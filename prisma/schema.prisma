@@ -1,0 +1,509 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User & Auth
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          Role      @default(TRAVELER)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  profile       TravelerProfile?
+  agency        Agency?       @relation("AgencyOwner")
+  agencyStaff   AgencyStaff?
+  bookings      Booking[]
+  trips         Trip[]
+  reviews       Review[]
+  notifications Notification[]
+  favorites     Favorite[]
+  documents     Document[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+enum Role {
+  TRAVELER
+  AGENCY
+  STAFF
+  ADMIN
+}
+
+// Traveler Profile
+model TravelerProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  dateOfBirth       DateTime?
+  nationality       String?
+  passportNumber    String?
+  emergencyContact  String?
+  emergencyPhone    String?
+  travelPreferences Json?    // { interests, style, budget, etc. }
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Agency
+model Agency {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  website     String?
+  phone       String?
+  email       String?
+  address     String?
+  verified    Boolean  @default(false)
+  active      Boolean  @default(true)
+  ownerId     String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner    User          @relation("AgencyOwner", fields: [ownerId], references: [id])
+  staff    AgencyStaff[]
+  packages Package[]
+  bookings Booking[]
+  vendors  Vendor[]
+}
+
+// Agency Staff
+model AgencyStaff {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  agencyId  String
+  role      StaffRole @default(AGENT)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+}
+
+enum StaffRole {
+  MANAGER
+  AGENT
+  SUPPORT
+}
+
+// Package
+model Package {
+  id           String        @id @default(cuid())
+  agencyId     String
+  title        String
+  slug         String        @unique
+  description  String
+  highlights   String[]
+  duration     Int           // days
+  maxGroupSize Int?
+  difficulty   Difficulty?
+  status       PackageStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  
+  // Pricing
+  basePrice    Decimal       @db.Decimal(10, 2)
+  currency     String        @default("INR")
+  
+  // Location
+  destinations Json          // [{name, country, lat, lng}]
+  startPoint   String?
+  
+  // Details
+  inclusions   String[]
+  exclusions   String[]
+  images       String[]
+  
+  // Availability
+  availableFrom DateTime?
+  availableTo   DateTime?
+  departureDates DateTime[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  agency       Agency       @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  itineraries  Itinerary[]
+  bookings     Booking[]
+  reviews      Review[]
+  favorites    Favorite[]
+}
+
+enum PackageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+  EXTREME
+}
+
+// Itinerary (day-by-day plan)
+model Itinerary {
+  id          String   @id @default(cuid())
+  packageId   String?
+  tripId      String?
+  dayNumber   Int
+  title       String
+  description String?
+  
+  activities  Activity[]
+  hotel       ItineraryHotel?
+  transport   ItineraryTransport?
+  
+  package     Package? @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  trip        Trip?    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  itineraryId String
+  title       String
+  description String?
+  time        String?  // "09:00 AM"
+  duration    String?  // "2 hours"
+  location    String?
+  lat         Float?
+  lng         Float?
+  cost        Decimal? @db.Decimal(10, 2)
+  type        ActivityType @default(SIGHTSEEING)
+  
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+}
+
+enum ActivityType {
+  SIGHTSEEING
+  ADVENTURE
+  DINING
+  SHOPPING
+  RELAXATION
+  CULTURAL
+  TRANSPORTATION
+  CHECK_IN
+  CHECK_OUT
+}
+
+model ItineraryHotel {
+  id          String  @id @default(cuid())
+  itineraryId String  @unique
+  name        String
+  address     String?
+  rating      Float?
+  pricePerNight Decimal? @db.Decimal(10, 2)
+  checkIn     String?
+  checkOut    String?
+  
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+}
+
+model ItineraryTransport {
+  id          String         @id @default(cuid())
+  itineraryId String         @unique
+  type        TransportType
+  from        String
+  to          String
+  departureTime String?
+  arrivalTime   String?
+  cost        Decimal?       @db.Decimal(10, 2)
+  provider    String?
+  
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+}
+
+enum TransportType {
+  FLIGHT
+  TRAIN
+  BUS
+  CAR
+  FERRY
+  WALK
+}
+
+// AI-Generated Trip
+model Trip {
+  id               String     @id @default(cuid())
+  userId           String
+  title            String
+  status           TripStatus @default(PLANNING)
+  
+  // User inputs
+  destinations     Json       // [{name, country}]
+  startDate        DateTime
+  endDate          DateTime
+  travelers        Int        @default(1)
+  budget           Decimal    @db.Decimal(10, 2)
+  currency         String     @default("INR")
+  travelStyle      TravelStyle @default(STANDARD)
+  interests        String[]
+  stayPreference   String?    // hotel, hostel, resort, villa
+  transportPref    String?    // flight, train, bus, self-drive
+  
+  // AI-generated content
+  aiResponse       Json?      // Full AI response stored
+  costBreakdown    Json?      // {hotels, transport, activities, food, misc}
+  
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itineraries      Itinerary[]
+  booking          Booking?
+}
+
+enum TripStatus {
+  PLANNING
+  GENERATED
+  SAVED
+  BOOKED
+  COMPLETED
+  CANCELLED
+}
+
+enum TravelStyle {
+  BUDGET
+  STANDARD
+  PREMIUM
+  LUXURY
+}
+
+// Booking
+model Booking {
+  id            String        @id @default(cuid())
+  bookingNumber String        @unique @default(cuid())
+  userId        String
+  agencyId      String?
+  packageId     String?
+  tripId        String?       @unique
+  status        BookingStatus @default(PENDING)
+  
+  // Traveler info
+  travelers     Json          // [{name, age, document}]
+  specialRequests String?
+  
+  // Pricing
+  totalAmount   Decimal       @db.Decimal(10, 2)
+  paidAmount    Decimal       @default(0) @db.Decimal(10, 2)
+  currency      String        @default("INR")
+  
+  // Dates
+  travelDate    DateTime
+  returnDate    DateTime?
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  user          User          @relation(fields: [userId], references: [id])
+  agency        Agency?       @relation(fields: [agencyId], references: [id])
+  package       Package?      @relation(fields: [packageId], references: [id])
+  trip          Trip?         @relation(fields: [tripId], references: [id])
+  payments      Payment[]
+  documents     Document[]
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+// Payment
+model Payment {
+  id            String        @id @default(cuid())
+  bookingId     String
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("INR")
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod
+  gateway       String        // "razorpay" or "stripe"
+  gatewayId     String?       // External payment ID
+  gatewayData   Json?         // Raw response from gateway
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  UPI
+  CARD
+  NET_BANKING
+  WALLET
+  BANK_TRANSFER
+  INTERNATIONAL
+}
+
+// Vendor
+model Vendor {
+  id            String     @id @default(cuid())
+  agencyId      String
+  name          String
+  category      VendorType @default(OTHER)
+  contactEmail  String?
+  contactPhone  String?
+  location      String?
+  description   String?
+  rating        Float?
+  active        Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  
+  agency        Agency     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+}
+
+enum VendorType {
+  HOTEL
+  TRANSPORT
+  GUIDE
+  ACTIVITY
+  RESTAURANT
+  OTHER
+}
+
+// Review
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  packageId String
+  rating    Int      // 1-5
+  title     String?
+  comment   String?
+  images    String[]
+  createdAt DateTime @default(now())
+  
+  user      User    @relation(fields: [userId], references: [id])
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, packageId])
+}
+
+// Notification
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  read      Boolean  @default(false)
+  data      Json?    // Additional context
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  TRIP
+  SYSTEM
+  PROMOTION
+}
+
+// Favorite
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  packageId String
+  createdAt DateTime @default(now())
+  
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, packageId])
+}
+
+// Document
+model Document {
+  id        String       @id @default(cuid())
+  userId    String?
+  bookingId String?
+  name      String
+  type      DocumentType
+  url       String
+  size      Int?
+  createdAt DateTime     @default(now())
+  
+  user      User?    @relation(fields: [userId], references: [id])
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+enum DocumentType {
+  PASSPORT
+  VISA
+  TICKET
+  INVOICE
+  VOUCHER
+  INSURANCE
+  OTHER
+}
