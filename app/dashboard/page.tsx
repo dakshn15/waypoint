@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   CalendarCheck,
   Map as MapIcon,
@@ -12,10 +12,17 @@ import {
   Package,
   DollarSign,
   ArrowRight,
+  ListTodo,
+  Clock,
+  Play,
+  CheckCircle2,
+  AlertCircle,
+  ShieldAlert,
 } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import AnalyticsCharts from "./analytics/charts";
+import { Badge } from "@/components/ui/badge";
 
 
 import { redirect } from "next/navigation";
@@ -38,7 +45,7 @@ export default async function DashboardPage() {
   }
 
   if (userRole === "STAFF") {
-    redirect("/dashboard/bookings");
+    return <StaffDashboard userId={userId!} userName={userName} />;
   }
 
   return <TravelerDashboard userName={userName} userId={userId!} />;
@@ -543,6 +550,247 @@ async function AdminDashboard() {
             isTraveler={false}
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+async function StaffDashboard({
+  userId,
+  userName,
+}: {
+  userId: string;
+  userName: string;
+}) {
+  const staff = await prisma.agencyStaff.findUnique({
+    where: { userId },
+    include: { agency: true },
+  });
+
+  if (!staff) {
+    return (
+      <div className="p-6 text-center text-red-500">
+        Staff profile not found. Please contact your agency administrator.
+      </div>
+    );
+  }
+
+  // Get tasks counts
+  const [totalTasks, todoTasks, inProgressTasks, completedTasks] = await Promise.all([
+    prisma.task.count({ where: { staffId: staff.id } }),
+    prisma.task.count({ where: { staffId: staff.id, status: "TODO" } }),
+    prisma.task.count({ where: { staffId: staff.id, status: "IN_PROGRESS" } }),
+    prisma.task.count({ where: { staffId: staff.id, status: "COMPLETED" } }),
+  ]);
+
+  const pendingTasks = todoTasks + inProgressTasks;
+
+  // Get agency bookings count
+  const agencyBookingsCount = await prisma.booking.count({
+    where: { agencyId: staff.agencyId },
+  });
+
+  // Fetch top 3 active tasks assigned to staff (Todo / In Progress)
+  const activeTasks = await prisma.task.findMany({
+    where: { staffId: staff.id, status: { not: "COMPLETED" } },
+    orderBy: [
+      { priority: "desc" },
+      { dueDate: "asc" },
+    ],
+    take: 3,
+  });
+
+  // Fetch recent agency bookings
+  const recentBookings = await prisma.booking.findMany({
+    where: { agencyId: staff.agencyId },
+    include: { user: true, package: true },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  });
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "HIGH":
+        return "bg-rose-500/10 text-rose-500 border border-rose-500/20";
+      case "MEDIUM":
+        return "bg-amber-500/10 text-amber-500 border border-amber-500/20";
+      default:
+        return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
+    }
+  };
+
+  const getBookingStatusColor = (status: string) => {
+    switch (status) {
+      case "CONFIRMED":
+        return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+      case "PROCESSING":
+        return "bg-sky-500/10 text-sky-600 border-sky-500/20";
+      case "CANCELLED":
+        return "bg-rose-500/10 text-rose-600 border-rose-500/20";
+      default:
+        return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Dashboard Greeting Header */}
+      <div>
+        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+          Welcome back, {userName}! 👋
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5 font-medium">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          {staff.role} &bull; {staff.agency.name} Operations Control
+        </p>
+      </div>
+
+      {/* Grid of Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Assigned Tasks</p>
+              <h3 className="text-3xl font-extrabold tracking-tight">{totalTasks}</h3>
+            </div>
+            <div className="h-12 w-12 rounded-xl bg-[var(--waypoint-teal)]/10 text-[var(--waypoint-teal)] flex items-center justify-center">
+              <ListTodo className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Pending Work</p>
+              <h3 className="text-3xl font-extrabold tracking-tight text-amber-500">{pendingTasks}</h3>
+            </div>
+            <div className="h-12 w-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+              <Clock className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Completed Tasks</p>
+              <h3 className="text-3xl font-extrabold tracking-tight text-emerald-500">{completedTasks}</h3>
+            </div>
+            <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Agency Bookings</p>
+              <h3 className="text-3xl font-extrabold tracking-tight">{agencyBookingsCount}</h3>
+            </div>
+            <div className="h-12 w-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
+              <CalendarCheck className="h-6 w-6" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main split dashboard view */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Left: Active Tasks */}
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm flex flex-col justify-between">
+          <CardHeader className="border-b border-zinc-100 dark:border-zinc-900/60 pb-4 flex flex-row items-center justify-between">
+            <div className="space-y-0.5">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <ListTodo className="h-5 w-5 text-[var(--waypoint-teal)]" /> Your Active Tasks
+              </CardTitle>
+              <CardDescription className="text-xs">Operational tasks assigned to you.</CardDescription>
+            </div>
+            <Link
+              href="/dashboard/tasks"
+              className="text-xs font-semibold text-[var(--waypoint-teal)] hover:underline flex items-center gap-1 shrink-0"
+            >
+              Task Board <ArrowRight className="h-3 w-3" />
+            </Link>
+          </CardHeader>
+          <CardContent className="p-6 flex-1 flex flex-col justify-between">
+            {activeTasks.length > 0 ? (
+              <div className="space-y-4">
+                {activeTasks.map((t) => (
+                  <div key={t.id} className="p-3 bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-100 dark:border-zinc-900/60 rounded-xl space-y-1.5">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 line-clamp-1">{t.title}</span>
+                      <Badge variant="outline" className={`text-[8px] px-1.5 uppercase font-bold shrink-0 ${getPriorityColor(t.priority)}`}>
+                        {t.priority}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-1">{t.description}</p>
+                    <div className="flex justify-between items-center text-[10px] text-zinc-400 font-medium">
+                      <span>{t.category}</span>
+                      <span>Due: {formatDate(new Date(t.dueDate))}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+                <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-2.5" />
+                <p className="font-bold text-sm text-zinc-900 dark:text-zinc-100">All caught up!</p>
+                <p className="text-xs text-zinc-500">No active tasks assigned.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Right: Recent Agency Bookings */}
+        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm flex flex-col justify-between">
+          <CardHeader className="border-b border-zinc-100 dark:border-zinc-900/60 pb-4 flex flex-row items-center justify-between">
+            <div className="space-y-0.5">
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <CalendarCheck className="h-5 w-5 text-sky-500" /> Recent Bookings
+              </CardTitle>
+              <CardDescription className="text-xs">Latest customer bookings in your agency.</CardDescription>
+            </div>
+            <Link
+              href="/dashboard/bookings"
+              className="text-xs font-semibold text-sky-500 hover:underline flex items-center gap-1 shrink-0"
+            >
+              View Bookings <ArrowRight className="h-3 w-3" />
+            </Link>
+          </CardHeader>
+          <CardContent className="p-6 flex-1 flex flex-col justify-between">
+            {recentBookings.length > 0 ? (
+              <div className="space-y-4">
+                {recentBookings.map((b) => (
+                  <div key={b.id} className="p-3 bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-100 dark:border-zinc-900/60 rounded-xl flex items-center justify-between gap-4">
+                    <div className="min-w-0 space-y-0.5">
+                      <span className="font-bold text-sm text-zinc-800 dark:text-zinc-250 truncate block">
+                        {b.user.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate block">
+                        {b.package?.title || "Custom Trip"}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 block font-medium">
+                        Amt: {formatCurrency(Number(b.totalAmount), b.currency)}
+                      </span>
+                    </div>
+
+                    <Badge className={`text-[9px] px-1.5 uppercase font-bold tracking-wider shrink-0 ${getBookingStatusColor(b.status)}`}>
+                      {b.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+                <AlertCircle className="h-10 w-10 text-zinc-400 mb-2.5" />
+                <p className="font-bold text-sm text-zinc-900 dark:text-zinc-100">No bookings yet</p>
+                <p className="text-xs text-zinc-500">Wait for client requests.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

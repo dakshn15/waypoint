@@ -1,10 +1,9 @@
-"use server";
-
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AgenciesList } from "./agencies-list-client";
+import { serializePrisma } from "@/lib/utils";
 
 export default async function AdminAgenciesPage() {
   const session = await auth.api.getSession({
@@ -63,7 +62,7 @@ export default async function AdminAgenciesPage() {
         </p>
       </div>
 
-      <AgenciesList initialAgencies={formattedAgencies} />
+      <AgenciesList initialAgencies={serializePrisma(formattedAgencies)} />
     </div>
   );
 }

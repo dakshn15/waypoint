@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Search,
   Building2,
@@ -18,12 +27,20 @@ import {
   Users,
   CheckCircle2,
   AlertCircle,
-  FileText,
+  Plus,
+  Edit,
+  Trash2,
 } from "lucide-react";
-import { toggleAgencyVerification, toggleAgencyActive } from "@/app/actions/admin";
+import {
+  toggleAgencyVerification,
+  toggleAgencyActive,
+  createAgencyByAdmin,
+  updateAgencyByAdmin,
+  deleteAgencyByAdmin,
+} from "@/app/actions/admin";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface Agency {
   id: string;
@@ -42,7 +59,7 @@ interface Agency {
   packagesCount: number;
   bookingsCount: number;
   staffCount: number;
-  createdAt: Date;
+  createdAt: string;
 }
 
 interface AgenciesListProps {
@@ -50,47 +67,177 @@ interface AgenciesListProps {
 }
 
 export function AgenciesList({ initialAgencies }: AgenciesListProps) {
+  const router = useRouter();
   const [agencies, setAgencies] = useState<Agency[]>(initialAgencies);
   const [search, setSearch] = useState("");
   const [filterVerified, setFilterVerified] = useState<string>("ALL");
-  const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
+
+  // Modal states
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Agency | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Agency | null>(null);
+
+  // Form states
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    ownerName: "",
+    ownerEmail: "",
+    description: "",
+    website: "",
+    phone: "",
+  });
+
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+    website: "",
+    email: "",
+    phone: "",
+    address: "",
+    logo: "",
+    verified: false,
+    active: true,
+  });
 
   const handleToggleVerification = async (agencyId: string) => {
-    startTransition(async () => {
-      const result = await toggleAgencyVerification(agencyId);
-      if (result.success) {
-        setAgencies((prev) =>
-          prev.map((a) => (a.id === agencyId ? { ...a, verified: !a.verified } : a))
-        );
-        const agency = agencies.find((a) => a.id === agencyId);
-        toast.success(
-          `Agency "${agency?.name}" is now ${
-            !agency?.verified ? "Verified" : "Unverified"
-          }`
-        );
-      } else {
-        toast.error(result.error || "Failed to toggle verification");
-      }
-    });
+    setLoading(true);
+    const res = await toggleAgencyVerification(agencyId);
+    setLoading(false);
+    if (res.success) {
+      setAgencies((prev) =>
+        prev.map((a) => (a.id === agencyId ? { ...a, verified: !a.verified } : a))
+      );
+      const agency = agencies.find((a) => a.id === agencyId);
+      toast.success(`Agency "${agency?.name}" verification status toggled.`);
+    } else {
+      toast.error(res.error || "Failed to toggle verification");
+    }
   };
 
   const handleToggleActive = async (agencyId: string) => {
-    startTransition(async () => {
-      const result = await toggleAgencyActive(agencyId);
-      if (result.success) {
-        setAgencies((prev) =>
-          prev.map((a) => (a.id === agencyId ? { ...a, active: !a.active } : a))
-        );
-        const agency = agencies.find((a) => a.id === agencyId);
-        toast.success(
-          `Agency "${agency?.name}" status updated to ${
-            !agency?.active ? "Active" : "Suspended"
-          }`
-        );
-      } else {
-        toast.error(result.error || "Failed to toggle active status");
-      }
+    setLoading(true);
+    const res = await toggleAgencyActive(agencyId);
+    setLoading(false);
+    if (res.success) {
+      setAgencies((prev) =>
+        prev.map((a) => (a.id === agencyId ? { ...a, active: !a.active } : a))
+      );
+      const agency = agencies.find((a) => a.id === agencyId);
+      toast.success(`Agency "${agency?.name}" status updated.`);
+    } else {
+      toast.error(res.error || "Failed to toggle status");
+    }
+  };
+
+  const handleCreateAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createForm.name.trim() || !createForm.ownerName.trim() || !createForm.ownerEmail.trim()) {
+      toast.error("Name, Owner Name, and Owner Email are required.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await createAgencyByAdmin({
+        name: createForm.name,
+        ownerName: createForm.ownerName,
+        ownerEmail: createForm.ownerEmail,
+        description: createForm.description || null,
+        website: createForm.website || null,
+        phone: createForm.phone || null,
+      });
+
+      if (res.error) throw new Error(res.error);
+
+      toast.success("Agency registered successfully!");
+      setCreateOpen(false);
+      setCreateForm({
+        name: "",
+        ownerName: "",
+        ownerEmail: "",
+        description: "",
+        website: "",
+        phone: "",
+      });
+      router.refresh();
+      window.location.reload();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to register agency");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenEdit = (agency: Agency) => {
+    setEditTarget(agency);
+    setEditForm({
+      name: agency.name,
+      description: agency.description || "",
+      website: agency.website || "",
+      email: agency.email || "",
+      phone: agency.phone || "",
+      address: agency.address || "",
+      logo: agency.logo || "",
+      verified: agency.verified,
+      active: agency.active,
     });
+  };
+
+  const handleUpdateAgencySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTarget) return;
+
+    if (!editForm.name.trim()) {
+      toast.error("Agency name is required.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await updateAgencyByAdmin(editTarget.id, {
+        name: editForm.name,
+        description: editForm.description || null,
+        website: editForm.website || null,
+        email: editForm.email || null,
+        phone: editForm.phone || null,
+        address: editForm.address || null,
+        logo: editForm.logo || null,
+        verified: editForm.verified,
+        active: editForm.active,
+      });
+
+      if (res.error) throw new Error(res.error);
+
+      toast.success("Agency details updated successfully!");
+      setEditTarget(null);
+      router.refresh();
+      window.location.reload();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update agency");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAgency = async () => {
+    if (!deleteTarget) return;
+
+    setLoading(true);
+    try {
+      const res = await deleteAgencyByAdmin(deleteTarget.id);
+      if (res.success) {
+        setAgencies((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+        toast.success(`Agency "${deleteTarget.name}" deleted successfully.`);
+        setDeleteTarget(null);
+      } else {
+        toast.error(res.error || "Failed to delete agency");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete agency");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredAgencies = agencies.filter((agency) => {
@@ -122,28 +269,41 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
             />
           </div>
 
-          <div className="flex gap-2 w-full md:w-auto justify-end">
+          <div className="flex gap-3 w-full md:w-auto items-center justify-end">
+            <div className="flex gap-1.5 border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 bg-zinc-100 dark:bg-zinc-900/50">
+              <Button
+                variant={filterVerified === "ALL" ? "default" : "ghost"}
+                onClick={() => setFilterVerified("ALL")}
+                size="sm"
+                className="h-7 px-2.5 text-xs rounded-md cursor-pointer"
+              >
+                All
+              </Button>
+              <Button
+                variant={filterVerified === "VERIFIED" ? "default" : "ghost"}
+                onClick={() => setFilterVerified("VERIFIED")}
+                size="sm"
+                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
+                  filterVerified === "VERIFIED" ? "bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white" : ""
+                }`}
+              >
+                Verified
+              </Button>
+              <Button
+                variant={filterVerified === "UNVERIFIED" ? "default" : "ghost"}
+                onClick={() => setFilterVerified("UNVERIFIED")}
+                size="sm"
+                className="h-7 px-2.5 text-xs rounded-md cursor-pointer"
+              >
+                Unverified
+              </Button>
+            </div>
+
             <Button
-              variant={filterVerified === "ALL" ? "default" : "outline"}
-              onClick={() => setFilterVerified("ALL")}
-              size="sm"
+              onClick={() => setCreateOpen(true)}
+              className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
             >
-              All
-            </Button>
-            <Button
-              variant={filterVerified === "VERIFIED" ? "default" : "outline"}
-              onClick={() => setFilterVerified("VERIFIED")}
-              size="sm"
-              className={filterVerified === "VERIFIED" ? "bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white" : ""}
-            >
-              Verified Only
-            </Button>
-            <Button
-              variant={filterVerified === "UNVERIFIED" ? "default" : "outline"}
-              onClick={() => setFilterVerified("UNVERIFIED")}
-              size="sm"
-            >
-              Unverified
+              <Plus className="h-4 w-4" /> Add Agency
             </Button>
           </div>
         </CardContent>
@@ -151,145 +311,405 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Grid List */}
       <div className="grid gap-6 md:grid-cols-2">
-        <AnimatePresence mode="popLayout">
-          {filteredAgencies.length === 0 ? (
-            <div className="col-span-full py-16 text-center text-muted-foreground">
-              No agencies found matching your filters.
-            </div>
-          ) : (
-            filteredAgencies.map((agency) => (
-              <motion.div
-                key={agency.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                layout
-              >
-                <Card className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${
-                  agency.active ? "border-zinc-200 dark:border-zinc-800" : "border-rose-500/20"
-                }`}>
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-500 flex items-center justify-center text-white">
-                          <Building2 className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl flex items-center gap-1.5 font-bold">
-                            {agency.name}
-                            {agency.verified ? (
-                              <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-500/10" />
-                            ) : (
-                              <AlertCircle className="h-5 w-5 text-amber-500" />
-                            )}
-                          </CardTitle>
-                          <CardDescription className="text-xs text-muted-foreground mt-0.5">
-                            Created on {formatDate(new Date(agency.createdAt))}
-                          </CardDescription>
-                        </div>
+        {filteredAgencies.length === 0 ? (
+          <div className="col-span-full py-16 text-center text-muted-foreground">
+            No agencies found matching your filters.
+          </div>
+        ) : (
+          filteredAgencies.map((agency) => (
+            <Card
+              key={agency.id}
+              className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${
+                agency.active ? "border-zinc-200 dark:border-zinc-800" : "border-rose-500/20"
+              }`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    {agency.logo ? (
+                      <img
+                        src={agency.logo}
+                        alt={`${agency.name} logo`}
+                        className="h-10 w-10 rounded-xl object-cover border border-zinc-200 dark:border-zinc-800"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-500 flex items-center justify-center text-white">
+                        <Building2 className="h-5 w-5" />
                       </div>
-                      <Badge variant={agency.active ? "default" : "destructive"}>
-                        {agency.active ? "Active" : "Suspended"}
-                      </Badge>
-                    </div>
-                    {agency.description && (
-                      <p className="text-sm text-muted-foreground mt-3 line-clamp-2">
-                        {agency.description}
-                      </p>
                     )}
-                  </CardHeader>
-
-                  <CardContent className="space-y-4 flex-1 flex flex-col justify-between">
-                    {/* Contacts & Metadata */}
-                    <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
-                      {agency.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                          <span>{agency.email}</span>
-                        </div>
-                      )}
-                      {agency.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span>{agency.phone}</span>
-                        </div>
-                      )}
-                      {agency.website && (
-                        <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-muted-foreground" />
-                          <a
-                            href={agency.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:underline text-[var(--waypoint-teal)]"
-                          >
-                            {agency.website}
-                          </a>
-                        </div>
-                      )}
-                      <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/50 mt-2">
-                        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Owner Details</p>
-                        <p className="text-sm font-medium mt-0.5 text-zinc-800 dark:text-zinc-200">
-                          {agency.ownerName} ({agency.ownerEmail})
-                        </p>
-                      </div>
+                    <div>
+                      <CardTitle className="text-xl flex items-center gap-1.5 font-bold">
+                        {agency.name}
+                        {agency.verified ? (
+                          <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-500/10" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-amber-500" />
+                        )}
+                      </CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground mt-0.5">
+                        Created on {formatDate(new Date(agency.createdAt))}
+                      </CardDescription>
                     </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={agency.active ? "default" : "destructive"}>
+                      {agency.active ? "Active" : "Suspended"}
+                    </Badge>
+                  </div>
+                </div>
+                {agency.description && (
+                  <p className="text-sm text-muted-foreground mt-3 line-clamp-2 leading-relaxed">
+                    {agency.description}
+                  </p>
+                )}
+              </CardHeader>
 
-                    {/* Stats Counter */}
-                    <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-zinc-500/5 dark:bg-zinc-950/40 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 text-center">
-                      <div>
-                        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                          <Package className="h-3 w-3" /> Packages
-                        </p>
-                        <p className="text-lg font-bold mt-0.5">{agency.packagesCount}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                          <CalendarCheck className="h-3 w-3" /> Bookings
-                        </p>
-                        <p className="text-lg font-bold mt-0.5">{agency.bookingsCount}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                          <Users className="h-3 w-3" /> Staff
-                        </p>
-                        <p className="text-lg font-bold mt-0.5">{agency.staffCount}</p>
-                      </div>
+              <CardContent className="space-y-4 flex-1 flex flex-col justify-between">
+                {/* Contacts & Metadata */}
+                <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  {agency.email && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span>{agency.email}</span>
                     </div>
-
-                    {/* Control Switches */}
-                    <div className="flex justify-between items-center pt-2 border-t border-zinc-200 dark:border-zinc-800/80">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id={`verify-${agency.id}`}
-                          checked={agency.verified}
-                          onCheckedChange={() => handleToggleVerification(agency.id)}
-                          disabled={isPending}
-                        />
-                        <Label htmlFor={`verify-${agency.id}`} className="text-xs font-medium cursor-pointer">
-                          Verified Profile
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id={`active-${agency.id}`}
-                          checked={agency.active}
-                          onCheckedChange={() => handleToggleActive(agency.id)}
-                          disabled={isPending}
-                        />
-                        <Label htmlFor={`active-${agency.id}`} className="text-xs font-medium cursor-pointer">
-                          Active Operation
-                        </Label>
-                      </div>
+                  )}
+                  {agency.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span>{agency.phone}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
-        </AnimatePresence>
+                  )}
+                  {agency.website && (
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <a
+                        href={agency.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-[var(--waypoint-teal)] font-medium"
+                      >
+                        {agency.website}
+                      </a>
+                    </div>
+                  )}
+                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/50 mt-2">
+                    <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Owner Details</p>
+                    <p className="text-sm font-medium mt-0.5 text-zinc-800 dark:text-zinc-200">
+                      {agency.ownerName} ({agency.ownerEmail})
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stats Counter */}
+                <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-zinc-500/5 dark:bg-zinc-950/40 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 text-center">
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                      <Package className="h-3 w-3" /> Packages
+                    </p>
+                    <p className="text-lg font-bold mt-0.5">{agency.packagesCount}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                      <CalendarCheck className="h-3 w-3" /> Bookings
+                    </p>
+                    <p className="text-lg font-bold mt-0.5">{agency.bookingsCount}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                      <Users className="h-3 w-3" /> Staff
+                    </p>
+                    <p className="text-lg font-bold mt-0.5">{agency.staffCount}</p>
+                  </div>
+                </div>
+
+                {/* Control switches and actions row */}
+                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      onClick={() => handleOpenEdit(agency)}
+                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 hover:border-sky-500/20 hover:bg-sky-500/5 hover:text-sky-500 cursor-pointer"
+                    >
+                      <Edit className="h-3.5 w-3.5" /> Edit Agency
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      onClick={() => setDeleteTarget(agency)}
+                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 text-rose-500 hover:border-rose-500/25 hover:bg-rose-500/5 cursor-pointer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor={`verify-${agency.id}`} className="text-[10px] text-zinc-500 font-semibold cursor-pointer">
+                      Verified
+                    </Label>
+                    <Switch
+                      id={`verify-${agency.id}`}
+                      checked={agency.verified}
+                      onCheckedChange={() => handleToggleVerification(agency.id)}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
+
+      {/* Register Agency Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="glass-card max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Register New Agency</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Register a travel agency tenant and create its administrator profile.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateAgency} className="space-y-4 mt-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="create-agency-name">Agency Name <span className="text-rose-500">*</span></Label>
+              <Input
+                id="create-agency-name"
+                required
+                placeholder="Golden Travels Ltd"
+                value={createForm.name}
+                onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="create-owner-name">Owner Name <span className="text-rose-500">*</span></Label>
+                <Input
+                  id="create-owner-name"
+                  required
+                  placeholder="Rahul Kumar"
+                  value={createForm.ownerName}
+                  onChange={(e) => setCreateForm({ ...createForm, ownerName: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="create-owner-email">Owner Email <span className="text-rose-500">*</span></Label>
+                <Input
+                  id="create-owner-email"
+                  type="email"
+                  required
+                  placeholder="rahul@goldentravels.com"
+                  value={createForm.ownerEmail}
+                  onChange={(e) => setCreateForm({ ...createForm, ownerEmail: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="create-website">Website URL</Label>
+                <Input
+                  id="create-website"
+                  placeholder="www.goldentravels.com"
+                  value={createForm.website}
+                  onChange={(e) => setCreateForm({ ...createForm, website: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="create-phone">Phone</Label>
+                <Input
+                  id="create-phone"
+                  placeholder="+91..."
+                  value={createForm.phone}
+                  onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="create-desc">Description</Label>
+              <Textarea
+                id="create-desc"
+                placeholder="Enter a brief profile description..."
+                value={createForm.description}
+                onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 min-h-[80px]"
+              />
+            </div>
+
+            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+              >
+                {loading ? "Registering..." : "Register Agency"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Agency Dialog */}
+      <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
+        <DialogContent className="glass-card max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Edit Agency Tenant</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Modify agency details, brand logo, coordinates, and configuration settings.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-agency-name">Agency Name <span className="text-rose-500">*</span></Label>
+                <Input
+                  id="edit-agency-name"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-logo">Logo URL</Label>
+                <Input
+                  id="edit-logo"
+                  value={editForm.logo}
+                  onChange={(e) => setEditForm({ ...editForm, logo: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1.5 col-span-1">
+                <Label htmlFor="edit-website">Website URL</Label>
+                <Input
+                  id="edit-website"
+                  value={editForm.website}
+                  onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5 col-span-1">
+                <Label htmlFor="edit-email">Public Email</Label>
+                <Input
+                  id="edit-email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5 col-span-1">
+                <Label htmlFor="edit-phone">Public Phone</Label>
+                <Input
+                  id="edit-phone"
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-address">Office Address</Label>
+              <Input
+                id="edit-address"
+                value={editForm.address}
+                onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-desc">Agency Profile Description</Label>
+              <Textarea
+                id="edit-desc"
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 min-h-[80px]"
+              />
+            </div>
+
+            <div className="flex gap-4 p-3 bg-zinc-500/5 dark:bg-zinc-900/30 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl justify-around">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="edit-verified"
+                  checked={editForm.verified}
+                  onCheckedChange={(val) => setEditForm({ ...editForm, verified: val })}
+                />
+                <Label htmlFor="edit-verified" className="text-xs font-semibold cursor-pointer">
+                  Verified Profile
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="edit-active"
+                  checked={editForm.active}
+                  onCheckedChange={(val) => setEditForm({ ...editForm, active: val })}
+                />
+                <Label htmlFor="edit-active" className="text-xs font-semibold cursor-pointer">
+                  Active Operation
+                </Label>
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+              >
+                {loading ? "Saving Changes..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="glass-card border-rose-500/20 max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-rose-500">Delete Travel Agency</DialogTitle>
+            <DialogDescription className="mt-2 text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to delete the travel agency{" "}
+              <strong className="text-zinc-900 dark:text-zinc-100">{deleteTarget?.name}</strong>?
+              Deleting the agency will permanently remove its listings, bookings, and employee associations.
+              The owner profile role will revert back to Traveler status. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteAgency} disabled={loading} className="cursor-pointer">
+              {loading ? "Deleting..." : "Permanently Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

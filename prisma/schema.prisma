@@ -123,6 +123,7 @@ model Agency {
   packages Package[]
   bookings Booking[]
   vendors  Vendor[]
+  tasks    Task[]
 }
 
 // Agency Staff
@@ -136,6 +137,7 @@ model AgencyStaff {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  tasks  Task[]
 }
 
 enum StaffRole {
@@ -506,4 +508,43 @@ enum DocumentType {
   VOUCHER
   INSURANCE
   OTHER
+}
+
+// Task Assignment Model
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  dueDate     DateTime
+  status      TaskStatus   @default(TODO)
+  priority    Priority     @default(MEDIUM)
+  category    TaskCategory @default(SYSTEM)
+  
+  agencyId    String
+  agency      Agency       @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  
+  staffId     String?
+  staff       AgencyStaff? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskCategory {
+  BOOKING
+  CUSTOMER
+  PACKAGE
+  SYSTEM
 }

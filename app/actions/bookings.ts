@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import { getUserAgencyAccess } from "@/lib/permissions";
+
 export async function createBooking(data: {
   packageId?: string;
   tripId?: string;
@@ -79,6 +81,13 @@ export async function cancelBooking(bookingId: string) {
     throw new Error("Unauthorized to cancel this booking.");
   }
 
+  if (role === "AGENCY" || role === "STAFF") {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || booking.agencyId !== access.agencyId) {
+      throw new Error("Unauthorized to cancel this booking.");
+    }
+  }
+
   const updated = await prisma.booking.update({
     where: { id: bookingId },
     data: { status: "CANCELLED" },
@@ -117,23 +126,21 @@ export async function updateBookingStatus(
 
   const role = (session.user as any).role || "TRAVELER";
 
-  if (role !== "ADMIN" && role !== "AGENCY") {
-    throw new Error("Only agencies and admins can update booking status.");
+  if (role !== "ADMIN" && role !== "AGENCY" && role !== "STAFF") {
+    throw new Error("Only agency personnel and admins can update booking status.");
   }
 
-  if (role === "AGENCY") {
-    const agency = await prisma.agency.findUnique({
-      where: { ownerId: session.user.id },
-    });
-    if (!agency) {
-      throw new Error("Agency profile not found.");
-    }
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
 
-    const booking = await prisma.booking.findUnique({
-      where: { id: bookingId },
-    });
+  if (!booking) {
+    throw new Error("Booking not found.");
+  }
 
-    if (!booking || booking.agencyId !== agency.id) {
+  if (role === "AGENCY" || role === "STAFF") {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || booking.agencyId !== access.agencyId) {
       throw new Error("Unauthorized to update this booking.");
     }
   }

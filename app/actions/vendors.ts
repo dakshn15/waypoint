@@ -1,9 +1,12 @@
 "use server";
 
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { headers } from "next/headers";
+import { getUserAgencyAccess } from "@/lib/permissions";
 
 interface AddVendorInput {
-  agencyId: string;
+  agencyId?: string;
   name: string;
   category: string;
   location?: string;
@@ -14,13 +17,26 @@ interface AddVendorInput {
 
 export async function addVendor(input: AddVendorInput) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return { error: "Unauthorized. Please log in." };
+    }
+
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+      return { error: "Unauthorized. Only agencies or managers can add vendors." };
+    }
+
     if (!input.name.trim()) {
       return { error: "Vendor name is required" };
     }
 
     const vendor = await prisma.vendor.create({
       data: {
-        agencyId: input.agencyId,
+        agencyId: access.agencyId,
         name: input.name.trim(),
         category: input.category as any,
         location: input.location || null,
@@ -40,8 +56,23 @@ export async function addVendor(input: AddVendorInput) {
 
 export async function toggleVendorStatus(vendorId: string) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return { error: "Unauthorized. Please log in." };
+    }
+
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER" && access.staffRole !== "AGENT")) {
+      return { error: "Unauthorized. Only managers, agents, or owners can update vendor status." };
+    }
+
     const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
-    if (!vendor) return { error: "Vendor not found" };
+    if (!vendor || vendor.agencyId !== access.agencyId) {
+      return { error: "Vendor not found." };
+    }
 
     const updated = await prisma.vendor.update({
       where: { id: vendorId },
@@ -56,6 +87,24 @@ export async function toggleVendorStatus(vendorId: string) {
 
 export async function deleteVendor(vendorId: string) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return { error: "Unauthorized. Please log in." };
+    }
+
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+      return { error: "Unauthorized. Only managers or owners can delete vendors." };
+    }
+
+    const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
+    if (!vendor || vendor.agencyId !== access.agencyId) {
+      return { error: "Vendor not found." };
+    }
+
     await prisma.vendor.delete({ where: { id: vendorId } });
     return { success: true };
   } catch (error: any) {
