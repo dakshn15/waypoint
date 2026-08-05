@@ -448,11 +448,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
   pkg.isFavorited = isFavorited;
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950/30 pb-20">
+    <div className="min-h-screen bg-slate-50/50 pb-20">
       {/* Header */}
-      <header className="border-b bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/packages" className="flex items-center gap-2 text-sm font-medium hover:text-[var(--waypoint-teal)] transition-colors">
+          <Link href="/packages" className="flex items-center gap-2 text-sm font-medium hover:text-[#769ABC] transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back to Packages
           </Link>
           <div className="flex items-center gap-4">
@@ -461,28 +461,28 @@ export default async function PackageDetailPage({ params }: PageProps) {
               initialFavorited={pkg.isFavorited}
             />
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-[var(--waypoint-teal)] to-[var(--waypoint-navy)] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-[#769ABC] to-[#1A3B5A] flex items-center justify-center">
                 <span className="text-white font-bold text-xs">W</span>
               </div>
-              <span className="font-bold text-sm">Waypoint</span>
+              <span className="font-bold text-sm text-slate-900">Waypoint</span>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-[var(--waypoint-navy)] to-zinc-900 text-white py-16 px-4">
+      <div className="bg-gradient-to-br from-[#1A3B5A] to-slate-900 text-white py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Badge className="bg-[var(--waypoint-teal)] text-white hover:bg-[var(--waypoint-teal)]/90 px-3 py-1 text-xs">
+            <Badge className="bg-[#769ABC] text-white hover:bg-[#769ABC]/90 px-3 py-1 text-xs">
               {pkg.difficulty}
             </Badge>
-            <Badge variant="outline" className="text-zinc-300 border-zinc-700 px-3 py-1 text-xs">
-              <Clock className="h-3.5 w-3.5 mr-1 text-[var(--waypoint-teal)] inline" />
+            <Badge variant="outline" className="text-slate-300 border-slate-700 px-3 py-1 text-xs">
+              <Clock className="h-3.5 w-3.5 mr-1 text-[#769ABC] inline" />
               {pkg.duration} Days
             </Badge>
-            <div className="flex items-center gap-1 text-sm text-zinc-300 ml-2">
-              <Star className="h-4 w-4 fill-[var(--waypoint-amber)] text-[var(--waypoint-amber)]" />
+            <div className="flex items-center gap-1 text-sm text-slate-300 ml-2">
+              <Star className="h-4 w-4 fill-[#E46F44] text-[#E46F44]" />
               <span className="font-semibold text-white">{pkg.rating}</span>
               <span>({pkg.reviews || 12} reviews)</span>
             </div>
@@ -492,7 +492,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
             {pkg.title}
           </h1>
           
-          <p className="text-zinc-300 text-lg max-w-3xl mb-0 leading-relaxed">
+          <p className="text-slate-300 text-lg max-w-3xl mb-0 leading-relaxed">
             {pkg.description}
           </p>
         </div>
@@ -506,10 +506,10 @@ export default async function PackageDetailPage({ params }: PageProps) {
           <div className="lg:col-span-2 space-y-8">
             
             {/* Visual Header Banner */}
-            <div className="h-64 md:h-96 rounded-2xl bg-gradient-to-tr from-[var(--waypoint-teal)]/20 to-[var(--waypoint-navy)]/30 border border-zinc-200/50 dark:border-zinc-800/50 flex flex-col items-center justify-center relative overflow-hidden group shadow-xl">
-              <MapPin className="h-16 w-16 text-[var(--waypoint-teal)] animate-pulse" />
+            <div className="h-64 md:h-96 rounded-2xl bg-gradient-to-tr from-[#769ABC]/20 to-[#1A3B5A]/30 border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden group shadow-xl">
+              <MapPin className="h-16 w-16 text-[#769ABC] animate-pulse" />
               <div className="absolute bottom-4 left-4 right-4 text-center bg-black/40 backdrop-blur-md border border-white/10 p-3 rounded-xl">
-                <span className="text-xs text-zinc-300">Route Map & Destinations</span>
+                <span className="text-xs text-slate-300">Route Map & Destinations</span>
                 <div className="text-sm font-semibold text-white mt-1">
                   {pkg.destinations.join(" → ")}
                 </div>
@@ -518,15 +518,15 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
             {/* highlights */}
             {pkg.highlights && pkg.highlights.length > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-2xl border shadow-sm">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-[var(--waypoint-teal)]" />
+              <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900">
+                  <ShieldCheck className="h-5 w-5 text-[#769ABC]" />
                   Tour Highlights
                 </h2>
                 <ul className="grid gap-3 sm:grid-cols-2">
                   {pkg.highlights.map((h: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-muted-foreground align-top animate-fade-in">
-                      <span className="text-[var(--waypoint-teal)] font-bold">✦</span>
+                    <li key={i} className="flex gap-2 text-sm text-slate-600 align-top animate-fade-in">
+                      <span className="text-[#769ABC] font-bold">✦</span>
                       <span>{h}</span>
                     </li>
                   ))}
@@ -537,39 +537,39 @@ export default async function PackageDetailPage({ params }: PageProps) {
             {/* Inclusions & Exclusions */}
             <div className="grid gap-6 sm:grid-cols-2">
               {/* Inclusions */}
-              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border shadow-sm">
-                <h3 className="text-lg font-bold mb-4 text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 className="text-lg font-bold mb-4 text-[#1A3B5A] flex items-center gap-2">
                   <Check className="h-5 w-5" /> Inclusions
                 </h3>
                 <ul className="space-y-2.5">
                   {pkg.inclusions && pkg.inclusions.length > 0 ? (
                     pkg.inclusions.map((inc: string, i: number) => (
-                      <li key={i} className="flex gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <li key={i} className="flex gap-2 text-sm text-slate-600">
+                        <Check className="h-4 w-4 text-[#769ABC] shrink-0 mt-0.5" />
                         <span>{inc}</span>
                       </li>
                     ))
                   ) : (
-                    <li className="text-sm text-muted-foreground">Accommodations and daily activities</li>
+                    <li className="text-sm text-slate-600">Accommodations and daily activities</li>
                   )}
                 </ul>
               </div>
 
               {/* Exclusions */}
-              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border shadow-sm">
-                <h3 className="text-lg font-bold mb-4 text-rose-600 dark:text-rose-400 flex items-center gap-2">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 className="text-lg font-bold mb-4 text-rose-600 flex items-center gap-2">
                   <X className="h-5 w-5" /> Exclusions
                 </h3>
                 <ul className="space-y-2.5">
                   {pkg.exclusions && pkg.exclusions.length > 0 ? (
                     pkg.exclusions.map((exc: string, i: number) => (
-                      <li key={i} className="flex gap-2 text-sm text-muted-foreground">
+                      <li key={i} className="flex gap-2 text-sm text-slate-600">
                         <X className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
                         <span>{exc}</span>
                       </li>
                     ))
                   ) : (
-                    <li className="text-sm text-muted-foreground">Personal expenses, laundry, tips</li>
+                    <li className="text-sm text-slate-600">Personal expenses, laundry, tips</li>
                   )}
                 </ul>
               </div>
@@ -577,47 +577,47 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
             {/* Day-by-Day Itinerary */}
             {pkg.itineraries && pkg.itineraries.length > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-2xl border shadow-sm space-y-6">
-                <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-                  <CalendarDays className="h-5 w-5 text-[var(--waypoint-teal)]" />
+              <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <h2 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900">
+                  <CalendarDays className="h-5 w-5 text-[#769ABC]" />
                   Day-by-Day Itinerary
                 </h2>
-                <p className="text-sm text-muted-foreground mt-0.5">Explore the detailed daily tour plans, sightseeing stops, and activities.</p>
+                <p className="text-sm text-slate-600 mt-0.5">Explore the detailed daily tour plans, sightseeing stops, and activities.</p>
                 
                 <div className="space-y-6 mt-4">
                   {pkg.itineraries.map((day: any) => (
-                    <div key={day.dayNumber} className="border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/20">
-                      <div className="p-4 bg-zinc-100/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-400 flex items-center justify-center text-white font-bold text-sm shadow">
+                    <div key={day.dayNumber} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
+                      <div className="p-4 bg-slate-100/60 border-b border-slate-200 flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#769ABC] to-[#1A3B5A] flex items-center justify-center text-white font-bold text-sm shadow">
                           {day.dayNumber}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-zinc-955 dark:text-zinc-50">{day.title}</h3>
-                          {day.description && <p className="text-xs text-muted-foreground mt-0.5">{day.description}</p>}
+                          <h3 className="font-semibold text-slate-900">{day.title}</h3>
+                          {day.description && <p className="text-xs text-slate-600 mt-0.5">{day.description}</p>}
                         </div>
                       </div>
                       
                       <div className="p-5 space-y-4">
                         {/* Transport */}
                         {day.transport && (
-                          <div className="flex items-center gap-3 bg-violet-500/5 border border-violet-500/10 rounded-lg p-3 text-xs">
-                            <Plane className="h-4 w-4 text-violet-500" />
+                          <div className="flex items-center gap-3 bg-[#769ABC]/10 border border-[#769ABC]/20 rounded-lg p-3 text-xs">
+                            <Plane className="h-4 w-4 text-[#769ABC]" />
                             <div>
-                              <span className="font-semibold">Transfer: {day.transport.from} → {day.transport.to}</span>
-                              <span className="text-muted-foreground block mt-0.5">Mode: {day.transport.type}</span>
+                              <span className="font-semibold text-slate-900">Transfer: {day.transport.from} → {day.transport.to}</span>
+                              <span className="text-slate-600 block mt-0.5">Mode: {day.transport.type}</span>
                             </div>
                           </div>
                         )}
 
                         {/* Activities */}
-                        <div className="space-y-4 pl-2 border-l border-zinc-200 dark:border-zinc-800 ml-4">
+                        <div className="space-y-4 pl-2 border-l border-slate-200 ml-4">
                           {day.activities?.map((act: any, aIdx: number) => (
                             <div key={act.id || aIdx} className="relative pl-6">
-                              <span className="absolute left-[-21px] top-1.5 h-2.5 w-2.5 rounded-full bg-[var(--waypoint-teal)] border-2 border-white dark:border-zinc-900 shadow-sm" />
-                              <div className="text-xs font-semibold text-[var(--waypoint-teal)]">{act.time}</div>
-                              <h4 className="text-sm font-semibold mt-0.5 text-zinc-900 dark:text-zinc-100">{act.title}</h4>
-                              {act.description && <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{act.description}</p>}
-                              <div className="text-xs text-muted-foreground mt-1.5 flex gap-3 flex-wrap">
+                              <span className="absolute left-[-21px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#769ABC] border-2 border-white shadow-sm" />
+                              <div className="text-xs font-semibold text-[#769ABC]">{act.time}</div>
+                              <h4 className="text-sm font-semibold mt-0.5 text-slate-900">{act.title}</h4>
+                              {act.description && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{act.description}</p>}
+                              <div className="text-xs text-slate-500 mt-1.5 flex gap-3 flex-wrap">
                                 <span>📍 {act.location}</span>
                                 <span>⏱️ {act.duration}</span>
                               </div>
@@ -627,11 +627,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
                         {/* Hotel */}
                         {day.hotel && (
-                          <div className="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/10 rounded-lg p-3 text-xs mt-2">
-                            <Hotel className="h-4 w-4 text-emerald-500" />
+                          <div className="flex items-center gap-3 bg-[#E8AA9B]/10 border border-[#E8AA9B]/20 rounded-lg p-3 text-xs mt-2">
+                            <Hotel className="h-4 w-4 text-[#E46F44]" />
                             <div>
-                              <span className="font-semibold">Accommodation: {day.hotel.name}</span>
-                              <span className="text-muted-foreground block mt-0.5">{day.hotel.address} • Rating: ⭐{day.hotel.rating}</span>
+                              <span className="font-semibold text-slate-900">Accommodation: {day.hotel.name}</span>
+                              <span className="text-slate-600 block mt-0.5">{day.hotel.address} • Rating: ⭐{day.hotel.rating}</span>
                             </div>
                           </div>
                         )}
@@ -643,12 +643,12 @@ export default async function PackageDetailPage({ params }: PageProps) {
             )}
 
             {/* Agency/Partner info */}
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border shadow-sm flex items-center justify-between">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
-                <span className="text-xs text-muted-foreground">Organized By</span>
-                <h4 className="text-md font-bold text-foreground mt-0.5">{pkg.agencyName}</h4>
+                <span className="text-xs text-slate-500">Organized By</span>
+                <h4 className="text-md font-bold text-slate-900 mt-0.5">{pkg.agencyName}</h4>
               </div>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-500 dark:text-emerald-400 bg-emerald-500/5 px-2.5 py-1">
+              <Badge variant="outline" className="border-[#769ABC]/30 text-[#769ABC] bg-[#769ABC]/5 px-2.5 py-1">
                 Verified Agency Partner
               </Badge>
             </div>

@@ -1,22 +1,22 @@
 import "../lib/storage-polyfill";
 import type { Metadata } from "next";
-import { Inter, DM_Sans, Geist } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Geist } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -32,21 +32,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={cn("h-full", "antialiased", inter.variable, dmSans.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", inter.variable, plusJakarta.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
-          <Toaster position="top-right" richColors />
-        </ThemeProvider>
+        <TooltipProvider>
+          {children}
+        </TooltipProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

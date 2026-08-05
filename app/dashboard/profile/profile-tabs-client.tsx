@@ -178,7 +178,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
 
       {/* Tab 1: Account Details */}
       <TabsContent value="account">
-        <Card className="glass-card border border-zinc-200 dark:border-zinc-800">
+        <Card className="glass-card border border-slate-200">
           <CardHeader>
             <CardTitle>Account Details</CardTitle>
             <CardDescription>
@@ -192,7 +192,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                   {imageUrl ? (
                     <AvatarImage src={imageUrl} alt={name} />
                   ) : null}
-                  <AvatarFallback className="bg-[var(--waypoint-navy)] text-white text-2xl font-semibold">
+                  <AvatarFallback className="bg-[#1A3B5A] text-white text-2xl font-semibold">
                     {name.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -203,7 +203,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="text-xs h-8"
+                      className="text-xs h-8 border-slate-200"
                       onClick={() => document.getElementById("avatar-upload")?.click()}
                     >
                       Upload New Photo
@@ -213,7 +213,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 h-8"
+                        className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 h-8"
                         onClick={() => setImageUrl("")}
                       >
                         Remove Photo
@@ -242,7 +242,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="Enter full name"
                   />
                 </div>
@@ -252,7 +252,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     id="email"
                     value={user.email}
                     disabled
-                    className="bg-zinc-100/50 dark:bg-zinc-900/50 text-muted-foreground border-zinc-200/50"
+                    className="bg-slate-100 text-muted-foreground border-slate-200"
                   />
                 </div>
 
@@ -261,7 +261,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingAccount}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white px-6 rounded-lg transition-colors font-medium text-xs h-9"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingAccount ? "Saving Changes..." : "Save Details"}
               </Button>
@@ -272,7 +272,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
 
       {/* Tab 2: Traveler details */}
       <TabsContent value="traveler">
-        <Card className="glass-card border border-zinc-200 dark:border-zinc-800">
+        <Card className="glass-card border border-slate-200">
           <CardHeader>
             <CardTitle>Traveler Profile & Preferences</CardTitle>
             <CardDescription>
@@ -289,7 +289,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     type="date"
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                   />
                 </div>
                 <div className="space-y-2">
@@ -298,7 +298,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     id="nationality"
                     value={nationality}
                     onChange={(e) => setNationality(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="Indian, German, etc."
                   />
                 </div>
@@ -308,7 +308,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     id="passport"
                     value={passport}
                     onChange={(e) => setPassport(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="Enter passport number"
                   />
                 </div>
@@ -325,7 +325,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                       id="emergencyContact"
                       value={emergencyContact}
                       onChange={(e) => setEmergencyContact(e.target.value)}
-                      className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                      className="bg-white border-slate-200"
                       placeholder="Emergency contact full name"
                     />
                   </div>
@@ -335,7 +335,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                       id="emergencyPhone"
                       value={emergencyPhone}
                       onChange={(e) => setEmergencyPhone(e.target.value)}
-                      className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                      className="bg-white border-slate-200"
                       placeholder="+91 XXXXX XXXXX"
                     />
                   </div>
@@ -345,7 +345,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingTraveler}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white px-6 rounded-lg transition-colors font-medium text-xs h-9"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingTraveler ? "Saving Preferences..." : "Save Preferences"}
               </Button>
@@ -356,7 +356,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
 
       {/* Tab 3: Security Settings */}
       <TabsContent value="security">
-        <Card className="glass-card border border-zinc-200 dark:border-zinc-800">
+        <Card className="glass-card border border-slate-200">
           <CardHeader>
             <CardTitle>Change Password</CardTitle>
             <CardDescription>
@@ -373,7 +373,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="••••••••"
                   />
                 </div>
@@ -384,7 +384,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="Minimum 6 characters"
                   />
                 </div>
@@ -395,7 +395,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-white/50 dark:bg-black/50 focus-visible:ring-[var(--waypoint-teal)]"
+                    className="bg-white border-slate-200"
                     placeholder="Confirm new password"
                   />
                 </div>
@@ -404,7 +404,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingPassword}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white px-6 rounded-lg transition-colors font-medium text-xs h-9"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingPassword ? "Changing Password..." : "Update Password"}
               </Button>

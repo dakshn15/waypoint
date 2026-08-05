@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_COLORS: Record<string, string> = {
-  PLANNING: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  GENERATED: "bg-sky-500/10 text-sky-600 border-sky-500/20",
-  SAVED: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  BOOKED: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+  PLANNING: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
+  GENERATED: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
+  SAVED: "bg-[#E8AA9B]/15 text-[#C85A35] border-[#E8AA9B]/25",
+  BOOKED: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
   COMPLETED: "bg-zinc-500/10 text-zinc-600 border-zinc-500/20",
   CANCELLED: "bg-red-500/10 text-red-600 border-red-500/20",
 };

@@ -26,23 +26,23 @@ const CATEGORY_CONFIG: Record<
 > = {
   HOTEL: {
     icon: <Hotel className="h-4 w-4" />,
-    color: "bg-sky-500/10 text-sky-600 border-sky-500/20",
+    color: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
   },
   TRANSPORT: {
     icon: <Car className="h-4 w-4" />,
-    color: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+    color: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
   },
   RESTAURANT: {
     icon: <Utensils className="h-4 w-4" />,
-    color: "bg-rose-500/10 text-rose-600 border-rose-500/20",
+    color: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
   },
   ACTIVITY: {
     icon: <Camera className="h-4 w-4" />,
-    color: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    color: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
   },
   GUIDE: {
     icon: <Globe className="h-4 w-4" />,
-    color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+    color: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
   },
   OTHER: {
     icon: <Building2 className="h-4 w-4" />,

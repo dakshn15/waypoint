@@ -1,16 +1,27 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @plugin "tailwindcss-animate";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-jakarta);
+
+  /* Waypoint Brand → Tailwind utilities */
+  --color-wp-primary: var(--wp-primary);
+  --color-wp-primary-light: var(--wp-primary-light);
+  --color-wp-primary-dark: var(--wp-primary-dark);
+  --color-wp-secondary: var(--wp-secondary);
+  --color-wp-secondary-light: var(--wp-secondary-light);
+  --color-wp-accent: var(--wp-accent);
+  --color-wp-accent-light: var(--wp-accent-light);
+  --color-wp-surface-card: var(--wp-surface-card);
+  --color-border-card: var(--border-card);
+
+  /* Sidebar */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -19,11 +30,8 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
+
+  /* System */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -41,90 +49,51 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radii */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-heading: var(--font-sans);
   --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Brand Theme Colors */
+  --wp-primary: #E46F44;
+  --wp-primary-light: #E8AA9B;
+  --wp-primary-dark: #C85A35;
+  --wp-secondary: #1A3B5A;
+  --wp-secondary-light: #769ABC;
+  --wp-accent: #769ABC;
+  --wp-accent-light: #DCD5DC;
+  --wp-surface-card: #FFFFFF;
+  --border-card: #E5E7EB;
 
-  /* Waypoint custom aesthetics */
-  --waypoint-navy: #0B1426;
-  --waypoint-teal: #0EA5E9;
-  --waypoint-amber: #F59E0B;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-}
+  /* Legacy aliases (used in error/not-found/dashboard pages) */
+  --waypoint-navy: #1A3B5A;
+  --waypoint-teal: #769ABC;
+  --waypoint-amber: #E46F44;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* System Variables */
+  --background: #FAFAF9;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  --primary: #E46F44;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A3B5A;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F3F4F6;
+  --muted-foreground: #4B5563;
+  --accent: #769ABC;
+  --accent-foreground: #111827;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #E46F44;
+  --radius: 0.75rem;
 }
 
 @layer base {
@@ -135,24 +104,45 @@
     @apply font-sans bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
+  }
+  
+  /* Apply display font family globally to all head elements */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-jakarta), var(--font-sans), sans-serif;
+    @apply tracking-tight font-extrabold text-slate-900;
   }
 }
 
-/* Glassmorphism utilities */
+/* Glassmorphism helpers */
 .glass {
-  @apply bg-white/70 dark:bg-black/50 backdrop-blur-md border border-white/20 dark:border-white/10;
+  @apply bg-white/80 backdrop-blur-xl border-b border-slate-200/50;
 }
 
 .glass-card {
-  @apply bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-xl shadow-black/5;
+  @apply bg-white border border-border-card shadow-md hover:shadow-xl transition-all duration-300;
 }
 
-/* Premium gradient texts */
-.text-gradient-primary {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--waypoint-teal)] to-[var(--waypoint-navy)] dark:to-white;
+/* Custom premium visual elements */
+.dot-pattern {
+  background-image: radial-gradient(circle at 1.2px 1.2px, var(--wp-secondary) 1.2px, transparent 0);
+  background-size: 30px 30px;
 }
 
-.text-gradient-amber {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--waypoint-amber)] to-orange-500;
+/* Custom Swiper pagination styling overrides */
+.testimonials-swiper .swiper-pagination-bullet {
+  background: var(--wp-secondary) !important;
+  opacity: 0.4;
+  width: 8px;
+  height: 8px;
+  transition: all 0.3s ease;
+}
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: #E46F44 !important;
+  opacity: 1 !important;
+  width: 20px !important;
+  border-radius: 4px !important;
+}
+.testimonials-swiper .swiper-pagination {
+  bottom: 0px !important;
 }

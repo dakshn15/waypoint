@@ -177,22 +177,23 @@ export default function TasksClient({
       case "HIGH":
         return "bg-rose-500/10 text-rose-500 border border-rose-500/20";
       case "MEDIUM":
-        return "bg-amber-500/10 text-amber-500 border border-amber-500/20";
+        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20";
       default:
         return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
+        return "bg-slate-500/10 text-slate-500 border border-slate-500/20";
     }
   };
 
   const getCategoryIcon = (category: TaskCategory) => {
     switch (category) {
       case "BOOKING":
-        return <Calendar className="h-4 w-4 text-[var(--waypoint-teal)]" />;
+        return <Calendar className="h-4 w-4 text-[#769ABC]" />;
       case "CUSTOMER":
-        return <Users className="h-4 w-4 text-sky-500" />;
+        return <Users className="h-4 w-4 text-[#1A3B5A]" />;
       case "PACKAGE":
-        return <FileText className="h-4 w-4 text-[var(--waypoint-amber)]" />;
+        return <FileText className="h-4 w-4 text-[#E46F44]" />;
       default:
-        return <Clock className="h-4 w-4 text-zinc-500" />;
+        return <Clock className="h-4 w-4 text-slate-500" />;
     }
   };
 
@@ -211,10 +212,10 @@ export default function TasksClient({
     if (list.length === 0) {
       return (
         <Card className="glass-card mt-4">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-            <CheckCircle2 className="h-12 w-12 mb-3 text-emerald-500" />
-            <h3 className="text-lg font-semibold mb-1 text-zinc-900 dark:text-zinc-100">All caught up!</h3>
-            <p className="text-sm text-zinc-500">No tasks in this category.</p>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-slate-500">
+            <CheckCircle2 className="h-12 w-12 mb-3 text-[#769ABC]" />
+            <h3 className="text-lg font-semibold mb-1 text-slate-900">All caught up!</h3>
+            <p className="text-sm text-slate-500">No tasks in this category.</p>
           </CardContent>
         </Card>
       );
@@ -229,7 +230,7 @@ export default function TasksClient({
           return (
             <Card
               key={task.id}
-              className={`glass-card border border-zinc-200/60 dark:border-zinc-800/60 hover:shadow-xl transition-all rounded-2xl relative ${
+              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative ${
                 task.status === "COMPLETED" ? "opacity-70" : ""
               }`}
             >
@@ -241,11 +242,11 @@ export default function TasksClient({
                         {isManagerOrOwner && task.staff?.userId !== currentStaffUserId ? (
                           <div className="mr-1 pt-0.5">
                             {task.status === "COMPLETED" ? (
-                              <span title="Completed"><CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" /></span>
+                              <span title="Completed"><CheckCircle2 className="h-5 w-5 text-[#769ABC] shrink-0" /></span>
                             ) : task.status === "IN_PROGRESS" ? (
-                              <span title="In Progress"><Clock className="h-5 w-5 text-sky-500 shrink-0 animate-pulse" /></span>
+                              <span title="In Progress"><Clock className="h-5 w-5 text-[#E46F44] shrink-0 animate-pulse" /></span>
                             ) : (
-                              <span title="To Do"><AlertCircle className="h-5 w-5 text-zinc-300 dark:text-zinc-700 shrink-0" /></span>
+                              <span title="To Do"><AlertCircle className="h-5 w-5 text-slate-400 shrink-0" /></span>
                             )}
                           </div>
                         ) : (
@@ -259,7 +260,7 @@ export default function TasksClient({
                               )
                             }
                             disabled={isPending || (userRole === "STAFF" && !isManagerOrOwner && task.staff?.userId !== currentStaffUserId)}
-                            className="h-5 w-5 rounded-lg border-zinc-300 text-[var(--waypoint-teal)] focus:ring-[var(--waypoint-teal)] dark:border-zinc-800 dark:bg-zinc-950/50 cursor-pointer disabled:opacity-50"
+                            className="h-5 w-5 rounded-lg border-slate-300 text-[#769ABC] focus:ring-[#769ABC] cursor-pointer disabled:opacity-50"
                           />
                         )}
                       </div>
@@ -267,13 +268,13 @@ export default function TasksClient({
                         <h3
                           className={`font-bold text-base leading-snug ${
                             task.status === "COMPLETED"
-                              ? "line-through text-muted-foreground"
-                              : "text-zinc-950 dark:text-zinc-55"
+                              ? "line-through text-slate-400"
+                              : "text-slate-900"
                           }`}
                         >
                           {task.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                           {task.description}
                         </p>
                       </div>
@@ -285,7 +286,7 @@ export default function TasksClient({
                         size="icon"
                         onClick={() => handleDeleteTask(task.id)}
                         disabled={isPending}
-                        className="h-8 w-8 text-zinc-400 hover:text-rose-500 rounded-lg shrink-0 cursor-pointer"
+                        className="h-8 w-8 text-slate-400 hover:text-rose-500 rounded-lg shrink-0 cursor-pointer"
                         title="Delete Task"
                       >
                         <Trash2 className="h-4.5 w-4.5" />
@@ -294,15 +295,15 @@ export default function TasksClient({
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-muted-foreground">
+                <div className="flex flex-col gap-3 pt-4 border-t border-slate-100 mt-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500">
                     <div className="flex items-center gap-4 flex-wrap">
                       <span className="flex items-center gap-1 font-semibold">
                         {getCategoryIcon(task.category)}
                         {task.category}
                       </span>
                       <span className="flex items-center gap-1 font-medium">
-                        <Clock className="h-3.5 w-3.5 text-zinc-400" />
+                        <Clock className="h-3.5 w-3.5 text-slate-400" />
                         Due: {formatDate(new Date(task.dueDate))}
                       </span>
                     </div>
@@ -319,10 +320,10 @@ export default function TasksClient({
                       <Badge
                         className={`text-[9px] uppercase font-extrabold tracking-wider ${
                           task.status === "COMPLETED"
-                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                            ? "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20"
                             : task.status === "IN_PROGRESS"
-                            ? "bg-sky-500/10 text-sky-600 border-sky-500/20"
-                            : "bg-zinc-500/10 text-zinc-500 border border-zinc-200 dark:border-zinc-800"
+                            ? "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20"
+                            : "bg-slate-500/10 text-slate-500 border border-slate-200"
                         }`}
                       >
                         {task.status.replace("_", " ")}
@@ -330,11 +331,11 @@ export default function TasksClient({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-dashed border-zinc-100 dark:border-zinc-900/60">
+                  <div className="flex items-center justify-between pt-2 border-t border-dashed border-slate-100">
                     {isManagerOrOwner ? (
                       <div className="flex items-center gap-1.5">
-                        <User className="h-3.5 w-3.5 text-zinc-400" />
-                        <span className="text-xs text-zinc-500 font-medium">Assignee:</span>
+                        <User className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="text-xs text-slate-500 font-medium">Assignee:</span>
                         <Select
                           value={task.staffId || "UNASSIGNED"}
                           onValueChange={async (val) => {
@@ -356,10 +357,10 @@ export default function TasksClient({
                             );
                           }}
                         >
-                          <SelectTrigger className="h-7 min-w-[120px] bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs py-0 px-2 flex items-center justify-between cursor-pointer">
+                          <SelectTrigger className="h-7 min-w-[120px] bg-white/40 border border-slate-200 rounded-lg text-xs py-0 px-2 flex items-center justify-between cursor-pointer">
                             <SelectValue placeholder="Unassigned" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white dark:bg-zinc-900 border rounded-lg max-h-[160px] overflow-y-auto">
+                          <SelectContent className="bg-white border rounded-lg max-h-[160px] overflow-y-auto">
                             <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
                             {staffList.map((s) => (
                               <SelectItem key={s.id} value={s.id}>
@@ -370,11 +371,11 @@ export default function TasksClient({
                         </Select>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                        <User className="h-3.5 w-3.5 text-zinc-400" />
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                        <User className="h-3.5 w-3.5 text-slate-400" />
                         <span>
                           Assigned to:{" "}
-                          <strong className="text-zinc-800 dark:text-zinc-200">
+                          <strong className="text-slate-800">
                             {assignedUser ? assignedUser.name : "Unassigned"}
                           </strong>
                         </span>
@@ -391,9 +392,9 @@ export default function TasksClient({
                               variant="outline"
                               onClick={() => handleUpdateStatus(task.id, "IN_PROGRESS")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 rounded-lg flex items-center gap-1 hover:bg-sky-500/5 hover:text-sky-600 hover:border-sky-500/20 cursor-pointer"
+                              className="text-xs h-7 px-2.5 rounded-lg flex items-center gap-1 hover:bg-[#769ABC]/5 hover:text-[#769ABC] hover:border-[#769ABC]/20 cursor-pointer"
                             >
-                              <Play className="h-3 w-3 fill-sky-600" /> Start Work
+                              <Play className="h-3 w-3 fill-[#E46F44]" /> Start Work
                             </Button>
                           )}
                           {task.status === "IN_PROGRESS" && (
@@ -401,7 +402,7 @@ export default function TasksClient({
                               size="xs"
                               onClick={() => handleUpdateStatus(task.id, "COMPLETED")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white rounded-lg flex items-center gap-1 cursor-pointer"
+                              className="text-xs h-7 px-2.5 bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-lg flex items-center gap-1 cursor-pointer"
                             >
                               <Check className="h-3.5 w-3.5" /> Mark Done
                             </Button>
@@ -422,10 +423,10 @@ export default function TasksClient({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
             Task Assignment Board
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Delegate and track operational duties, package revisions, and traveler booking requests.
           </p>
         </div>
@@ -433,7 +434,7 @@ export default function TasksClient({
         {isManagerOrOwner && (
           <Button
             onClick={() => setCreateOpen(true)}
-            className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl h-11 px-5 flex items-center gap-2 cursor-pointer shadow-md"
+            className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 flex items-center gap-2 cursor-pointer shadow-md"
           >
             <Plus className="h-4.5 w-4.5" /> Assign Task
           </Button>
@@ -444,10 +445,10 @@ export default function TasksClient({
         <div className="space-y-3 mt-4">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                <Users className="h-5 w-5 text-[var(--waypoint-teal)]" /> Staff Workload & Performance
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Users className="h-5 w-5 text-[#769ABC]" /> Staff Workload & Performance
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-slate-500">
                 Track completion progress and workload distribution across your operations team.
               </p>
             </div>
@@ -461,43 +462,43 @@ export default function TasksClient({
               const completionRate = staffTasks.length > 0 ? Math.round((completed / staffTasks.length) * 100) : 0;
 
               return (
-                <Card key={staff.id} className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-xl shadow-xs">
+                <Card key={staff.id} className="glass-card border border-slate-200 rounded-xl shadow-xs">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-[var(--waypoint-navy)]/10 text-[var(--waypoint-navy)] dark:bg-[var(--waypoint-teal)]/10 dark:text-[var(--waypoint-teal)] flex items-center justify-center font-bold text-xs uppercase">
+                        <div className="h-8 w-8 rounded-full bg-[#1A3B5A]/10 text-[#1A3B5A] flex items-center justify-center font-bold text-xs uppercase">
                           {staff.user.name.slice(0, 2)}
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-150">{staff.user.name}</h4>
-                          <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">{staff.role.toLowerCase()}</span>
+                          <h4 className="font-bold text-sm text-slate-900">{staff.user.name}</h4>
+                          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{staff.role.toLowerCase()}</span>
                         </div>
                       </div>
-                      <Badge className="text-[9px] uppercase font-extrabold tracking-wider bg-zinc-500/10 text-zinc-500 border border-zinc-200/30">
+                      <Badge className="text-[9px] uppercase font-extrabold tracking-wider bg-slate-500/10 text-slate-500 border border-slate-200/30">
                         {completionRate}% Done
                       </Badge>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-center border-y border-zinc-100 dark:border-zinc-900/60 py-2 mt-2">
+                    <div className="grid grid-cols-3 gap-2 text-center border-y border-slate-100 py-2 mt-2">
                       <div>
-                        <span className="text-[10px] text-zinc-500 font-semibold block uppercase">Assigned</span>
-                        <strong className="text-sm font-extrabold text-zinc-800 dark:text-zinc-200">{staffTasks.length}</strong>
+                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Assigned</span>
+                        <strong className="text-sm font-extrabold text-slate-800">{staffTasks.length}</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] text-zinc-500 font-semibold block uppercase">Pending</span>
-                        <strong className="text-sm font-extrabold text-amber-500">{pending}</strong>
+                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Pending</span>
+                        <strong className="text-sm font-extrabold text-[#E46F44]">{pending}</strong>
                       </div>
                       <div>
-                        <span className="text-[10px] text-zinc-500 font-semibold block uppercase">Completed</span>
-                        <strong className="text-sm font-extrabold text-emerald-500">{completed}</strong>
+                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Completed</span>
+                        <strong className="text-sm font-extrabold text-[#769ABC]">{completed}</strong>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="space-y-1 pt-1">
-                      <div className="w-full bg-zinc-100 dark:bg-zinc-900 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[var(--waypoint-teal)] rounded-full transition-all duration-500"
+                          className="h-full bg-[#769ABC] rounded-full transition-all duration-500"
                           style={{ width: `${completionRate}%` }}
                         />
                       </div>
@@ -512,20 +513,20 @@ export default function TasksClient({
               const unassignedTasks = tasks.filter((t) => t.staffId === null);
               const unassignedPending = unassignedTasks.filter((t) => t.status !== "COMPLETED").length;
               return (
-                <Card className="glass-card border border-dashed border-zinc-300 dark:border-zinc-800 rounded-xl shadow-xs">
+                <Card className="glass-card border border-dashed border-slate-300 rounded-xl shadow-xs">
                   <CardContent className="p-4 flex flex-col justify-between h-full min-h-[120px]">
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <h4 className="font-bold text-sm text-zinc-600 dark:text-zinc-400">Unallocated Tasks</h4>
-                        <span className="text-[10px] text-zinc-400 font-medium">Needs assignment</span>
+                        <h4 className="font-bold text-sm text-slate-600">Unallocated Tasks</h4>
+                        <span className="text-[10px] text-slate-400 font-medium">Needs assignment</span>
                       </div>
                       <Badge className="text-[9px] uppercase font-extrabold tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
                         {unassignedPending} Open
                       </Badge>
                     </div>
 
-                    <div className="text-xs text-muted-foreground mt-2">
-                      There are currently <strong className="text-zinc-700 dark:text-zinc-300">{unassignedTasks.length} unassigned</strong> operational tasks.
+                    <div className="text-xs text-slate-500 mt-2">
+                      There are currently <strong className="text-slate-700">{unassignedTasks.length} unassigned</strong> operational tasks.
                     </div>
                   </CardContent>
                 </Card>
@@ -536,15 +537,15 @@ export default function TasksClient({
       )}
 
       {/* Filters Hub */}
-      <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+      <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
         <CardContent className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-3">
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-500">Filter by Category</Label>
+            <Label className="text-xs font-semibold text-slate-500">Filter by Category</Label>
             <Select value={filterCategory} onValueChange={(v) => v && setFilterCategory(v)}>
-              <SelectTrigger className="w-full h-10 bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-xs">
+              <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+              <SelectContent className="bg-white border rounded-xl">
                 <SelectItem value="ALL">All Categories</SelectItem>
                 <SelectItem value="BOOKING">Booking</SelectItem>
                 <SelectItem value="CUSTOMER">Customer</SelectItem>
@@ -555,12 +556,12 @@ export default function TasksClient({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-500">Filter by Priority</Label>
+            <Label className="text-xs font-semibold text-slate-500">Filter by Priority</Label>
             <Select value={filterPriority} onValueChange={(v) => v && setFilterPriority(v)}>
-              <SelectTrigger className="w-full h-10 bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-xs">
+              <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+              <SelectContent className="bg-white border rounded-xl">
                 <SelectItem value="ALL">All Priorities</SelectItem>
                 <SelectItem value="HIGH">High</SelectItem>
                 <SelectItem value="MEDIUM">Medium</SelectItem>
@@ -571,12 +572,12 @@ export default function TasksClient({
 
           {isManagerOrOwner && (
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-zinc-500">Filter by Staff Member</Label>
+              <Label className="text-xs font-semibold text-slate-500">Filter by Staff Member</Label>
               <Select value={filterStaff} onValueChange={(v) => v && setFilterStaff(v)}>
-                <SelectTrigger className="w-full h-10 bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-xs">
+                <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                <SelectContent className="bg-white border rounded-xl">
                   <SelectItem value="ALL">All Staff</SelectItem>
                   <SelectItem value="UNASSIGNED">Unassigned Tasks</SelectItem>
                   {staffList.map((s) => (
@@ -593,17 +594,17 @@ export default function TasksClient({
 
       {/* Task Status Tabs */}
       <Tabs defaultValue="all" className="w-full mt-2">
-        <TabsList className="bg-zinc-500/10 dark:bg-zinc-900/50 p-1 border border-zinc-200/50 dark:border-zinc-800/50 rounded-xl max-w-full overflow-x-auto flex flex-nowrap md:inline-flex shrink-0 items-center">
-          <TabsTrigger value="all" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 data-[active]:text-zinc-950 dark:data-[active]:text-white">
+        <TabsList className="bg-slate-500/10 p-1 border border-slate-200 rounded-xl max-w-full overflow-x-auto flex flex-nowrap md:inline-flex shrink-0 items-center">
+          <TabsTrigger value="all" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             All Tasks ({filteredTasks.length})
           </TabsTrigger>
-          <TabsTrigger value="todo" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 data-[active]:text-zinc-950 dark:data-[active]:text-white">
+          <TabsTrigger value="todo" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             To Do ({filteredTasks.filter((t) => t.status === "TODO").length})
           </TabsTrigger>
-          <TabsTrigger value="in_progress" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 data-[active]:text-zinc-950 dark:data-[active]:text-white">
+          <TabsTrigger value="in_progress" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             In Progress ({filteredTasks.filter((t) => t.status === "IN_PROGRESS").length})
           </TabsTrigger>
-          <TabsTrigger value="completed" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 data-[active]:text-zinc-950 dark:data-[active]:text-white">
+          <TabsTrigger value="completed" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             Completed ({filteredTasks.filter((t) => t.status === "COMPLETED").length})
           </TabsTrigger>
         </TabsList>
@@ -622,10 +623,10 @@ export default function TasksClient({
 
       {/* Create Task Assignment Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Assign New Task</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground mt-1">
+            <DialogDescription className="text-xs text-slate-500 mt-1">
               Set details and allocate this task to a member of your agency staff.
             </DialogDescription>
           </DialogHeader>
@@ -639,7 +640,7 @@ export default function TasksClient({
                 placeholder="Verify details for Booking #..."
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -651,7 +652,7 @@ export default function TasksClient({
                 placeholder="Describe the operations, steps, or requests..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl text-sm min-h-[80px]"
+                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl text-sm min-h-[80px]"
               />
             </div>
 
@@ -665,7 +666,7 @@ export default function TasksClient({
                   min={new Date().toISOString().split("T")[0]}
                   value={form.dueDate}
                   onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-xs"
+                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-xs"
                 />
               </div>
 
@@ -675,10 +676,10 @@ export default function TasksClient({
                   value={form.priority}
                   onValueChange={(v) => v && setForm({ ...form, priority: v as Priority })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                  <SelectContent className="bg-white border rounded-xl">
                     <SelectItem value="LOW">Low</SelectItem>
                     <SelectItem value="MEDIUM">Medium</SelectItem>
                     <SelectItem value="HIGH">High</SelectItem>
@@ -694,10 +695,10 @@ export default function TasksClient({
                   value={form.category}
                   onValueChange={(v) => v && setForm({ ...form, category: v as TaskCategory })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                  <SelectContent className="bg-white border rounded-xl">
                     <SelectItem value="SYSTEM">System</SelectItem>
                     <SelectItem value="BOOKING">Booking</SelectItem>
                     <SelectItem value="CUSTOMER">Customer</SelectItem>
@@ -712,10 +713,10 @@ export default function TasksClient({
                   value={form.staffId}
                   onValueChange={(v) => setForm({ ...form, staffId: v || "" })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                  <SelectContent className="bg-white border rounded-xl">
                     <SelectItem value="">Unassigned</SelectItem>
                     {staffList.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
@@ -727,7 +728,7 @@ export default function TasksClient({
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
+            <div className="flex gap-3 justify-end pt-4 border-t border-slate-100 mt-4">
               <Button
                 type="button"
                 variant="outline"

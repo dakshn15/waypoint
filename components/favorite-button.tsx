@@ -67,15 +67,15 @@ export function FavoriteButton({
         size="icon"
         onClick={handleToggle}
         disabled={isPending}
-        className={`h-9 w-9 rounded-full cursor-pointer bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border shadow-sm transition-colors hover:bg-white dark:hover:bg-zinc-900 ${
+        className={`h-9 w-9 rounded-full cursor-pointer bg-white/80 backdrop-blur-sm border shadow-sm transition-colors hover:bg-white ${
           favorited
-            ? "text-pink-500 border-pink-500/20"
-            : "text-zinc-500 hover:text-pink-500 border-zinc-200/50 dark:border-zinc-800/50"
+            ? "text-[#E46F44] border-[#E46F44]/20"
+            : "text-slate-500 hover:text-[#E46F44] border-slate-200/50"
         }`}
       >
         <Heart
           className={`h-4.5 w-4.5 transition-transform ${
-            favorited ? "fill-pink-500 scale-110" : ""
+            favorited ? "fill-[#E46F44] scale-110" : ""
           }`}
         />
       </Button>

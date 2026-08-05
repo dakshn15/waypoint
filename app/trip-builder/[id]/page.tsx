@@ -57,14 +57,14 @@ const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
 };
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  SIGHTSEEING: "bg-sky-500/10 text-sky-600 border-sky-500/20",
-  ADVENTURE: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+  SIGHTSEEING: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
+  ADVENTURE: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
   DINING: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-  SHOPPING: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-  RELAXATION: "bg-teal-500/10 text-teal-600 border-teal-500/20",
-  CULTURAL: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  TRANSPORTATION: "bg-zinc-500/10 text-zinc-600 border-zinc-500/20",
-  CHECK_IN: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+  SHOPPING: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
+  RELAXATION: "bg-[#769ABC]/15 text-[#1A3B5A] border-[#769ABC]/30",
+  CULTURAL: "bg-[#E46F44]/15 text-[#E46F44] border-[#E46F44]/25",
+  TRANSPORTATION: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
+  CHECK_IN: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
   CHECK_OUT: "bg-red-500/10 text-red-600 border-red-500/20",
 };
 
@@ -118,9 +118,9 @@ export default async function GeneratedTripPage({ params }: PageProps) {
     );
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950/30">
+    <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
-      <header className="border-b bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link
             href="/dashboard/trips"
@@ -194,17 +194,17 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                   {
                     label: "Accommodation",
                     value: costBreakdown.accommodation,
-                    color: "bg-sky-500",
+                    color: "bg-[#1A3B5A]",
                   },
                   {
                     label: "Transport",
                     value: costBreakdown.transport,
-                    color: "bg-violet-500",
+                    color: "bg-[#769ABC]",
                   },
                   {
                     label: "Activities",
                     value: costBreakdown.activities,
-                    color: "bg-amber-500",
+                    color: "bg-[#E46F44]",
                   },
                   {
                     label: "Food",
@@ -259,7 +259,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                   {aiData.tips.map((tip, i) => (
                     <div
                       key={i}
-                      className="flex gap-2 text-sm text-muted-foreground bg-zinc-50 dark:bg-zinc-900/50 p-3 rounded-lg border"
+                      className="flex gap-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200"
                     >
                       <span className="text-[var(--waypoint-amber)] font-bold shrink-0">
                         💡
@@ -274,8 +274,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
         </div>
 
         {/* Day-by-Day Itinerary */}
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <CalendarDays className="h-6 w-6 text-[var(--waypoint-teal)]" />
+        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-900">
+          <CalendarDays className="h-6 w-6 text-[#769ABC]" />
           Day-by-Day Itinerary
         </h2>
         <div className="space-y-6">
@@ -295,21 +295,21 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                 className="glass-card overflow-hidden group"
               >
                 {/* Day header */}
-                <div className="bg-gradient-to-r from-[var(--waypoint-navy)]/5 to-transparent dark:from-[var(--waypoint-teal)]/5 p-6 border-b">
+                <div className="bg-gradient-to-r from-[#1A3B5A]/5 to-transparent p-6 border-b border-slate-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#769ABC] to-[#1A3B5A] flex items-center justify-center text-white font-bold text-sm shadow-md">
                         {day.dayNumber}
                       </div>
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-lg">{day.title}</h3>
-                          <Badge variant="outline" className="text-[10px] font-mono border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
+                          <h3 className="font-bold text-lg text-slate-900">{day.title}</h3>
+                          <Badge variant="outline" className="text-[10px] font-mono border-slate-200 text-slate-600">
                             {dateStr}
                           </Badge>
                         </div>
                         {day.description && (
-                          <p className="text-sm text-muted-foreground mt-0.5">
+                          <p className="text-sm text-slate-600 mt-0.5">
                             {day.description}
                           </p>
                         )}
@@ -321,8 +321,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                 <CardContent className="p-6 space-y-4">
                   {/* Transport Banner */}
                   {day.transport && (
-                    <div className="flex items-center gap-3 bg-violet-500/5 border border-violet-500/20 rounded-xl p-4">
-                      <div className="h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center text-violet-600">
+                    <div className="flex items-center gap-3 bg-[#769ABC]/10 border border-[#769ABC]/20 rounded-xl p-4">
+                      <div className="h-8 w-8 rounded-lg bg-[#769ABC]/20 flex items-center justify-center text-[#1A3B5A]">
                         {TRANSPORT_ICONS[day.transport.type] || (
                           <CarFront className="h-4 w-4" />
                         )}
@@ -424,8 +424,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
                   {/* Hotel Info */}
                   {day.hotel && (
-                    <div className="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 mt-2">
-                      <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                    <div className="flex items-center gap-3 bg-[#E8AA9B]/10 border border-[#E8AA9B]/20 rounded-xl p-4 mt-2">
+                      <div className="h-8 w-8 rounded-lg bg-[#E46F44]/10 flex items-center justify-center text-[#E46F44]">
                         <Hotel className="h-4 w-4" />
                       </div>
                       <div className="flex-1">

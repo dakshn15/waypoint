@@ -75,19 +75,19 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "CONFIRMED":
-        return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/10";
+        return "bg-[#769ABC]/10 text-[#1A3B5A] border border-[#769ABC]/20 hover:bg-[#769ABC]/15";
       case "COMPLETED":
-        return "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/10";
+        return "bg-[#1A3B5A]/10 text-[#1A3B5A] border border-[#1A3B5A]/20 hover:bg-[#1A3B5A]/15";
       case "PENDING":
-        return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/10";
+        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20 hover:bg-[#E46F44]/15";
       case "PROCESSING":
-        return "bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 hover:bg-sky-500/10";
+        return "bg-[#E8AA9B]/10 text-[#C85A35] border border-[#E8AA9B]/20 hover:bg-[#E8AA9B]/15";
       case "CANCELLED":
-        return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/10";
+        return "bg-rose-500/10 text-rose-600 border border-rose-500/20 hover:bg-rose-500/10";
       case "REFUNDED":
-        return "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20 hover:bg-zinc-500/10";
+        return "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-100";
       default:
-        return "bg-zinc-100 text-zinc-800 border-zinc-200";
+        return "bg-slate-100 text-slate-800 border-slate-200";
     }
   };
 
@@ -127,10 +127,10 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
 
   return (
     <>
-      <div className="border rounded-xl bg-card overflow-hidden">
+      <div className="border border-slate-200 rounded-xl bg-white overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="border-b border-slate-200 bg-slate-50">
               <TableHead className="w-[120px]">Booking ID</TableHead>
               <TableHead>Package / Trip</TableHead>
               <TableHead>{role === "AGENCY" || role === "STAFF" ? "Traveler" : "Agency"}</TableHead>
@@ -146,19 +146,19 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               const isAgencyOrStaffOrAdmin = ["AGENCY", "STAFF", "ADMIN"].includes(role);
 
               return (
-                <TableRow key={booking.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50">
+                <TableRow key={booking.id} className="border-b border-slate-200 hover:bg-slate-50">
                   <TableCell className="font-mono text-xs font-semibold">
                     {booking.bookingNumber ? booking.bookingNumber.substring(0, 8).toUpperCase() : booking.id.substring(0, 8).toUpperCase()}
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium text-sm">
+                    <div className="font-medium text-sm text-slate-900">
                       {booking.package ? booking.package.title : "Custom AI Trip Plan"}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {booking.travelers.length} traveler{booking.travelers.length > 1 ? "s" : ""}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="text-sm text-slate-600">
                     {isAgencyOrStaffOrAdmin ? (
                       <div className="flex items-center gap-2">
                         <UserIcon className="h-4 w-4 text-muted-foreground" />
@@ -168,10 +168,10 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                       <span>{booking.agency ? booking.agency.name : "Waypoint Direct"}</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="text-sm text-slate-600">
                     {formatDate(booking.travelDate)}
                   </TableCell>
-                  <TableCell className="font-semibold text-sm">
+                  <TableCell className="font-semibold text-sm text-slate-900">
                     {formatCurrency(Number(booking.totalAmount), booking.currency)}
                   </TableCell>
                   <TableCell>
@@ -186,7 +186,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-200 hover:border-red-300 rounded-lg text-xs"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300 rounded-lg text-xs"
                           onClick={() => {
                             setSelectedBooking(booking);
                             setDialogMode("CANCEL");
@@ -202,7 +202,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                           <Button
                             variant="outline"
                             size="sm"
-                            className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 rounded-lg text-xs"
+                            className="bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/30 hover:bg-[#769ABC]/20 hover:border-[#769ABC]/40 rounded-lg text-xs"
                             onClick={() => {
                               setSelectedBooking(booking);
                               setDialogMode("CONFIRM");
@@ -213,7 +213,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-200 hover:border-red-300 rounded-lg text-xs"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300 rounded-lg text-xs"
                             onClick={() => {
                               setSelectedBooking(booking);
                               setDialogMode("REJECT");
@@ -229,7 +229,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-lg text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                          className="rounded-lg text-xs hover:bg-slate-100 border-slate-200"
                           onClick={() => {
                             handleStatusUpdate(booking.id, "COMPLETED");
                           }}
@@ -253,9 +253,9 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
       {/* Confirmation Dialog */}
       {selectedBooking && dialogMode && (
         <Dialog open={true} onOpenChange={() => { if (!loading) { setSelectedBooking(null); setDialogMode(null); } }}>
-          <DialogContent className="max-w-md bg-white dark:bg-zinc-950 border rounded-xl shadow-lg p-6">
+          <DialogContent className="max-w-md bg-white border border-slate-200 rounded-xl shadow-lg p-6">
             <DialogHeader className="space-y-2">
-              <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+              <DialogTitle className="flex items-center gap-2 text-lg font-bold text-slate-900">
                 {dialogMode === "CANCEL" && (
                   <>
                     <ShieldAlert className="h-5 w-5 text-red-500" />
@@ -264,7 +264,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                 )}
                 {dialogMode === "CONFIRM" && (
                   <>
-                    <CheckCircle2 className="h-5 w-5 text-[var(--waypoint-teal)]" />
+                    <CheckCircle2 className="h-5 w-5 text-[#769ABC]" />
                     Confirm Booking
                   </>
                 )}
@@ -275,7 +275,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                   </>
                 )}
               </DialogTitle>
-              <DialogDescription className="text-zinc-600 dark:text-zinc-400 text-sm">
+              <DialogDescription className="text-slate-600 text-sm">
                 {dialogMode === "CANCEL" && (
                   "Are you sure you want to cancel your booking? This action will set your status to CANCELLED and notify the travel agency."
                 )}
@@ -289,11 +289,11 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
             </DialogHeader>
 
             {dialogMode === "CANCEL" && (
-              <div className="mt-4 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/50 p-4 space-y-2 text-xs text-orange-800 dark:text-orange-300">
-                <h4 className="font-semibold flex items-center gap-1.5 text-orange-900 dark:text-orange-200 text-sm">
+              <div className="mt-4 rounded-lg bg-orange-50 border border-orange-200 p-4 space-y-2 text-xs text-orange-800">
+                <h4 className="font-semibold flex items-center gap-1.5 text-orange-900 text-sm">
                   Cancellation & Refund Policy
                 </h4>
-                <ul className="list-disc pl-4 space-y-1 text-orange-850 dark:text-orange-300/90 leading-relaxed">
+                <ul className="list-disc pl-4 space-y-1 text-orange-800 leading-relaxed">
                   <li><strong>Free Cancellation:</strong> Full refund is guaranteed for cancellations made within 48 hours of booking.</li>
                   <li><strong>Standard Fee:</strong> A 15% cancellation fee applies if cancelled after 48 hours but before 7 days of departure.</li>
                   <li><strong>Late Cancellation:</strong> No refund is processed for cancellations within 7 days of departure.</li>
@@ -317,7 +317,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               )}
               {dialogMode === "CONFIRM" && (
                 <Button
-                  className="bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white"
+                  className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white"
                   disabled={loading}
                   onClick={() => handleStatusUpdate(selectedBooking.id, "CONFIRMED")}
                 >

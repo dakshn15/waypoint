@@ -238,38 +238,35 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
       case "ADMIN":
         return <Badge className="bg-rose-500/15 text-rose-500 border border-rose-500/25">Admin</Badge>;
       case "AGENCY":
-        return <Badge className="bg-[var(--waypoint-teal)]/15 text-[var(--waypoint-teal)] border border-[var(--waypoint-teal)]/25">Agency</Badge>;
+        return <Badge className="bg-[#769ABC]/15 text-[#769ABC] border border-[#769ABC]/25">Agency</Badge>;
       case "STAFF":
-        return <Badge className="bg-sky-500/15 text-sky-500 border border-sky-500/25">Staff</Badge>;
+        return <Badge className="bg-[#1A3B5A]/15 text-[#1A3B5A] border border-[#1A3B5A]/25">Staff</Badge>;
       default:
-        return <Badge variant="outline" className="text-muted-foreground border-zinc-300 dark:border-zinc-800">Traveler</Badge>;
+        return <Badge variant="outline" className="text-muted-foreground border-slate-300">Traveler</Badge>;
     }
   };
 
   return (
     <div className="space-y-4">
-      {/* Controls Card */}
       <Card className="glass-card">
         <CardContent className="p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
-          {/* Search */}
           <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-zinc-500/5 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800"
+              className="pl-9 bg-slate-500/5 border-slate-200"
             />
           </div>
 
-          {/* Action and Filter */}
           <div className="flex w-full sm:w-auto items-center gap-3 justify-end">
             <Filter className="h-4 w-4 text-muted-foreground hidden sm:block" />
             <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val || "ALL")}>
-              <SelectTrigger className="w-[150px] bg-zinc-500/5 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800">
+              <SelectTrigger className="w-[150px] bg-slate-500/5 border-slate-200">
                 <SelectValue placeholder="Filter by Role" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-zinc-900 border">
+              <SelectContent className="bg-white border border-slate-200">
                 <SelectItem value="ALL">All Roles</SelectItem>
                 <SelectItem value="TRAVELER">Traveler</SelectItem>
                 <SelectItem value="AGENCY">Agency</SelectItem>
@@ -280,20 +277,20 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
+              className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl gap-1.5 shadow-sm transition-all"
             >
-              <Plus className="h-4 w-4" /> Add User
+              <Plus className="h-4 w-4" />
+              Add User
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Users Table */}
       <Card className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-500/5">
+              <TableRow className="border-b border-slate-200 bg-slate-500/5">
                 <TableHead className="w-[230px]">User</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
@@ -313,27 +310,27 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 filteredUsers.map((user) => (
                   <TableRow
                     key={user.id}
-                    className="border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-500/5 transition-colors"
+                    className="border-b border-slate-200 hover:bg-slate-500/5 transition-colors"
                   >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-400 flex items-center justify-center text-white font-semibold text-sm">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#769ABC] to-[#E8AA9B] flex items-center justify-center text-white font-semibold text-sm">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        <span className="font-semibold text-slate-900">
                           {user.name}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                      <span className="flex items-center gap-1.5 text-sm text-slate-600">
                         <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                         {user.email}
                       </span>
                     </TableCell>
                     <TableCell>
                       {user.phone ? (
-                        <span className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                        <span className="flex items-center gap-1.5 text-sm text-slate-600">
                           <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                           {user.phone}
                         </span>
@@ -342,7 +339,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                       )}
                     </TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell className="text-zinc-600 dark:text-zinc-400 text-sm">
+                    <TableCell className="text-slate-600 text-sm">
                       {formatDate(new Date(user.createdAt))}
                     </TableCell>
                     <TableCell className="text-right">
@@ -350,24 +347,23 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                         <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0" />}>
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="glass-card border border-zinc-200 dark:border-zinc-800 p-1">
+                        <DropdownMenuContent align="end" className="glass-card border border-slate-200 p-1">
                           <DropdownMenuGroup>
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpenEdit(user)} className="cursor-pointer">
-                              <Edit2 className="mr-2 h-4 w-4 text-sky-500" />
+                              <Edit2 className="mr-2 h-4 w-4 text-[#769ABC]" />
                               Edit User Details
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setDeleteTarget(user)}
+                              disabled={user.id === currentUserId}
+                              className="text-rose-600 focus:text-rose-600 cursor-pointer font-semibold"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Account
+                            </DropdownMenuItem>
                           </DropdownMenuGroup>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-rose-500 focus:text-rose-500 cursor-pointer"
-                            onClick={() => setDeleteTarget(user)}
-                            disabled={user.id === currentUserId}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete User
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -379,16 +375,14 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
         </div>
       </Card>
 
-      {/* Create User Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="glass-card max-w-md p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Register New User</DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
-              Register a new Traveler, Agency Owner, Staff member, or Administrator account.
+              Add a new traveler, agency owner, or staff member to the system.
             </DialogDescription>
           </DialogHeader>
-
           <form onSubmit={handleCreateUser} className="space-y-4 mt-4">
             <div className="space-y-1.5">
               <Label htmlFor="create-name">Name <span className="text-rose-500">*</span></Label>
@@ -398,10 +392,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 placeholder="John Doe"
                 value={createForm.name}
                 onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
-
             <div className="space-y-1.5">
               <Label htmlFor="create-email">Email <span className="text-rose-500">*</span></Label>
               <Input
@@ -411,10 +404,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 placeholder="john@example.com"
                 value={createForm.email}
                 onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="create-phone">Phone</Label>
@@ -423,20 +415,19 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                   placeholder="+91..."
                   value={createForm.phone}
                   onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
-
               <div className="space-y-1.5">
                 <Label htmlFor="create-role">System Role <span className="text-rose-500">*</span></Label>
                 <Select
                   value={createForm.role}
                   onValueChange={(val: any) => setCreateForm({ ...createForm, role: val })}
                 >
-                  <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs">
+                  <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border">
+                  <SelectContent className="bg-white border border-slate-200">
                     <SelectItem value="TRAVELER">Traveler</SelectItem>
                     <SelectItem value="AGENCY">Agency Owner</SelectItem>
                     <SelectItem value="STAFF">Agency Staff</SelectItem>
@@ -445,39 +436,34 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 </Select>
               </div>
             </div>
-
-            {/* STAFF Assignments */}
             {createForm.role === "STAFF" && (
-              <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-500/5 dark:bg-zinc-900/30 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-500/5 border border-dashed border-slate-200 rounded-xl">
                 <div className="space-y-1.5">
                   <Label htmlFor="create-agency">Target Agency <span className="text-rose-500">*</span></Label>
                   <Select
                     value={createForm.agencyId}
                     onValueChange={(val) => setCreateForm({ ...createForm, agencyId: val || "" })}
                   >
-                    <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border-zinc-250 dark:border-zinc-800 text-xs">
+                    <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                       <SelectValue placeholder="Select Agency" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-zinc-900 border">
+                    <SelectContent className="bg-white border border-slate-200">
                       {agencies.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.name}
-                        </SelectItem>
+                        <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-1.5">
                   <Label htmlFor="create-staff-role">Staff Authority <span className="text-rose-500">*</span></Label>
                   <Select
                     value={createForm.staffRole}
                     onValueChange={(val: any) => setCreateForm({ ...createForm, staffRole: val })}
                   >
-                    <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border-zinc-250 dark:border-zinc-800 text-xs">
+                    <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-zinc-900 border">
+                    <SelectContent className="bg-white border border-slate-200">
                       <SelectItem value="MANAGER">Manager</SelectItem>
                       <SelectItem value="AGENT">Agent</SelectItem>
                       <SelectItem value="SUPPORT">Support</SelectItem>
@@ -486,15 +472,12 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 </div>
               </div>
             )}
-
-            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
-                Cancel
-              </Button>
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register User"}
               </Button>
@@ -503,16 +486,11 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
         </DialogContent>
       </Dialog>
 
-      {/* Edit User Dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
         <DialogContent className="glass-card max-w-md p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit User Profile</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Modify account info, change role, or update agency allocation details.
-            </DialogDescription>
           </DialogHeader>
-
           <form onSubmit={handleUpdateUser} className="space-y-4 mt-4">
             <div className="space-y-1.5">
               <Label htmlFor="edit-name">Name <span className="text-rose-500">*</span></Label>
@@ -521,10 +499,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 required
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
-
             <div className="space-y-1.5">
               <Label htmlFor="edit-email">Email <span className="text-rose-500">*</span></Label>
               <Input
@@ -533,10 +510,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 required
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="edit-phone">Phone</Label>
@@ -544,10 +520,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                   id="edit-phone"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
-
               <div className="space-y-1.5">
                 <Label htmlFor="edit-role">System Role <span className="text-rose-500">*</span></Label>
                 <Select
@@ -555,10 +530,10 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                   onValueChange={(val: any) => setEditForm({ ...editForm, role: val })}
                   disabled={editTarget?.id === currentUserId}
                 >
-                  <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs">
+                  <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border">
+                  <SelectContent className="bg-white border border-slate-200">
                     <SelectItem value="TRAVELER">Traveler</SelectItem>
                     <SelectItem value="AGENCY">Agency Owner</SelectItem>
                     <SelectItem value="STAFF">Agency Staff</SelectItem>
@@ -567,39 +542,34 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 </Select>
               </div>
             </div>
-
-            {/* STAFF Assignments */}
             {editForm.role === "STAFF" && (
-              <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-500/5 dark:bg-zinc-900/30 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-500/5 border border-dashed border-slate-200 rounded-xl">
                 <div className="space-y-1.5">
                   <Label htmlFor="edit-agency">Target Agency <span className="text-rose-500">*</span></Label>
                   <Select
                     value={editForm.agencyId}
                     onValueChange={(val) => setEditForm({ ...editForm, agencyId: val || "" })}
                   >
-                    <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border border-zinc-250 dark:border-zinc-800 text-xs">
+                    <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                       <SelectValue placeholder="Select Agency" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-zinc-900 border">
+                    <SelectContent className="bg-white border border-slate-200">
                       {agencies.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.name}
-                        </SelectItem>
+                        <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-1.5">
                   <Label htmlFor="edit-staff-role">Staff Authority <span className="text-rose-500">*</span></Label>
                   <Select
                     value={editForm.staffRole}
                     onValueChange={(val: any) => setEditForm({ ...editForm, staffRole: val })}
                   >
-                    <SelectTrigger className="w-full bg-white/50 dark:bg-zinc-900/40 border-zinc-250 dark:border-zinc-800 text-xs">
+                    <SelectTrigger className="w-full bg-white border-slate-200 text-xs">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-zinc-900 border">
+                    <SelectContent className="bg-white border border-slate-200">
                       <SelectItem value="MANAGER">Manager</SelectItem>
                       <SelectItem value="AGENT">Agent</SelectItem>
                       <SelectItem value="SUPPORT">Support</SelectItem>
@@ -608,15 +578,12 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                 </div>
               </div>
             )}
-
-            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>
-                Cancel
-              </Button>
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>Cancel</Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>
@@ -625,22 +592,16 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="glass-card border-rose-500/20 max-w-md p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">Delete User Account</DialogTitle>
             <DialogDescription className="mt-2 text-xs text-muted-foreground leading-relaxed">
-              Are you sure you want to delete the account for{" "}
-              <strong className="text-zinc-900 dark:text-zinc-100">{deleteTarget?.name}</strong> (
-              {deleteTarget?.email})? This action will permanently remove all bookings, trips, and
-              personal information associated with this user. This cannot be undone.
+              Are you sure you want to delete the account for <strong className="text-slate-900">{deleteTarget?.name}</strong>?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading}>
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading}>Cancel</Button>
             <Button variant="destructive" onClick={handleDeleteUser} disabled={loading} className="cursor-pointer">
               {loading ? "Deleting..." : "Permanently Delete"}
             </Button>

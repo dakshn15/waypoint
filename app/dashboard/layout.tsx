@@ -23,7 +23,7 @@ export default async function DashboardLayout({
   const navItems = NAV_ITEMS[userRole as keyof typeof NAV_ITEMS] || NAV_ITEMS.TRAVELER;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-black">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
       <DashboardSidebar
         navItems={[...navItems]}
         userName={session.user.name || "User"}

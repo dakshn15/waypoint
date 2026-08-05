@@ -41,24 +41,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="glass-card border-white/20 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-none animate-in fade-in zoom-in-95 duration-500">
+    <Card className="glass-card border-slate-200 shadow-xl animate-in fade-in zoom-in-95 duration-500">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-dm-sans">Create an account</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-dm-sans text-slate-900">Create an account</CardTitle>
+        <CardDescription className="text-slate-500">
           Join Waypoint to plan, book, or manage travel
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         
-        <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+        <div className="flex p-1 bg-slate-100 rounded-lg">
           <button 
-            className={`flex-1 text-sm font-medium py-2 rounded-md transition-all ${role === "TRAVELER" ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex-1 text-sm font-medium py-2 rounded-md transition-all ${role === "TRAVELER" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-800"}`}
             onClick={() => setRole("TRAVELER")}
           >
             I&apos;m a Traveler
           </button>
           <button 
-            className={`flex-1 text-sm font-medium py-2 rounded-md transition-all ${role === "AGENCY" ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            className={`flex-1 text-sm font-medium py-2 rounded-md transition-all ${role === "AGENCY" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-800"}`}
             onClick={() => setRole("AGENCY")}
           >
             I&apos;m an Agency
@@ -74,7 +74,7 @@ export default function RegisterPage() {
               required 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="bg-white/50 dark:bg-black/50"
+              className="bg-white border-slate-200"
             />
           </div>
           <div className="space-y-2">
@@ -86,7 +86,7 @@ export default function RegisterPage() {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/50 dark:bg-black/50"
+              className="bg-white border-slate-200"
             />
           </div>
           <div className="space-y-2">
@@ -97,19 +97,19 @@ export default function RegisterPage() {
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/50 dark:bg-black/50"
+              className="bg-white border-slate-200"
             />
           </div>
-          <Button type="submit" className="w-full bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white" disabled={loading}>
+          <Button type="submit" className="w-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11" disabled={loading}>
             {loading ? "Creating account..." : "Sign up"}
           </Button>
         </form>
         
       </CardContent>
       <CardFooter className="flex flex-col gap-4 text-center">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-slate-500">
           Already have an account?{" "}
-          <Link href="/login" className="text-[var(--waypoint-teal)] hover:underline font-medium">
+          <Link href="/login" className="text-[#769ABC] hover:underline font-medium">
             Sign in
           </Link>
         </div>

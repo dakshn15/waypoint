@@ -77,14 +77,14 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
       {packages.map((pkg) => {
         const isPending = loadingId === pkg.id;
         return (
-          <Card key={pkg.id} className="glass-card group hover:shadow-xl transition-all hover:-translate-y-1 border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl overflow-hidden">
+          <Card key={pkg.id} className="glass-card group hover:shadow-xl transition-all hover:-translate-y-1 border border-slate-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <Badge
                   className={
                     pkg.status === "PUBLISHED"
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/10 text-[10px] uppercase font-bold tracking-wider"
-                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/10 text-[10px] uppercase font-bold tracking-wider"
+                      ? "bg-[#769ABC]/10 text-[#1A3B5A] border border-[#769ABC]/20 hover:bg-[#769ABC]/15 text-[10px] uppercase font-bold tracking-wider"
+                      : "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20 hover:bg-[#E46F44]/15 text-[10px] uppercase font-bold tracking-wider"
                   }
                 >
                   {pkg.status}
@@ -93,12 +93,12 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-250 cursor-pointer">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-slate-800 cursor-pointer">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     }
                   />
-                  <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-900 border shadow-xl rounded-xl">
+                  <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 shadow-xl rounded-xl">
                     <DropdownMenuItem
                       onClick={() => handleToggleStatus(pkg.id)}
                       disabled={isPending}
@@ -120,15 +120,15 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                 </DropdownMenu>
               </div>
 
-              <h3 className="font-bold text-lg mb-1 text-zinc-900 dark:text-zinc-50 line-clamp-1">{pkg.title}</h3>
+              <h3 className="font-bold text-lg mb-1 text-slate-900 line-clamp-1">{pkg.title}</h3>
               <p className="text-xs text-muted-foreground mb-4 font-medium">{pkg.duration} days tour</p>
               
-              <div className="flex justify-between items-center pt-3 border-t border-zinc-100 dark:border-zinc-900/60">
-                <span className="text-md font-bold text-zinc-900 dark:text-zinc-50">
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                <span className="text-md font-bold text-slate-900">
                   {formatCurrency(pkg.basePrice, pkg.currency)}
                 </span>
                 <Link href={`/packages/${pkg.id}`}>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-[var(--waypoint-teal)] hover:text-[var(--waypoint-teal)] hover:bg-teal-500/5 cursor-pointer font-semibold rounded-lg">
+                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-[#769ABC] hover:text-[#769ABC] hover:bg-[#769ABC]/5 cursor-pointer font-semibold rounded-lg">
                     <Eye className="h-3.5 w-3.5" /> View Detail
                   </Button>
                 </Link>

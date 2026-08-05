@@ -191,10 +191,10 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
   };
 
   return (
-    <Card className="glass-card sticky top-24 border border-zinc-200/60 dark:border-zinc-800/60 shadow-2xl rounded-2xl overflow-hidden">
-      <CardHeader className="bg-zinc-50/50 dark:bg-zinc-900/40 border-b border-zinc-200/30 dark:border-zinc-800/30 py-4 px-6">
-        <CardTitle className="text-lg font-bold flex items-center gap-2 text-zinc-900 dark:text-zinc-50">
-          <Calendar className="h-5 w-5 text-[var(--waypoint-teal)]" />
+    <Card className="glass-card sticky top-24 border border-slate-200 shadow-2xl rounded-2xl overflow-hidden">
+      <CardHeader className="bg-slate-50/50 border-b border-slate-200 py-4 px-6">
+        <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-900">
+          <Calendar className="h-5 w-5 text-[#769ABC]" />
           Book Your Journey
         </CardTitle>
       </CardHeader>
@@ -202,9 +202,9 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Travel Date */}
           <div className="space-y-2">
-            <Label htmlFor="travelDate" className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Departure Date <span className="text-red-500">*</span></Label>
+            <Label htmlFor="travelDate" className="text-xs font-semibold text-slate-700">Departure Date <span className="text-red-500">*</span></Label>
             <Select value={travelDate} onValueChange={(v: string | null) => v && setTravelDate(v)}>
-              <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+              <SelectTrigger className="w-full h-11 bg-white border border-slate-200 rounded-xl px-3.5 text-sm">
                 <SelectValue placeholder="Choose a date..." />
               </SelectTrigger>
               <SelectContent>
@@ -231,8 +231,8 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
           {/* Travelers List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                <Users className="h-4 w-4 text-muted-foreground" />
+              <Label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                <Users className="h-4 w-4 text-slate-400" />
                 Traveler Details <span className="text-red-500">*</span>
               </Label>
               <Button
@@ -240,7 +240,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 variant="ghost"
                 size="sm"
                 onClick={handleAddTraveler}
-                className="text-[var(--waypoint-teal)] hover:text-[var(--waypoint-teal)]/80 text-xs p-0 h-auto gap-1 font-semibold hover:bg-transparent"
+                className="text-[#769ABC] hover:text-[#769ABC]/80 text-xs p-0 h-auto gap-1 font-semibold hover:bg-transparent"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Traveler
               </Button>
@@ -248,8 +248,8 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
               {travelers.map((traveler, index) => (
-                <div key={index} className="flex gap-2 items-center bg-zinc-50/50 dark:bg-zinc-900/20 p-3 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-350 transition-colors">
-                  <span className="text-xs font-bold text-muted-foreground min-w-[1.25rem]">
+                <div key={index} className="flex gap-2 items-center bg-slate-50 p-3 rounded-xl border border-slate-200 transition-colors">
+                  <span className="text-xs font-bold text-slate-400 min-w-[1.25rem]">
                     #{index + 1}
                   </span>
                   <div className="flex-1 grid grid-cols-4 gap-2">
@@ -259,7 +259,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                         value={traveler.name}
                         required
                         onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
-                        className="h-9 text-xs bg-white dark:bg-zinc-950/40 border-zinc-200 dark:border-zinc-850 rounded-lg"
+                        className="h-9 text-xs bg-white border-slate-200 rounded-lg"
                       />
                     </div>
                     <div className="col-span-1">
@@ -271,7 +271,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                         value={traveler.age}
                         required
                         onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
-                        className="h-9 text-xs bg-white dark:bg-zinc-950/40 border-zinc-200 dark:border-zinc-850 rounded-lg text-center"
+                        className="h-9 text-xs bg-white border-slate-200 rounded-lg text-center"
                       />
                     </div>
                   </div>
@@ -293,21 +293,21 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
           {/* Special Requests */}
           <div className="space-y-2">
-            <Label htmlFor="specialRequests" className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Special Requests (Optional)</Label>
+            <Label htmlFor="specialRequests" className="text-xs font-semibold text-slate-700">Special Requests (Optional)</Label>
             <Textarea
               id="specialRequests"
               placeholder="e.g. Dietary preferences, room configurations..."
               value={specialRequests}
               onChange={(e) => setSpecialRequests(e.target.value)}
-              className="bg-white/50 dark:bg-zinc-950/40 text-xs border border-zinc-200 dark:border-zinc-800 rounded-xl"
+              className="bg-white text-xs border border-slate-200 rounded-xl"
               rows={2}
             />
           </div>
 
           {/* Payment Method Selector */}
-          <div className="space-y-2.5 border-t border-zinc-150/40 dark:border-zinc-800/40 pt-4">
-            <Label className="flex items-center gap-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
+          <div className="space-y-2.5 border-t border-slate-200 pt-4">
+            <Label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+              <CreditCard className="h-4 w-4 text-slate-400" />
               Choose Payment Gateway
             </Label>
             <div className="grid grid-cols-2 gap-3">
@@ -316,41 +316,41 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 onClick={() => setGateway("razorpay")}
                 className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
                   gateway === "razorpay"
-                    ? "border-[var(--waypoint-teal)] ring-2 ring-[var(--waypoint-teal)]/10 bg-teal-500/5 text-[var(--waypoint-teal)] font-semibold shadow-sm"
-                    : "border-zinc-200 dark:border-zinc-800 bg-white/20 dark:bg-zinc-950/10 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300"
+                    ? "border-[#769ABC] ring-2 ring-[#769ABC]/10 bg-[#769ABC]/5 text-[#769ABC] font-semibold shadow-sm"
+                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
                 }`}
               >
                 <span className="text-sm font-semibold">Razorpay</span>
-                <span className="text-[9px] text-muted-foreground mt-0.5">Cards / UPI / NetBanking</span>
+                <span className="text-[9px] text-slate-400 mt-0.5">Cards / UPI / NetBanking</span>
               </button>
               <button
                 type="button"
                 onClick={() => setGateway("stripe")}
                 className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
                   gateway === "stripe"
-                    ? "border-[var(--waypoint-teal)] ring-2 ring-[var(--waypoint-teal)]/10 bg-teal-500/5 text-[var(--waypoint-teal)] font-semibold shadow-sm"
-                    : "border-zinc-200 dark:border-zinc-800 bg-white/20 dark:bg-zinc-950/10 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 text-zinc-700 dark:text-zinc-300"
+                    ? "border-[#769ABC] ring-2 ring-[#769ABC]/10 bg-[#769ABC]/5 text-[#769ABC] font-semibold shadow-sm"
+                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
                 }`}
               >
                 <span className="text-sm font-semibold">Stripe</span>
-                <span className="text-[9px] text-muted-foreground mt-0.5">Global Card Checkout</span>
+                <span className="text-[9px] text-slate-400 mt-0.5">Global Card Checkout</span>
               </button>
             </div>
           </div>
 
           {/* Price Summary */}
-          <div className="border border-dashed border-zinc-200 dark:border-zinc-800 p-4 rounded-xl bg-zinc-50/30 dark:bg-zinc-900/20 space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="border border-dashed border-slate-200 p-4 rounded-xl bg-slate-50/50 space-y-2">
+            <div className="flex justify-between text-xs text-slate-500">
               <span>Base price (per person)</span>
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">{formatCurrency(basePrice, currency)}</span>
+              <span className="font-semibold text-slate-800">{formatCurrency(basePrice, currency)}</span>
             </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="flex justify-between text-xs text-slate-500">
               <span>Total travelers</span>
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">x {travelers.length}</span>
+              <span className="font-semibold text-slate-800">x {travelers.length}</span>
             </div>
-            <div className="flex justify-between font-bold text-md border-t border-zinc-200/50 dark:border-zinc-800/50 pt-2.5 mt-1">
-              <span className="text-zinc-900 dark:text-zinc-100">Total Price</span>
-              <span className="text-lg text-[var(--waypoint-teal)] font-bold">
+            <div className="flex justify-between font-bold text-md border-t border-slate-200 pt-2.5 mt-1">
+              <span className="text-slate-900">Total Price</span>
+              <span className="text-lg text-[#769ABC] font-bold">
                 {formatCurrency(totalAmount, currency)}
               </span>
             </div>
@@ -360,7 +360,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-[var(--waypoint-teal)] to-[var(--waypoint-navy)] hover:from-[var(--waypoint-teal)]/95 hover:to-[var(--waypoint-navy)]/95 hover:scale-[1.01] active:scale-[0.99] transition-all text-white font-bold py-6 rounded-xl shadow-lg gap-2 cursor-pointer border-0"
+            className="w-full bg-gradient-to-r from-[#769ABC] to-[#1A3B5A] hover:from-[#769ABC]/95 hover:to-[#1A3B5A]/95 hover:scale-[1.01] active:scale-[0.99] transition-all text-white font-bold py-6 rounded-xl shadow-lg gap-2 cursor-pointer border-0"
           >
             <CreditCard className="h-4 w-4" />
             {loading ? "Initializing Secure Portal..." : "Confirm & Pay Now"}

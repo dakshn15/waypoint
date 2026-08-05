@@ -265,12 +265,12 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
               placeholder="Search agencies..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-zinc-500/5 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800"
+              className="pl-9 bg-slate-50 border-slate-200"
             />
           </div>
 
           <div className="flex gap-3 w-full md:w-auto items-center justify-end">
-            <div className="flex gap-1.5 border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 bg-zinc-100 dark:bg-zinc-900/50">
+            <div className="flex gap-1.5 border border-slate-200 rounded-lg p-0.5 bg-slate-100">
               <Button
                 variant={filterVerified === "ALL" ? "default" : "ghost"}
                 onClick={() => setFilterVerified("ALL")}
@@ -284,7 +284,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 onClick={() => setFilterVerified("VERIFIED")}
                 size="sm"
                 className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
-                  filterVerified === "VERIFIED" ? "bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white" : ""
+                  filterVerified === "VERIFIED" ? "bg-[#769ABC] hover:bg-[#769ABC]/90 text-white" : ""
                 }`}
               >
                 Verified
@@ -301,7 +301,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
+              className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
             >
               <Plus className="h-4 w-4" /> Add Agency
             </Button>
@@ -320,7 +320,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
             <Card
               key={agency.id}
               className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${
-                agency.active ? "border-zinc-200 dark:border-zinc-800" : "border-rose-500/20"
+                agency.active ? "border-slate-200" : "border-rose-500/20"
               }`}
             >
               <CardHeader className="pb-3">
@@ -330,20 +330,20 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                       <img
                         src={agency.logo}
                         alt={`${agency.name} logo`}
-                        className="h-10 w-10 rounded-xl object-cover border border-zinc-200 dark:border-zinc-800"
+                        className="h-10 w-10 rounded-xl object-cover border border-slate-200"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[var(--waypoint-teal)] to-sky-500 flex items-center justify-center text-white">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#769ABC] to-[#E8AA9B] flex items-center justify-center text-white">
                         <Building2 className="h-5 w-5" />
                       </div>
                     )}
                     <div>
-                      <CardTitle className="text-xl flex items-center gap-1.5 font-bold">
+                      <CardTitle className="text-xl flex items-center gap-1.5 font-bold text-slate-900">
                         {agency.name}
                         {agency.verified ? (
-                          <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-500/10" />
+                          <CheckCircle2 className="h-5 w-5 text-[#769ABC] fill-[#769ABC]/10" />
                         ) : (
-                          <AlertCircle className="h-5 w-5 text-amber-500" />
+                          <AlertCircle className="h-5 w-5 text-[#E46F44]" />
                         )}
                       </CardTitle>
                       <CardDescription className="text-xs text-muted-foreground mt-0.5">
@@ -366,7 +366,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
               <CardContent className="space-y-4 flex-1 flex flex-col justify-between">
                 {/* Contacts & Metadata */}
-                <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                <div className="space-y-2 text-sm text-slate-600">
                   {agency.email && (
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
@@ -386,50 +386,50 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                         href={agency.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline text-[var(--waypoint-teal)] font-medium"
+                        className="hover:underline text-[#769ABC] font-medium"
                       >
                         {agency.website}
                       </a>
                     </div>
                   )}
-                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/50 mt-2">
-                    <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Owner Details</p>
-                    <p className="text-sm font-medium mt-0.5 text-zinc-800 dark:text-zinc-200">
+                  <div className="pt-2 border-t border-slate-100 mt-2">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Owner Details</p>
+                    <p className="text-sm font-medium mt-0.5 text-slate-800">
                       {agency.ownerName} ({agency.ownerEmail})
                     </p>
                   </div>
                 </div>
 
                 {/* Stats Counter */}
-                <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-zinc-500/5 dark:bg-zinc-950/40 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 text-center">
+                <div className="grid grid-cols-3 gap-2 py-3 px-4 bg-slate-50 rounded-xl border border-slate-200/50 text-center">
                   <div>
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <Package className="h-3 w-3" /> Packages
                     </p>
-                    <p className="text-lg font-bold mt-0.5">{agency.packagesCount}</p>
+                    <p className="text-lg font-bold mt-0.5 text-slate-900">{agency.packagesCount}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <CalendarCheck className="h-3 w-3" /> Bookings
                     </p>
-                    <p className="text-lg font-bold mt-0.5">{agency.bookingsCount}</p>
+                    <p className="text-lg font-bold mt-0.5 text-slate-900">{agency.bookingsCount}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <Users className="h-3 w-3" /> Staff
                     </p>
-                    <p className="text-lg font-bold mt-0.5">{agency.staffCount}</p>
+                    <p className="text-lg font-bold mt-0.5 text-slate-900">{agency.staffCount}</p>
                   </div>
                 </div>
 
                 {/* Control switches and actions row */}
-                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="xs"
                       onClick={() => handleOpenEdit(agency)}
-                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 hover:border-sky-500/20 hover:bg-sky-500/5 hover:text-sky-500 cursor-pointer"
+                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 border-slate-200 hover:border-[#769ABC]/20 hover:bg-[#769ABC]/5 hover:text-[#769ABC] cursor-pointer"
                     >
                       <Edit className="h-3.5 w-3.5" /> Edit Agency
                     </Button>
@@ -437,14 +437,14 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                       variant="outline"
                       size="xs"
                       onClick={() => setDeleteTarget(agency)}
-                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 text-rose-500 hover:border-rose-500/25 hover:bg-rose-500/5 cursor-pointer"
+                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 border-slate-200 text-rose-500 hover:border-rose-500/25 hover:bg-rose-500/5 cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Delete
                     </Button>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Label htmlFor={`verify-${agency.id}`} className="text-[10px] text-zinc-500 font-semibold cursor-pointer">
+                    <Label htmlFor={`verify-${agency.id}`} className="text-[10px] text-slate-500 font-semibold cursor-pointer">
                       Verified
                     </Label>
                     <Switch
@@ -463,10 +463,10 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Register Agency Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="glass-card max-w-md p-6">
+        <DialogContent className="glass-card max-w-md p-6 border-slate-200">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Register New Agency</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogTitle className="text-xl font-bold text-slate-900">Register New Agency</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
               Register a travel agency tenant and create its administrator profile.
             </DialogDescription>
           </DialogHeader>
@@ -480,7 +480,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 placeholder="Golden Travels Ltd"
                 value={createForm.name}
                 onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
 
@@ -493,7 +493,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   placeholder="Rahul Kumar"
                   value={createForm.ownerName}
                   onChange={(e) => setCreateForm({ ...createForm, ownerName: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
 
@@ -506,7 +506,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   placeholder="rahul@goldentravels.com"
                   value={createForm.ownerEmail}
                   onChange={(e) => setCreateForm({ ...createForm, ownerEmail: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
             </div>
@@ -519,7 +519,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   placeholder="www.goldentravels.com"
                   value={createForm.website}
                   onChange={(e) => setCreateForm({ ...createForm, website: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
 
@@ -530,7 +530,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   placeholder="+91..."
                   value={createForm.phone}
                   onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
             </div>
@@ -542,18 +542,18 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 placeholder="Enter a brief profile description..."
                 value={createForm.description}
                 onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 min-h-[80px]"
+                className="bg-white border-slate-200 min-h-[80px]"
               />
             </div>
 
-            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200">
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register Agency"}
               </Button>
@@ -564,10 +564,10 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Edit Agency Dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-        <DialogContent className="glass-card max-w-md p-6">
+        <DialogContent className="glass-card max-w-md p-6 border-slate-200">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Edit Agency Tenant</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogTitle className="text-xl font-bold text-slate-900">Edit Agency Tenant</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
               Modify agency details, brand logo, coordinates, and configuration settings.
             </DialogDescription>
           </DialogHeader>
@@ -581,7 +581,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   required
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
 
@@ -591,7 +591,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   id="edit-logo"
                   value={editForm.logo}
                   onChange={(e) => setEditForm({ ...editForm, logo: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                  className="bg-white border-slate-200"
                 />
               </div>
             </div>
@@ -603,7 +603,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   id="edit-website"
                   value={editForm.website}
                   onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                  className="bg-white border-slate-200 text-xs"
                 />
               </div>
 
@@ -613,7 +613,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   id="edit-email"
                   value={editForm.email}
                   onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                  className="bg-white border-slate-200 text-xs"
                 />
               </div>
 
@@ -623,7 +623,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   id="edit-phone"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 text-xs"
+                  className="bg-white border-slate-200 text-xs"
                 />
               </div>
             </div>
@@ -634,7 +634,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 id="edit-address"
                 value={editForm.address}
                 onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+                className="bg-white border-slate-200"
               />
             </div>
 
@@ -644,18 +644,18 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 id="edit-desc"
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 min-h-[80px]"
+                className="bg-white border-slate-200 min-h-[80px]"
               />
             </div>
 
-            <div className="flex gap-4 p-3 bg-zinc-500/5 dark:bg-zinc-900/30 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl justify-around">
+            <div className="flex gap-4 p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl justify-around">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="edit-verified"
                   checked={editForm.verified}
                   onCheckedChange={(val) => setEditForm({ ...editForm, verified: val })}
                 />
-                <Label htmlFor="edit-verified" className="text-xs font-semibold cursor-pointer">
+                <Label htmlFor="edit-verified" className="text-xs font-semibold cursor-pointer text-slate-700">
                   Verified Profile
                 </Label>
               </div>
@@ -666,20 +666,20 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   checked={editForm.active}
                   onCheckedChange={(val) => setEditForm({ ...editForm, active: val })}
                 />
-                <Label htmlFor="edit-active" className="text-xs font-semibold cursor-pointer">
+                <Label htmlFor="edit-active" className="text-xs font-semibold cursor-pointer text-slate-700">
                   Active Operation
                 </Label>
               </div>
             </div>
 
-            <DialogFooter className="pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200">
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-5"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving Changes..." : "Save Changes"}
               </Button>
@@ -693,15 +693,15 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
         <DialogContent className="glass-card border-rose-500/20 max-w-md p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">Delete Travel Agency</DialogTitle>
-            <DialogDescription className="mt-2 text-xs text-muted-foreground leading-relaxed">
+            <DialogDescription className="mt-2 text-xs text-slate-500 leading-relaxed">
               Are you sure you want to delete the travel agency{" "}
-              <strong className="text-zinc-900 dark:text-zinc-100">{deleteTarget?.name}</strong>?
+              <strong className="text-slate-900">{deleteTarget?.name}</strong>?
               Deleting the agency will permanently remove its listings, bookings, and employee associations.
               The owner profile role will revert back to Traveler status. This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading}>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading} className="border-slate-200">
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDeleteAgency} disabled={loading} className="cursor-pointer">

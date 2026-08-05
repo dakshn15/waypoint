@@ -66,13 +66,13 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
   const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case "MANAGER":
-        return "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20";
+        return "bg-[#1A3B5A]/10 text-[#1A3B5A] border border-[#1A3B5A]/20";
       case "AGENT":
-        return "bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20";
+        return "bg-[#769ABC]/10 text-[#769ABC] border border-[#769ABC]/20";
       case "SUPPORT":
-        return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20";
+        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20";
       default:
-        return "bg-zinc-100 text-zinc-800 border-zinc-200";
+        return "bg-slate-100 text-slate-800 border-slate-200";
     }
   };
 
@@ -176,19 +176,19 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Staff Management</h1>
-          <p className="text-muted-foreground mt-1">Manage staff roles, status, and permissions for your agency.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Staff Management</h1>
+          <p className="text-slate-500 mt-1">Manage staff roles, status, and permissions for your agency.</p>
         </div>
 
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white gap-2 font-semibold h-11 px-5 rounded-xl transition-colors cursor-pointer">
+              <Button className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white gap-2 font-semibold h-11 px-5 rounded-xl transition-colors cursor-pointer">
                 <Plus className="h-4 w-4" /> Add Staff Member
               </Button>
             }
           />
-          <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl">
+          <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Invite Staff Member</DialogTitle>
             </DialogHeader>
@@ -201,7 +201,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -214,7 +214,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -226,9 +226,9 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   placeholder="Defaults to: password123"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
                 />
-                <p className="text-[10px] text-muted-foreground mt-0.5">Staff members will use this password to log in.</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">Staff members will use this password to log in.</p>
               </div>
 
               <div className="space-y-2">
@@ -237,10 +237,10 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   value={formData.role}
                   onValueChange={(v: string | null) => v && setFormData({ ...formData, role: v as any })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-zinc-900 border shadow-lg rounded-xl">
+                  <SelectContent className="bg-white border shadow-lg rounded-xl">
                     <SelectItem value="AGENT">Agent (Default)</SelectItem>
                     <SelectItem value="MANAGER">Manager</SelectItem>
                     <SelectItem value="SUPPORT">Support Officer</SelectItem>
@@ -248,7 +248,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 </Select>
               </div>
 
-              <div className="flex gap-3 justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
+              <div className="flex gap-3 justify-end pt-4 border-t border-slate-100 mt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -260,7 +260,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                  className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
                 >
                   {loading ? "Inviting..." : "Create Staff Account"}
                 </Button>
@@ -271,18 +271,18 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
       </div>
 
       {staff.length === 0 ? (
-        <Card className="glass-card border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="h-16 w-16 bg-gradient-to-tr from-[var(--waypoint-teal)]/10 to-[var(--waypoint-navy)]/10 rounded-full flex items-center justify-center mb-4">
-              <Users className="h-8 w-8 text-[var(--waypoint-teal)]" />
+            <div className="h-16 w-16 bg-gradient-to-tr from-[#769ABC]/10 to-[#1A3B5A]/10 rounded-full flex items-center justify-center mb-4">
+              <Users className="h-8 w-8 text-[#769ABC]" />
             </div>
             <h3 className="text-xl font-bold mb-2">No Staff Members Yet</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-md mb-6 leading-relaxed">
+            <p className="text-sm text-slate-500 text-center max-w-md mb-6 leading-relaxed">
               Staff members can log in using their credentials and help you manage trip package bookings and support requests.
             </p>
             <Button
               onClick={() => setInviteOpen(true)}
-              className="bg-teal-500/10 text-[var(--waypoint-teal)] hover:bg-teal-500/20 border border-[var(--waypoint-teal)]/30 font-semibold h-11 px-6 rounded-xl cursor-pointer"
+              className="bg-[#769ABC]/10 text-[#769ABC] hover:bg-[#769ABC]/20 border border-[#769ABC]/30 font-semibold h-11 px-6 rounded-xl cursor-pointer"
             >
               Add Your First Staff Member
             </Button>
@@ -296,14 +296,14 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               <Card
                 key={s.id}
                 className={`glass-card hover:shadow-xl transition-all hover:-translate-y-0.5 border rounded-2xl overflow-hidden ${
-                  !s.active ? "opacity-65" : "border-zinc-200/60 dark:border-zinc-800/60"
+                  !s.active ? "opacity-65" : "border-slate-200"
                 }`}
               >
                 <CardContent className="p-6 relative">
                   <button
                     onClick={() => handleDeleteStaff(s.user.id)}
                     disabled={isSelfAction}
-                    className="absolute top-5 right-5 h-8 w-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-rose-500 hover:bg-rose-500/5 transition-colors border border-transparent hover:border-rose-500/10 cursor-pointer"
+                    className="absolute top-5 right-5 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-colors border border-transparent hover:border-rose-500/10 cursor-pointer"
                     title="Delete Staff Member"
                   >
                     <Trash2 className="h-4.5 w-4.5" />
@@ -312,31 +312,31 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   <button
                     onClick={() => handleEditClick(s)}
                     disabled={isSelfAction}
-                    className="absolute top-5 right-13 h-8 w-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-500/5 transition-colors border border-transparent hover:border-zinc-500/10 cursor-pointer"
+                    className="absolute top-5 right-13 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-500/5 transition-colors border border-transparent hover:border-slate-500/10 cursor-pointer"
                     title="Edit Staff Member"
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
 
                   <div className="flex items-center gap-3 mb-5">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[var(--waypoint-navy)] to-zinc-700 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#1A3B5A] to-slate-700 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
                       {s.user.name?.charAt(0)?.toUpperCase() || "S"}
                     </div>
                     <div>
-                      <h3 className="font-bold text-md text-zinc-900 dark:text-zinc-50 leading-tight">{s.user.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                      <h3 className="font-bold text-md text-slate-900 leading-tight">{s.user.name}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                         <Mail className="h-3 w-3 inline" /> {s.user.email}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <Badge variant="outline" className={`text-[10px] font-extrabold tracking-widest uppercase ${getRoleBadgeStyle(s.role)}`}>
                       {s.role}
                     </Badge>
                     
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground font-medium">
+                      <span className="text-xs text-slate-500 font-medium">
                         {s.active ? "Active" : "Disabled"}
                       </span>
                       <Switch
@@ -356,7 +356,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
 
       {/* Edit Staff Dialog */}
       <Dialog open={!!editStaff} onOpenChange={(open) => !open && setEditStaff(null)}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit Staff Member</DialogTitle>
           </DialogHeader>
@@ -368,7 +368,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 required
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -380,7 +380,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 placeholder="Leave empty to keep unchanged"
                 value={editFormData.password}
                 onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
-                className="bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 focus:border-[var(--waypoint-teal)] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -390,10 +390,10 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 value={editFormData.role}
                 onValueChange={(v: string | null) => v && setEditFormData({ ...editFormData, role: v as any })}
               >
-                <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3.5 text-sm">
+                <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-zinc-900 border shadow-lg rounded-xl">
+                <SelectContent className="bg-white border shadow-lg rounded-xl">
                   <SelectItem value="AGENT">Agent</SelectItem>
                   <SelectItem value="MANAGER">Manager</SelectItem>
                   <SelectItem value="SUPPORT">Support Officer</SelectItem>
@@ -401,7 +401,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               </Select>
             </div>
 
-            <div className="flex gap-3 justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60 mt-4">
+            <div className="flex gap-3 justify-end pt-4 border-t border-slate-100 mt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -413,7 +413,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>

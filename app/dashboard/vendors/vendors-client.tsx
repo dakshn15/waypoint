@@ -55,27 +55,27 @@ const CATEGORY_CONFIG: Record<
 > = {
   HOTEL: {
     icon: <Hotel className="h-4 w-4" />,
-    color: "bg-sky-500/10 text-sky-600 border-sky-500/20",
+    color: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
   },
   TRANSPORT: {
     icon: <Car className="h-4 w-4" />,
-    color: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+    color: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
   },
   RESTAURANT: {
     icon: <Utensils className="h-4 w-4" />,
-    color: "bg-rose-500/10 text-rose-600 border-rose-500/20",
+    color: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
   },
   ACTIVITY: {
     icon: <Camera className="h-4 w-4" />,
-    color: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    color: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
   },
   GUIDE: {
     icon: <Globe className="h-4 w-4" />,
-    color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+    color: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
   },
   OTHER: {
     icon: <Building2 className="h-4 w-4" />,
-    color: "bg-zinc-500/10 text-zinc-600 border-zinc-500/20",
+    color: "bg-slate-500/10 text-slate-600 border-slate-500/20",
   },
 };
 
@@ -130,8 +130,8 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
         return (
           <Card
             key={vendor.id}
-            className={`glass-card group hover:shadow-2xl hover:shadow-[var(--waypoint-teal)]/10 transition-all hover:-translate-y-0.5 border rounded-2xl overflow-hidden ${
-              !vendor.active ? "opacity-65" : "border-zinc-200/60 dark:border-zinc-800/60"
+            className={`glass-card group hover:shadow-2xl hover:shadow-[#769ABC]/10 transition-all hover:-translate-y-0.5 border border-slate-200/60 rounded-2xl overflow-hidden ${
+              !vendor.active ? "opacity-65" : ""
             }`}
           >
             <CardContent className="p-5">
@@ -145,8 +145,8 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                     variant="outline"
                     className={
                       vendor.active
-                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] uppercase font-bold tracking-wider"
-                        : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20 text-[10px] uppercase font-bold tracking-wider"
+                        ? "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20 text-[10px] uppercase font-bold tracking-wider"
+                        : "bg-slate-500/10 text-slate-500 border-slate-500/20 text-[10px] uppercase font-bold tracking-wider"
                     }
                   >
                     {vendor.active ? "Active" : "Inactive"}
@@ -155,12 +155,12 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       render={
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-250 cursor-pointer">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-slate-800 cursor-pointer">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       }
                     />
-                    <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-zinc-900 border shadow-xl rounded-xl">
+                    <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 shadow-xl rounded-xl">
                       <DropdownMenuItem
                         onClick={() => handleToggleActive(vendor.id, vendor.active)}
                         disabled={isPending}
@@ -183,23 +183,23 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                 </div>
               </div>
 
-              <h3 className="font-bold text-lg mb-1 group-hover:text-[var(--waypoint-teal)] transition-colors line-clamp-1">
+              <h3 className="font-bold text-lg mb-1 group-hover:text-[#769ABC] transition-colors line-clamp-1 text-slate-900">
                 {vendor.name}
               </h3>
 
               {vendor.location && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+                <p className="text-xs text-slate-500 flex items-center gap-1 mb-2">
                   <MapPin className="h-3 w-3" /> {vendor.location}
                 </p>
               )}
 
               {vendor.description && (
-                <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-slate-600 mb-4 line-clamp-2 leading-relaxed">
                   {vendor.description}
                 </p>
               )}
 
-              <div className="flex flex-col gap-1.5 text-xs text-muted-foreground pt-3 border-t border-zinc-100 dark:border-zinc-900/60 font-medium">
+              <div className="flex flex-col gap-1.5 text-xs text-slate-500 pt-3 border-t border-slate-100 font-medium">
                 {vendor.contactEmail && (
                   <span className="flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5" /> {vendor.contactEmail}
@@ -213,9 +213,9 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
               </div>
 
               {vendor.rating && (
-                <div className="flex items-center gap-1 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-900/60">
-                  <Star className="h-4 w-4 fill-[var(--waypoint-amber)] text-[var(--waypoint-amber)]" />
-                  <span className="text-sm font-medium">
+                <div className="flex items-center gap-1 mt-3 pt-3 border-t border-slate-100">
+                  <Star className="h-4 w-4 fill-[#E46F44] text-[#E46F44]" />
+                  <span className="text-sm font-medium text-slate-800">
                     {Number(vendor.rating).toFixed(1)}
                   </span>
                 </div>

@@ -51,10 +51,10 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="glass-card border-white/20 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-none animate-in fade-in zoom-in-95 duration-500">
+    <Card className="glass-card border-slate-200 shadow-xl animate-in fade-in zoom-in-95 duration-500">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-dm-sans">Welcome back</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-dm-sans text-slate-900">Welcome back</CardTitle>
+        <CardDescription className="text-slate-500">
           Enter your email to sign in to your account
         </CardDescription>
       </CardHeader>
@@ -69,13 +69,13 @@ export default function LoginPage() {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/50 dark:bg-black/50"
+              className="bg-white border-slate-200"
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-sm font-medium text-[var(--waypoint-teal)] hover:underline">
+              <Link href="/forgot-password" className="text-sm font-medium text-[#769ABC] hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -85,26 +85,26 @@ export default function LoginPage() {
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/50 dark:bg-black/50"
+              className="bg-white border-slate-200"
             />
           </div>
-          <Button type="submit" className="w-full bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white" disabled={loading}>
+          <Button type="submit" className="w-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
         
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground glass px-4 rounded-full">
+            <span className="bg-white px-4 text-slate-400 font-semibold rounded-full border border-slate-200">
               Or continue with
             </span>
           </div>
         </div>
         
-        <Button variant="outline" type="button" className="w-full" onClick={handleGoogleLogin}>
+        <Button variant="outline" type="button" className="w-full border-slate-200 rounded-xl h-11 font-semibold" onClick={handleGoogleLogin}>
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -127,9 +127,9 @@ export default function LoginPage() {
         </Button>
       </CardContent>
       <CardFooter className="flex flex-col gap-4 text-center">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-slate-500">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-[var(--waypoint-teal)] hover:underline font-medium">
+          <Link href="/register" className="text-[#769ABC] hover:underline font-medium">
             Sign up
           </Link>
         </div>

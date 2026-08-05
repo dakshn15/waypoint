@@ -138,7 +138,7 @@ export default function NewPackagePage() {
                 <div className="space-y-2">
                   <Label>Difficulty <span className="text-red-500">*</span></Label>
                   <Select value={formData.difficulty} onValueChange={(v: string | null) => v && setFormData({ ...formData, difficulty: v })}>
-                    <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-955/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-full h-11 bg-white border border-slate-200 rounded-xl px-3"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="EASY">Easy</SelectItem>
                       <SelectItem value="MODERATE">Moderate</SelectItem>
@@ -205,7 +205,7 @@ export default function NewPackagePage() {
                 <div className="space-y-2">
                   <Label>Currency <span className="text-red-500">*</span></Label>
                   <Select value={formData.currency} onValueChange={(v: string | null) => v && setFormData({ ...formData, currency: v })}>
-                    <SelectTrigger className="w-full h-11 bg-white/50 dark:bg-zinc-955/40 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-full h-11 bg-white border border-slate-200 rounded-xl px-3"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {SUPPORTED_CURRENCIES.map((c) => (
                         <SelectItem key={c.code} value={c.code}>{c.symbol} {c.name} ({c.code})</SelectItem>

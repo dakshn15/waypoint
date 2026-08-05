@@ -31,9 +31,6 @@ import {
   Palette,
   ShieldCheck,
   Camera,
-  Monitor,
-  Moon,
-  Sun,
   IndianRupee,
   Languages,
   KeyRound,
@@ -41,7 +38,6 @@ import {
 } from "lucide-react";
 import { updateUserSettings, updateAgencySettings } from "@/app/actions/settings";
 import { authClient } from "@/lib/auth-client";
-import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -99,7 +95,7 @@ function NotifRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-zinc-50/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 transition-colors hover:bg-zinc-100/80 dark:hover:bg-zinc-800/30">
+    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 transition-colors hover:bg-slate-100/80">
       <div className="space-y-0.5 min-w-0">
         <p className="text-sm font-medium">{title}</p>
         <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
@@ -111,7 +107,6 @@ function NotifRow({
 
 export default function SettingsClient({ user, agency, canManageAgency }: SettingsClientProps) {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [loading, setLoading] = useState(false);
 
   // Profile
@@ -235,7 +230,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
     <div className="w-full max-w-5xl mx-auto">
       <Tabs defaultValue="profile" className="w-full">
         {/* ── Tab Navigation ── */}
-        <TabsList className="w-full flex bg-zinc-100/80 dark:bg-zinc-900/60 p-1.5 border border-zinc-200/70 dark:border-zinc-800/70 rounded-2xl mb-8 overflow-x-auto gap-1">
+        <TabsList className="w-full flex bg-slate-100 p-1.5 border border-slate-200 rounded-2xl mb-8 overflow-x-auto gap-1">
           <TabsTrigger
             value="profile"
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all"
@@ -276,17 +271,17 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
               <CardContent className="p-6">
                 <SectionHeading icon={User} title="Profile Information" desc="Your personal details and public avatar shown across the platform." />
 
-                <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-gradient-to-r from-zinc-50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/30 border border-zinc-200/50 dark:border-zinc-800/50">
+                <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
                   <div className="relative group">
-                    <Avatar className="h-24 w-24 ring-4 ring-white dark:ring-zinc-900 shadow-lg">
+                    <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
                       {profileImage ? <AvatarImage src={profileImage} className="object-cover" /> : null}
-                      <AvatarFallback className="bg-gradient-to-br from-[var(--waypoint-navy)] to-[var(--waypoint-teal)] text-white text-3xl font-bold">
+                      <AvatarFallback className="bg-gradient-to-br from-[#1A3B5A] to-[#769ABC] text-white text-3xl font-bold">
                         {profileName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <Label
                       htmlFor="avatar-file"
-                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white dark:border-zinc-900"
+                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
                     >
                       <Camera className="h-3.5 w-3.5" />
                     </Label>
@@ -294,9 +289,9 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   </div>
 
                   <div className="text-center sm:text-left space-y-1">
-                    <h4 className="text-lg font-bold">{profileName}</h4>
+                    <h4 className="text-lg font-bold text-slate-900">{profileName}</h4>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--waypoint-navy)]/10 text-[var(--waypoint-navy)] dark:bg-[var(--waypoint-teal)]/15 dark:text-[var(--waypoint-teal)]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1A3B5A]/10 text-[#1A3B5A]">
                       {user.role}
                     </span>
                   </div>
@@ -316,20 +311,20 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       value={profileName}
                       onChange={(e) => setProfileName(e.target.value)}
                       placeholder="Your display name"
-                      className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                      className="h-11 bg-white border-slate-200 rounded-xl"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="profile-phone" className="text-sm font-medium">Phone Number</Label>
                     <div className="relative">
-                      <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                      <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                       <Input
                         id="profile-phone"
                         value={profilePhone}
                         onChange={(e) => setProfilePhone(e.target.value)}
                         placeholder="+91 98765 43210"
-                        className="h-11 pl-10 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
@@ -338,22 +333,22 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                 <div className="space-y-2">
                   <Label htmlFor="profile-email" className="text-sm font-medium">Email Address</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                    <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                     <Input
                       id="profile-email"
                       disabled
                       value={user.email}
-                      className="h-11 pl-10 bg-zinc-100 dark:bg-zinc-900/20 border-zinc-200 dark:border-zinc-800/40 rounded-xl cursor-not-allowed opacity-60"
+                      className="h-11 pl-10 bg-slate-100 border-slate-200 rounded-xl cursor-not-allowed opacity-60"
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground">Email cannot be changed for security reasons.</p>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
+                <div className="flex justify-end pt-4 border-t border-slate-100">
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="h-11 bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                    className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Save Changes
@@ -376,7 +371,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <div className="space-y-2">
                     <Label htmlFor="curr-pass" className="text-sm font-medium">Current Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                      <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                       <Input
                         id="curr-pass"
                         required
@@ -384,12 +379,12 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="Enter current password"
-                        className="h-11 pl-10 pr-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 pl-10 pr-11 bg-white border-slate-200 rounded-xl"
                       />
                       <button
                         type="button"
                         onClick={() => setShowCurrent(!showCurrent)}
-                        className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 bg-transparent border-0 cursor-pointer p-0.5"
+                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
                       >
                         {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -407,12 +402,12 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           placeholder="Minimum 6 characters"
-                          className="h-11 pr-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                          className="h-11 pr-11 bg-white border-slate-200 rounded-xl"
                         />
                         <button
                           type="button"
                           onClick={() => setShowNew(!showNew)}
-                          className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 bg-transparent border-0 cursor-pointer p-0.5"
+                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
                         >
                           {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
@@ -427,16 +422,16 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-enter new password"
-                        className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-900/60">
+                  <div className="flex justify-end pt-4 border-t border-slate-100">
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="h-11 bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                      className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
                       Update Password
@@ -451,13 +446,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
               <CardContent className="p-6">
                 <SectionHeading icon={ShieldCheck} title="Two-Factor Authentication" desc="Add an extra layer of protection to your account with 2FA." />
 
-                <div className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-emerald-50/80 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/10 border border-emerald-200/50 dark:border-emerald-800/30">
+                <div className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#769ABC]/10 to-[#E8AA9B]/10 border border-[#769ABC]/30">
                   <div className="flex items-center gap-4">
-                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${tfaEnabled ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'} transition-colors`}>
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${tfaEnabled ? 'bg-[#769ABC]' : 'bg-slate-300'} transition-colors`}>
                       <ShieldCheck className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold">
+                      <p className="text-sm font-semibold text-slate-900">
                         {tfaEnabled ? "2FA is Active" : "2FA is Disabled"}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
@@ -481,45 +476,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
         {/* ═══════════ PREFERENCES ═══════════ */}
         <TabsContent value="preferences" className="outline-none">
           <form onSubmit={handleSavePreferences} className="space-y-6">
-            {/* Appearance */}
-            <Card className="glass-card">
-              <CardContent className="p-6">
-                <SectionHeading icon={Palette} title="Appearance" desc="Customize the look and feel of your dashboard interface." />
-
-                <div className="space-y-4">
-                  <Label className="text-sm font-medium">Interface Theme</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { value: "light", label: "Light", icon: Sun, desc: "Clean & bright" },
-                      { value: "dark", label: "Dark", icon: Moon, desc: "Easy on eyes" },
-                      { value: "system", label: "System", icon: Monitor, desc: "Auto detect" },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setTheme(opt.value)}
-                        className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                          theme === opt.value
-                            ? "border-[var(--waypoint-teal)] bg-[var(--waypoint-teal)]/5 shadow-sm"
-                            : "border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/30 hover:border-zinc-300 dark:hover:border-zinc-700"
-                        }`}
-                      >
-                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
-                          theme === opt.value
-                            ? "bg-[var(--waypoint-teal)] text-white"
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                        } transition-colors`}>
-                          <opt.icon className="h-5 w-5" />
-                        </div>
-                        <span className="text-sm font-semibold">{opt.label}</span>
-                        <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Regional */}
             <Card className="glass-card">
               <CardContent className="p-6">
@@ -531,10 +487,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> Currency
                     </Label>
                     <Select value={currency} onValueChange={(val) => setCurrency(val || "INR")}>
-                      <SelectTrigger className="!w-full h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                      <SelectTrigger className="!w-full h-11 bg-white border-slate-200 rounded-xl">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                      <SelectContent className="bg-white border rounded-xl">
                         <SelectItem value="INR">₹ INR — Indian Rupee</SelectItem>
                         <SelectItem value="USD">$ USD — US Dollar</SelectItem>
                         <SelectItem value="EUR">€ EUR — Euro</SelectItem>
@@ -548,10 +504,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       <Languages className="h-3.5 w-3.5 text-muted-foreground" /> Language
                     </Label>
                     <Select value={lang} onValueChange={(val) => setLang(val || "en")}>
-                      <SelectTrigger className="!w-full h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl">
+                      <SelectTrigger className="!w-full h-11 bg-white border-slate-200 rounded-xl">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-zinc-900 border rounded-xl">
+                      <SelectContent className="bg-white border rounded-xl">
                         <SelectItem value="en">English (US / IN)</SelectItem>
                         <SelectItem value="hi">Hindi (हिंदी)</SelectItem>
                         <SelectItem value="es">Spanish (Español)</SelectItem>
@@ -595,10 +551,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   />
                 </div>
 
-                <div className="flex justify-end pt-5 mt-5 border-t border-zinc-100 dark:border-zinc-900/60">
+                <div className="flex justify-end pt-5 mt-5 border-t border-slate-100">
                   <Button
                     type="submit"
-                    className="h-11 bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                    className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     <Save className="h-4 w-4" /> Save Preferences
                   </Button>
@@ -625,7 +581,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={agencyForm.name}
                         onChange={(e) => setAgencyForm({ ...agencyForm, name: e.target.value })}
                         placeholder="Your agency name"
-                        className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
 
@@ -636,7 +592,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={agencyForm.logo}
                         onChange={(e) => setAgencyForm({ ...agencyForm, logo: e.target.value })}
                         placeholder="https://example.com/logo.png"
-                        className="h-11 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
@@ -651,13 +607,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                     <div className="space-y-2">
                       <Label htmlFor="agency-web" className="text-sm font-medium">Website</Label>
                       <div className="relative">
-                        <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                        <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                         <Input
                           id="agency-web"
                           value={agencyForm.website}
                           onChange={(e) => setAgencyForm({ ...agencyForm, website: e.target.value })}
                           placeholder="www.agency.com"
-                          className="h-11 pl-10 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
                         />
                       </div>
                     </div>
@@ -665,13 +621,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                     <div className="space-y-2">
                       <Label htmlFor="agency-email" className="text-sm font-medium">Support Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                        <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                         <Input
                           id="agency-email"
                           value={agencyForm.email}
                           onChange={(e) => setAgencyForm({ ...agencyForm, email: e.target.value })}
                           placeholder="support@agency.com"
-                          className="h-11 pl-10 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
                         />
                       </div>
                     </div>
@@ -679,13 +635,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                     <div className="space-y-2">
                       <Label htmlFor="agency-phone" className="text-sm font-medium">Support Phone</Label>
                       <div className="relative">
-                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                         <Input
                           id="agency-phone"
                           value={agencyForm.phone}
                           onChange={(e) => setAgencyForm({ ...agencyForm, phone: e.target.value })}
                           placeholder="+91 98765 43210"
-                          className="h-11 pl-10 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
                         />
                       </div>
                     </div>
@@ -694,13 +650,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <div className="space-y-2 mt-5">
                     <Label htmlFor="agency-address" className="text-sm font-medium">Office Address</Label>
                     <div className="relative">
-                      <MapPin className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                      <MapPin className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                       <Input
                         id="agency-address"
                         value={agencyForm.address}
                         onChange={(e) => setAgencyForm({ ...agencyForm, address: e.target.value })}
                         placeholder="123 Tourism Way, Suite 4B, Mumbai"
-                        className="h-11 pl-10 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl"
+                        className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
@@ -713,15 +669,15 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       onChange={(e) => setAgencyForm({ ...agencyForm, description: e.target.value })}
                       placeholder="Tell travelers what makes your agency special..."
                       rows={4}
-                      className="bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl resize-none"
+                      className="bg-white border-slate-200 rounded-xl resize-none"
                     />
                   </div>
 
-                  <div className="flex justify-end pt-5 mt-5 border-t border-zinc-100 dark:border-zinc-900/60">
+                  <div className="flex justify-end pt-5 mt-5 border-t border-slate-100">
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="h-11 bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                      className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       Save Agency Profile
