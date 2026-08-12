@@ -1,22 +1,14 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Clock, Star, Filter } from "lucide-react";
-import Link from "next/link";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { FavoriteButton } from "@/components/favorite-button";
-import PackagesListClient from "./packages-list-client";
-
 import { prisma } from "@/lib/db";
+import PackagesListClient from "./packages-list-client";
 
 // Demo data for the public package browsing page
 const DEMO_PACKAGES = [
   {
     id: "1",
     title: "Golden Triangle Tour",
-    description: "Explore Delhi, Agra, and Jaipur — India's most iconic destinations.",
+    description: "Explore Delhi, Agra, and Jaipur — India's most iconic destinations with guided heritage walks and Mughal architecture.",
     destinations: ["Delhi", "Agra", "Jaipur"],
     duration: 7,
     basePrice: 24999,
@@ -24,12 +16,12 @@ const DEMO_PACKAGES = [
     rating: 4.8,
     reviews: 124,
     difficulty: "EASY",
-    image: null,
+    image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "2",
     title: "Kerala Backwaters Bliss",
-    description: "Cruise through serene backwaters, explore tea gardens, and relax on pristine beaches.",
+    description: "Cruise through serene backwaters, explore tea gardens in Munnar, and relax on pristine beaches of Kerala.",
     destinations: ["Kochi", "Munnar", "Alleppey"],
     duration: 5,
     basePrice: 18999,
@@ -37,12 +29,12 @@ const DEMO_PACKAGES = [
     rating: 4.9,
     reviews: 89,
     difficulty: "EASY",
-    image: null,
+    image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "3",
     title: "Himalayan Adventure",
-    description: "Trek through breathtaking mountain trails and experience Himalayan culture.",
+    description: "Trek through breathtaking mountain trails, cross high-altitude passes, and experience authentic Himalayan culture.",
     destinations: ["Manali", "Leh", "Nubra Valley"],
     duration: 10,
     basePrice: 35999,
@@ -50,12 +42,12 @@ const DEMO_PACKAGES = [
     rating: 4.7,
     reviews: 67,
     difficulty: "CHALLENGING",
-    image: null,
+    image: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "4",
     title: "Goa Beach Paradise",
-    description: "Sun, sand, and seafood — the ultimate Goa beach vacation experience.",
+    description: "Sun, sand, and seafood — the ultimate Goa beach vacation with water sports, nightlife, and Old Goa heritage.",
     destinations: ["North Goa", "South Goa"],
     duration: 4,
     basePrice: 12999,
@@ -63,12 +55,12 @@ const DEMO_PACKAGES = [
     rating: 4.6,
     reviews: 210,
     difficulty: "EASY",
-    image: null,
+    image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "5",
     title: "Rajasthan Royal Heritage",
-    description: "Step back in time to explore majestic forts, palaces, and desert landscapes.",
+    description: "Step back in time to explore majestic forts, lake palaces, and golden desert landscapes of Rajasthan.",
     destinations: ["Udaipur", "Jodhpur", "Jaisalmer"],
     duration: 8,
     basePrice: 29999,
@@ -76,12 +68,12 @@ const DEMO_PACKAGES = [
     rating: 4.8,
     reviews: 93,
     difficulty: "MODERATE",
-    image: null,
+    image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "6",
     title: "Northeast Explorer",
-    description: "Discover the untouched beauty of India's northeast — lush valleys and tribal culture.",
+    description: "Discover the untouched beauty of India's northeast — lush valleys, living root bridges, and tribal culture.",
     destinations: ["Shillong", "Cherrapunji", "Kaziranga"],
     duration: 6,
     basePrice: 22999,
@@ -89,7 +81,7 @@ const DEMO_PACKAGES = [
     rating: 4.9,
     reviews: 42,
     difficulty: "MODERATE",
-    image: null,
+    image: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
@@ -146,42 +138,5 @@ export default async function PackagesPage() {
     isFavorited: favoritedIds.includes(pkg.id),
   }));
 
-  return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[var(--waypoint-teal)] to-[var(--waypoint-navy)] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">W</span>
-            </div>
-            <span className="text-lg font-bold tracking-tight">Waypoint</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            {session?.user ? (
-              <Link href="/dashboard">
-                <Button className="bg-[var(--waypoint-teal)] hover:bg-[var(--waypoint-teal)]/90 text-white rounded-full px-6">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">Log in</Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm" className="bg-[var(--waypoint-navy)] text-white hover:bg-[var(--waypoint-teal)] rounded-full px-6">
-                    Sign up
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <PackagesListClient initialPackages={allPackages} />
-    </div>
-  );
+  return <PackagesListClient initialPackages={allPackages} userSession={session} />;
 }
-

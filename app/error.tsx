@@ -27,7 +27,7 @@ export default function Error({
         </p>
         <Button
           onClick={() => reset()}
-          className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white rounded-full px-6"
+          className="bg-secondary hover:bg-secondary text-white rounded-full px-6"
         >
           Try Again
         </Button>

@@ -192,7 +192,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
                   {imageUrl ? (
                     <AvatarImage src={imageUrl} alt={name} />
                   ) : null}
-                  <AvatarFallback className="bg-[#1A3B5A] text-white text-2xl font-semibold">
+                  <AvatarFallback className="bg-secondary text-white text-2xl font-semibold">
                     {name.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -261,7 +261,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingAccount}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
+                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingAccount ? "Saving Changes..." : "Save Details"}
               </Button>
@@ -345,7 +345,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingTraveler}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
+                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingTraveler ? "Saving Preferences..." : "Save Preferences"}
               </Button>
@@ -404,7 +404,7 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
               <Button
                 type="submit"
                 disabled={updatingPassword}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
+                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
               >
                 {updatingPassword ? "Changing Password..." : "Update Password"}
               </Button>

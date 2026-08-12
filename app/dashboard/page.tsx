@@ -147,7 +147,7 @@ async function TravelerDashboard({
             <CardTitle className="text-sm font-medium">
               Saved Packages
             </CardTitle>
-            <Heart className="h-4 w-4 text-[#E46F44]" />
+            <Heart className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{favoritesCount}</div>
@@ -230,15 +230,15 @@ async function AgencyDashboard({
   const [allBookings, packagesCount] = await Promise.all([
     agency
       ? prisma.booking.findMany({
-          where: { agencyId: agency.id },
-          include: { package: true, user: true },
-          orderBy: { createdAt: "desc" },
-        })
+        where: { agencyId: agency.id },
+        include: { package: true, user: true },
+        orderBy: { createdAt: "desc" },
+      })
       : Promise.resolve([]),
     agency
       ? prisma.package.count({
-          where: { agencyId: agency.id, status: "PUBLISHED" },
-        })
+        where: { agencyId: agency.id, status: "PUBLISHED" },
+      })
       : Promise.resolve(0),
   ]);
 
@@ -301,7 +301,7 @@ async function AgencyDashboard({
             <CardTitle className="text-sm font-medium">
               Total Revenue
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-[#769ABC]" />
+            <DollarSign className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -345,7 +345,7 @@ async function AgencyDashboard({
             <CardTitle className="text-sm font-medium">
               Total Travelers
             </CardTitle>
-            <Users className="h-4 w-4 text-[#769ABC]" />
+            <Users className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{uniqueTravelers}</div>
@@ -468,7 +468,7 @@ async function AdminDashboard() {
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-[#769ABC]" />
+            <Users className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsers}</div>
@@ -501,7 +501,7 @@ async function AdminDashboard() {
             <CardTitle className="text-sm font-medium">
               Platform Revenue
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-[#769ABC]" />
+            <DollarSign className="h-4 w-4 text-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -613,7 +613,7 @@ async function StaffDashboard({
       case "HIGH":
         return "bg-rose-500/10 text-rose-500 border border-rose-500/20";
       case "MEDIUM":
-        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20";
+        return "bg-primary/10 text-primary border border-primary/20";
       default:
         return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
     }
@@ -622,9 +622,9 @@ async function StaffDashboard({
   const getBookingStatusColor = (status: string) => {
     switch (status) {
       case "CONFIRMED":
-        return "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20";
+        return "bg-secondary/10 text-secondary border-secondary/20";
       case "PROCESSING":
-        return "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20";
+        return "bg-primary/10 text-primary border-primary/20";
       case "CANCELLED":
         return "bg-rose-500/10 text-rose-600 border-rose-500/20";
       default:
@@ -640,7 +640,7 @@ async function StaffDashboard({
           Welcome back, {userName}! 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5 font-medium">
-          <span className="h-2 w-2 rounded-full bg-[#769ABC]" />
+          <span className="h-2 w-2 rounded-full bg-secondary" />
           {staff.role} &bull; {staff.agency.name} Operations Control
         </p>
       </div>
@@ -653,7 +653,7 @@ async function StaffDashboard({
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Tasks</p>
               <h3 className="text-3xl font-extrabold tracking-tight">{totalTasks}</h3>
             </div>
-            <div className="h-12 w-12 rounded-xl bg-[#769ABC]/10 text-[#769ABC] flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
               <ListTodo className="h-6 w-6" />
             </div>
           </CardContent>
@@ -663,9 +663,9 @@ async function StaffDashboard({
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Work</p>
-              <h3 className="text-3xl font-extrabold tracking-tight text-[#E46F44]">{pendingTasks}</h3>
+              <h3 className="text-3xl font-extrabold tracking-tight text-primary">{pendingTasks}</h3>
             </div>
-            <div className="h-12 w-12 rounded-xl bg-[#E46F44]/10 text-[#E46F44] flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
               <Clock className="h-6 w-6" />
             </div>
           </CardContent>
@@ -675,9 +675,9 @@ async function StaffDashboard({
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Tasks</p>
-              <h3 className="text-3xl font-extrabold tracking-tight text-[#769ABC]">{completedTasks}</h3>
+              <h3 className="text-3xl font-extrabold tracking-tight text-secondary">{completedTasks}</h3>
             </div>
-            <div className="h-12 w-12 rounded-xl bg-[#769ABC]/10 text-[#769ABC] flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
               <CheckCircle2 className="h-6 w-6" />
             </div>
           </CardContent>
@@ -689,7 +689,7 @@ async function StaffDashboard({
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Agency Bookings</p>
               <h3 className="text-3xl font-extrabold tracking-tight">{agencyBookingsCount}</h3>
             </div>
-            <div className="h-12 w-12 rounded-xl bg-[#1A3B5A]/10 text-[#1A3B5A] flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
               <CalendarCheck className="h-6 w-6" />
             </div>
           </CardContent>
@@ -703,13 +703,13 @@ async function StaffDashboard({
           <CardHeader className="border-b border-slate-100 pb-4 flex flex-row items-center justify-between">
             <div className="space-y-0.5">
               <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <ListTodo className="h-5 w-5 text-[#769ABC]" /> Your Active Tasks
+                <ListTodo className="h-5 w-5 text-secondary" /> Your Active Tasks
               </CardTitle>
               <CardDescription className="text-xs">Operational tasks assigned to you.</CardDescription>
             </div>
             <Link
               href="/dashboard/tasks"
-              className="text-xs font-semibold text-[#769ABC] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1 shrink-0"
             >
               Task Board <ArrowRight className="h-3 w-3" />
             </Link>
@@ -735,7 +735,7 @@ async function StaffDashboard({
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-                <CheckCircle2 className="h-10 w-10 text-[#769ABC] mb-2.5" />
+                <CheckCircle2 className="h-10 w-10 text-secondary mb-2.5" />
                 <p className="font-bold text-sm text-slate-900">All caught up!</p>
                 <p className="text-xs text-slate-500">No active tasks assigned.</p>
               </div>
@@ -748,13 +748,13 @@ async function StaffDashboard({
           <CardHeader className="border-b border-slate-100 pb-4 flex flex-row items-center justify-between">
             <div className="space-y-0.5">
               <CardTitle className="text-lg font-bold flex items-center gap-2">
-                <CalendarCheck className="h-5 w-5 text-[#1A3B5A]" /> Recent Bookings
+                <CalendarCheck className="h-5 w-5 text-secondary" /> Recent Bookings
               </CardTitle>
               <CardDescription className="text-xs">Latest customer bookings in your agency.</CardDescription>
             </div>
             <Link
               href="/dashboard/bookings"
-              className="text-xs font-semibold text-[#769ABC] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-semibold text-secondary hover:underline flex items-center gap-1 shrink-0"
             >
               View Bookings <ArrowRight className="h-3 w-3" />
             </Link>

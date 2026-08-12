@@ -55,15 +55,15 @@ const CATEGORY_CONFIG: Record<
 > = {
   HOTEL: {
     icon: <Hotel className="h-4 w-4" />,
-    color: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   TRANSPORT: {
     icon: <Car className="h-4 w-4" />,
-    color: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   RESTAURANT: {
     icon: <Utensils className="h-4 w-4" />,
-    color: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
+    color: "bg-primary/10 text-primary border-primary/20",
   },
   ACTIVITY: {
     icon: <Camera className="h-4 w-4" />,
@@ -71,7 +71,7 @@ const CATEGORY_CONFIG: Record<
   },
   GUIDE: {
     icon: <Globe className="h-4 w-4" />,
-    color: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   OTHER: {
     icon: <Building2 className="h-4 w-4" />,
@@ -89,7 +89,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
     try {
       const res = await toggleVendorStatus(vendorId);
       if (res.error) throw new Error(res.error);
-      
+
       setVendors((prev) =>
         prev.map((v) => (v.id === vendorId ? { ...v, active: !currentActive } : v))
       );
@@ -110,7 +110,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
     try {
       const res = await deleteVendor(vendorId);
       if (res.error) throw new Error(res.error);
-      
+
       setVendors((prev) => prev.filter((v) => v.id !== vendorId));
       toast.success("Vendor deleted successfully.");
       router.refresh();
@@ -130,22 +130,21 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
         return (
           <Card
             key={vendor.id}
-            className={`glass-card group hover:shadow-2xl hover:shadow-[#769ABC]/10 transition-all hover:-translate-y-0.5 border border-slate-200/60 rounded-2xl overflow-hidden ${
-              !vendor.active ? "opacity-65" : ""
-            }`}
+            className={`glass-card group hover:shadow-2xl hover:shadow-secondary/10 transition-all hover:-translate-y-0.5 border border-slate-200/60 rounded-2xl overflow-hidden ${!vendor.active ? "opacity-65" : ""
+              }`}
           >
             <CardContent className="p-5">
               <div className="flex items-start justify-between mb-3">
                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${catConfig.color}`}>
                   {catConfig.icon}
                 </div>
-                
+
                 <div className="flex items-center gap-1.5">
                   <Badge
                     variant="outline"
                     className={
                       vendor.active
-                        ? "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20 text-[10px] uppercase font-bold tracking-wider"
+                        ? "bg-secondary/10 text-secondary border-secondary/20 text-[10px] uppercase font-bold tracking-wider"
                         : "bg-slate-500/10 text-slate-500 border-slate-500/20 text-[10px] uppercase font-bold tracking-wider"
                     }
                   >
@@ -183,7 +182,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                 </div>
               </div>
 
-              <h3 className="font-bold text-lg mb-1 group-hover:text-[#769ABC] transition-colors line-clamp-1 text-slate-900">
+              <h3 className="font-bold text-lg mb-1 group-hover:text-secondary transition-colors line-clamp-1 text-slate-900">
                 {vendor.name}
               </h3>
 
@@ -214,7 +213,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
 
               {vendor.rating && (
                 <div className="flex items-center gap-1 mt-3 pt-3 border-t border-slate-100">
-                  <Star className="h-4 w-4 fill-[#E46F44] text-[#E46F44]" />
+                  <Star className="h-4 w-4 fill-primary text-primary" />
                   <span className="text-sm font-medium text-slate-800">
                     {Number(vendor.rating).toFixed(1)}
                   </span>

@@ -2,13 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Star, Filter, SlidersHorizontal, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { FavoriteButton } from "@/components/favorite-button";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
+import {
+  Search,
+  MapPin,
+  Star,
+  Filter,
+  SlidersHorizontal,
+  RefreshCw,
+  ArrowRight,
+  Clock,
+  ChevronDown,
+} from "lucide-react";
 
 interface Package {
   id: string;
@@ -27,9 +37,10 @@ interface Package {
 
 interface PackagesListClientProps {
   initialPackages: Package[];
+  userSession: any;
 }
 
-export default function PackagesListClient({ initialPackages }: PackagesListClientProps) {
+export default function PackagesListClient({ initialPackages, userSession }: PackagesListClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
@@ -38,9 +49,8 @@ export default function PackagesListClient({ initialPackages }: PackagesListClie
   const [difficulty, setDifficulty] = useState<"ALL" | "EASY" | "MODERATE" | "CHALLENGING">("ALL");
   const [duration, setDuration] = useState<"ALL" | "SHORT" | "MEDIUM" | "LONG">("ALL");
   const [maxPrice, setMaxPrice] = useState<number>(50000);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Sync searchQuery state when search param in URL changes
   useEffect(() => {
     setSearchQuery(searchParams.get("search") || "");
   }, [searchParams]);
@@ -56,15 +66,28 @@ export default function PackagesListClient({ initialPackages }: PackagesListClie
     router.push(`/packages?${params.toString()}`);
   };
 
-  // Reset all filters
   const resetFilters = () => {
     setSearchQuery("");
     setDifficulty("ALL");
     setDuration("ALL");
     setMaxPrice(50000);
+    router.push("/packages");
   };
 
-  // Perform dynamic client-side filtering
+  // Compute range slider fill percentage
+  const rangeProgress = ((maxPrice - 5000) / (50000 - 5000)) * 100;
+
+  // Fallback images for packages without images
+  const FALLBACK_IMAGES = [
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=800&auto=format&fit=crop",
+  ];
+  const getFallbackImage = (idx: number) => FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length];
+
+  const hasActiveFilters = searchQuery || difficulty !== "ALL" || duration !== "ALL" || maxPrice < 50000;
+
   const filteredPackages = initialPackages.filter((pkg) => {
     const query = searchQuery.toLowerCase().trim();
     const matchesSearch =
@@ -90,220 +113,363 @@ export default function PackagesListClient({ initialPackages }: PackagesListClie
     return matchesSearch && matchesDifficulty && matchesDuration && matchesPrice;
   });
 
+  const difficultyColor = (d: string) => {
+    switch (d.toUpperCase()) {
+      case "EASY": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "MODERATE": return "bg-amber-50 text-amber-700 border-amber-200";
+      case "CHALLENGING": return "bg-rose-50 text-rose-700 border-rose-200";
+      default: return "bg-slate-50 text-slate-600 border-slate-200";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50/50">
-      {/* Hero Search Section */}
-      <div className="bg-gradient-to-b from-[#1A3B5A] to-slate-900 py-16 px-4">
-        <div className="container mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Explore Travel Packages
+    <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
+
+      {/* ═══════════════ FLOATING PILL NAVBAR ═══════════════ */}
+      <SiteHeader userSession={userSession} activeRoute="/packages" />
+
+
+      {/* ═══════════════ HERO SECTION ═══════════════ */}
+      <section className="relative md:pt-32 sm:pt-28 pt-24 pb-8 overflow-hidden bg-gradient-to-b from-[#F5F0ED] via-[#FAF8F6] to-[#FAFAF9]">
+        {/* Ambient glow */}
+        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-secondary/8 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute inset-0 dot-pattern opacity-[0.04]" />
+
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-widest text-primary md:mb-7 mb-5">
+            <MapPin className="h-3.5 w-3.5" />
+            <span>Curated Travel Packages</span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
+            Discover your next{" "}
+            <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
+              adventure.
+            </span>
           </h1>
-          <p className="text-slate-300 text-md md:text-lg mb-8">
-            Hand-crafted packages from verified travel agencies across India.
+
+          {/* Sub */}
+          <p className="md:text-base text-sm text-slate-500 leading-relaxed max-w-2xl mx-auto md:mb-6 mb-5">
+            Hand-crafted packages from verified travel agencies across India. Filter by destination, budget, or difficulty to find your perfect trip.
           </p>
-          <form onSubmit={handleSearchSubmit} className="relative max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+
+          {/* Search */}
+          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl mx-auto flex items-center bg-white border border-slate-200 rounded-xl shadow-lg focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+            <Search className="sm:block hidden absolute left-4 h-5 w-5 text-slate-400 pointer-events-none shrink-0" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by destination, package name..."
-              className="pl-12 pr-28 h-14 text-md rounded-full bg-white/10 border-white/20 text-white placeholder:text-slate-400 backdrop-blur-xl focus-visible:ring-[#769ABC]"
+              className="flex-1 sm:ps-12 ps-4 sm:pe-28 pe-24 sm:h-14 h-12 text-sm rounded-2xl bg-transparent border-0 text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             <Button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-10 rounded-full bg-[#769ABC] hover:bg-[#769ABC]/90 text-white px-5 text-sm cursor-pointer"
+              className="absolute sm:right-2 right-1 font-bold text-sm bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-sm transition-all"
             >
-              Search
+              Search <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </form>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-10 max-w-7xl">
-        {/* Header Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">
-              {filteredPackages.length} package{filteredPackages.length !== 1 ? "s" : ""} available
-            </h2>
-            <p className="text-xs text-slate-500">
-              Showing filtered results from our curated catalog
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {(searchQuery || difficulty !== "ALL" || duration !== "ALL" || maxPrice < 50000) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetFilters}
-                className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5"
+          {/* Quick destination pills */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-5">
+            <span className="text-[11px] font-semibold text-slate-400">Popular:</span>
+            {["Manali", "Kerala", "Goa", "Rajasthan", "Ladakh", "Northeast"].map((dest) => (
+              <button
+                key={dest}
+                type="button"
+                onClick={() => setSearchQuery(dest)}
+                className="px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-[11px] font-medium text-slate-600 hover:border-primary hover:text-primary transition-all cursor-pointer shadow-sm"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Reset Filters
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className={`text-xs h-9 gap-1.5 ${showFilters ? "border-[#769ABC] text-[#769ABC] bg-[#769ABC]/5" : ""}`}
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Button>
+                {dest}
+              </button>
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="grid gap-8 lg:grid-cols-4 items-start">
-          {/* Filters Sidebar / Dropdown Panel */}
-          <div
-            className={`space-y-6 bg-white p-6 rounded-2xl border border-slate-200 lg:sticky lg:top-24 ${
-              showFilters ? "block lg:col-span-1" : "hidden"
-            }`}
-          >
+
+      {/* ═══════════════ CONTENT ═══════════════ */}
+      <section className="flex-1 pt-10 pb-20">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+          {/* ── Controls Bar ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h3 className="font-semibold text-sm mb-4 flex items-center gap-1.5 text-slate-900">
-                <Filter className="h-4 w-4 text-[#769ABC]" /> Filter Options
-              </h3>
-              <div className="space-y-6">
-                {/* Price Filter */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-medium text-slate-700">
-                    <span>Max Base Price</span>
-                    <span className="text-[#769ABC] font-semibold">
-                      ₹{maxPrice.toLocaleString("en-IN")}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={5000}
-                    max={50000}
-                    step={1000}
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#769ABC]"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-500">
-                    <span>₹5,000</span>
-                    <span>₹50,000+</span>
-                  </div>
-                </div>
-
-                {/* Difficulty Filter */}
-                <div className="space-y-2.5">
-                  <label className="text-xs font-semibold block text-slate-700">Difficulty</label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["ALL", "EASY", "MODERATE", "CHALLENGING"].map((diff) => (
-                      <button
-                        key={diff}
-                        onClick={() => setDifficulty(diff as any)}
-                        className={`text-[11px] px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
-                          difficulty === diff
-                            ? "bg-[#769ABC] text-white border-[#769ABC]"
-                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                        }`}
-                      >
-                        {diff}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Duration Filter */}
-                <div className="space-y-2.5">
-                  <label className="text-xs font-semibold block text-slate-700">Tour Duration</label>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {[
-                      { key: "ALL", label: "Any Days" },
-                      { key: "SHORT", label: "Short (1-5 Days)" },
-                      { key: "MEDIUM", label: "Medium (6-8 Days)" },
-                      { key: "LONG", label: "Long (9+ Days)" },
-                    ].map((dur) => (
-                      <button
-                        key={dur.key}
-                        onClick={() => setDuration(dur.key as any)}
-                        className={`text-[10px] p-2 rounded-lg border text-center transition-all cursor-pointer ${
-                          duration === dur.key
-                            ? "bg-[#1A3B5A] text-white border-[#1A3B5A]"
-                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                        }`}
-                      >
-                        {dur.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <h2 className="text-xl font-extrabold font-display text-slate-900">
+                {filteredPackages.length} package{filteredPackages.length !== 1 ? "s" : ""} found
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Browse our curated selection of verified travel experiences
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Reset All
+                </Button>
+              )}
+              {/* Mobile filter toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`lg:hidden text-xs h-9 gap-1.5 rounded-full cursor-pointer ${showFilters ? "border-primary text-primary bg-primary/5" : "border-slate-200"}`}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                Filters
+                <ChevronDown className={`h-3 w-3 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+              </Button>
             </div>
           </div>
 
-          {/* Package Grid (Main area) */}
-          <div className={`${showFilters ? "lg:col-span-3" : "lg:col-span-4"} grid gap-6 md:grid-cols-2 xl:grid-cols-3`}>
-            {filteredPackages.length > 0 ? (
-              filteredPackages.map((pkg) => (
-                <Link key={pkg.id} href={`/packages/${pkg.id}`}>
-                  <Card className="glass-card group overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-[#769ABC]/5 transition-all duration-350 hover:-translate-y-1 border border-slate-200">
-                    {/* Visual Card Banner */}
-                    <div className="h-44 bg-gradient-to-br from-[#769ABC]/20 to-[#1A3B5A]/30 flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <MapPin className="h-8 w-8 text-[#769ABC] group-hover:scale-110 transition-transform duration-350" />
-                      <FavoriteButton
-                        packageId={pkg.id}
-                        initialFavorited={pkg.isFavorited}
-                        className="absolute top-3 right-3 z-10"
-                      />
+          <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-start">
+
+            {/* ═══ FILTER SIDEBAR ═══ */}
+            <aside className={`${showFilters ? "block" : "hidden"} lg:block lg:sticky lg:top-28`}>
+              <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+
+                {/* Sidebar Header */}
+                <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Filter className="h-3.5 w-3.5 text-primary" />
                     </div>
-                    <CardContent className="p-5 space-y-3">
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="secondary" className="text-[10px] py-0 px-2 uppercase font-medium tracking-wider">
-                          {pkg.difficulty}
-                        </Badge>
-                        <Badge variant="outline" className="text-[10px] py-0 px-2 font-mono">
-                          {pkg.duration} Days
-                        </Badge>
+                    <span className="text-sm font-bold text-slate-900">Filters</span>
+                  </div>
+                  {hasActiveFilters && (
+                    <button
+                      onClick={resetFilters}
+                      className="text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+
+                <div className="p-5 space-y-6">
+
+                  {/* ── Price Range ── */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                      Budget Range
+                    </label>
+                    <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+                      <div className="flex justify-between text-sm font-semibold text-slate-800">
+                        <span>₹5,000</span>
+                        <span className="text-primary font-bold">₹{maxPrice.toLocaleString("en-IN")}</span>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-md text-slate-900 group-hover:text-[#769ABC] transition-colors line-clamp-1">
-                          {pkg.title}
-                        </h3>
-                        <p className="text-xs text-slate-600 line-clamp-2 mt-1 leading-relaxed">
-                          {pkg.description}
-                        </p>
+                      <input
+                        type="range"
+                        min={5000}
+                        max={50000}
+                        step={1000}
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(Number(e.target.value))}
+                        className="range-filled"
+                        style={{ "--range-progress": `${rangeProgress}%` } as React.CSSProperties}
+                      />
+                      <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                        <span>Budget</span>
+                        <span>Premium</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
-                        <MapPin className="h-3.5 w-3.5 text-[#769ABC] shrink-0" />
-                        <span className="line-clamp-1">{pkg.destinations.join(" → ")}</span>
-                      </div>
-                      <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                        <div>
-                          <span className="text-lg font-bold text-slate-900">₹{pkg.basePrice.toLocaleString("en-IN")}</span>
-                          <span className="text-[10px] text-slate-500">/person</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                          <Star className="h-3.5 w-3.5 fill-[#E46F44] text-[#E46F44]" />
-                          <span>{pkg.rating}</span>
-                          <span className="text-slate-400 font-normal">({pkg.reviews})</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))
-            ) : (
-              <div className="col-span-full py-16 text-center space-y-3 bg-white border border-slate-200 rounded-2xl">
-                <SlidersHorizontal className="h-10 w-10 text-slate-400 mx-auto animate-pulse" />
-                <h3 className="font-semibold text-lg text-slate-900">No Packages Found</h3>
-                <p className="text-sm text-slate-600 max-w-sm mx-auto">
-                  We couldn't find any packages matching your query or filter criteria. Try resetting your settings.
-                </p>
-                <Button onClick={resetFilters} variant="outline" size="sm" className="mt-2 text-xs">
-                  Reset Filter Selection
-                </Button>
+                    </div>
+                  </div>
+
+                  {/* ── Difficulty ── */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                      Difficulty Level
+                    </label>
+                    <div className="space-y-2">
+                      {[
+                        { key: "ALL", label: "All Levels", desc: "Show everything", icon: "◎" },
+                        { key: "EASY", label: "Easy", desc: "Family friendly", icon: "🟢" },
+                        { key: "MODERATE", label: "Moderate", desc: "Some fitness needed", icon: "🟡" },
+                        { key: "CHALLENGING", label: "Challenging", desc: "Adventure seekers", icon: "🔴" },
+                      ].map((diff) => (
+                        <button
+                          key={diff.key}
+                          onClick={() => setDifficulty(diff.key as any)}
+                          className={`w-full text-left px-3.5 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${
+                            difficulty === diff.key
+                              ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
+                              : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <span className="text-sm">{diff.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-[13px] font-semibold block ${difficulty === diff.key ? "text-primary" : "text-slate-800"}`}>
+                              {diff.label}
+                            </span>
+                            <span className="text-[11px] text-slate-400">{diff.desc}</span>
+                          </div>
+                          {difficulty === diff.key && (
+                            <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
+                              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Duration ── */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                      Trip Duration
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { key: "ALL", label: "Any", sub: "All durations" },
+                        { key: "SHORT", label: "Short", sub: "1–5 days" },
+                        { key: "MEDIUM", label: "Medium", sub: "6–8 days" },
+                        { key: "LONG", label: "Long", sub: "9+ days" },
+                      ].map((dur) => (
+                        <button
+                          key={dur.key}
+                          onClick={() => setDuration(dur.key as any)}
+                          className={`text-center px-3 py-3 rounded-xl border transition-all cursor-pointer ${
+                            duration === dur.key
+                              ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
+                              : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <span className={`text-[13px] font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
+                            {dur.label}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-medium">{dur.sub}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
               </div>
-            )}
+            </aside>
+
+            {/* ═══ PACKAGE GRID ═══ */}
+            <div>
+              {filteredPackages.length > 0 ? (
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {filteredPackages.map((pkg) => (
+                    <Link key={pkg.id} href={`/packages/${pkg.id}`} className="group">
+                      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+
+                        {/* Image */}
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={pkg.image || getFallbackImage(filteredPackages.indexOf(pkg))}
+                            alt={pkg.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = getFallbackImage(filteredPackages.indexOf(pkg));
+                            }}
+                          />
+                          {false && (
+                            <div className="w-full h-full bg-gradient-to-br from-secondary/20 via-primary/10 to-secondary/30 flex items-center justify-center">
+                              <MapPin className="h-10 w-10 text-secondary/40" />
+                            </div>
+                          )}
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+                          {/* Floating badges on image */}
+                          <div className="absolute top-3 left-3 flex gap-1.5">
+                            <span className={`text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide backdrop-blur-sm ${difficultyColor(pkg.difficulty)}`}>
+                              {pkg.difficulty}
+                            </span>
+                          </div>
+                          <div className="absolute top-3 right-3">
+                            <FavoriteButton
+                              packageId={pkg.id}
+                              initialFavorited={pkg.isFavorited}
+                              className="z-10"
+                            />
+                          </div>
+
+                          {/* Duration badge bottom-left */}
+                          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-white text-xs font-semibold">
+                            <Clock className="h-3.5 w-3.5" />
+                            <span>{pkg.duration} Days</span>
+                          </div>
+
+                          {/* Rating bottom-right */}
+                          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-bold text-slate-900">
+                            <Star className="h-3 w-3 fill-primary text-primary" />
+                            <span>{pkg.rating}</span>
+                            <span className="text-slate-400 font-normal text-[10px]">({pkg.reviews})</span>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-5 space-y-3">
+                          <div>
+                            <h3 className="font-extrabold text-base text-slate-900 group-hover:text-primary transition-colors line-clamp-1 font-display">
+                              {pkg.title}
+                            </h3>
+                            <p className="text-[13px] text-slate-500 line-clamp-2 mt-1.5 leading-relaxed">
+                              {pkg.description}
+                            </p>
+                          </div>
+
+                          {/* Destinations */}
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                            <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <span className="line-clamp-1">{pkg.destinations.join(" → ")}</span>
+                          </div>
+
+                          {/* Price row */}
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                            <div>
+                              <span className="text-xl font-extrabold text-slate-900 font-display">
+                                ₹{pkg.basePrice.toLocaleString("en-IN")}
+                              </span>
+                              <span className="text-[11px] text-slate-400 ml-1">/person</span>
+                            </div>
+                            <span className="text-[11px] font-bold text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              View Details <ArrowRight className="h-3 w-3" />
+                            </span>
+                          </div>
+                        </div>
+
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                /* ── Empty state ── */
+                <div className="py-20 text-center space-y-4 bg-white border border-slate-200/80 rounded-2xl">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+                    <Search className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="font-extrabold text-xl text-slate-900 font-display">No packages found</h3>
+                  <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                    We couldn&apos;t find any packages matching your criteria. Try adjusting your filters or search terms.
+                  </p>
+                  <Button onClick={resetFilters} variant="outline" size="sm" className="mt-2 text-xs rounded-full cursor-pointer gap-1.5">
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Reset All Filters
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
-      </div>
+      </section>
+
+
+      {/* ═══════════════ FOOTER ═══════════════ */}
+      <SiteFooter />
     </div>
   );
 }

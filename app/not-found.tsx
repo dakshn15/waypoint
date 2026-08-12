@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50">
       <div className="text-center max-w-md">
-        <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-tr from-[#769ABC] to-[#1A3B5A] mb-6 shadow-lg shadow-[#769ABC]/20">
+        <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-tr from-secondary to-secondary mb-6 shadow-lg shadow-secondary/20">
           <MapPin className="h-10 w-10 text-white" />
         </div>
         <h1 className="text-6xl font-bold mb-2 text-slate-900">404</h1>
@@ -16,7 +16,7 @@ export default function NotFound() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link href="/">
-            <Button className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white rounded-full px-6">
+            <Button className="bg-secondary hover:bg-secondary text-white rounded-full px-6">
               Go Home
             </Button>
           </Link>

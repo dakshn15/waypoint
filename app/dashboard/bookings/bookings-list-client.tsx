@@ -46,7 +46,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           const data = await res.json();
           if (data.success) {
             toast.success("Payment verified! Booking confirmed.", { id: toastId });
-            
+
             // Instantly update local state to show as CONFIRMED
             setBookings((prev) =>
               prev.map((b) => (b.id === bookingId ? { ...b, status: "CONFIRMED" } : b))
@@ -75,11 +75,11 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "CONFIRMED":
-        return "bg-[#769ABC]/10 text-[#1A3B5A] border border-[#769ABC]/20 hover:bg-[#769ABC]/15";
+        return "bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/15";
       case "COMPLETED":
-        return "bg-[#1A3B5A]/10 text-[#1A3B5A] border border-[#1A3B5A]/20 hover:bg-[#1A3B5A]/15";
+        return "bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/15";
       case "PENDING":
-        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20 hover:bg-[#E46F44]/15";
+        return "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15";
       case "PROCESSING":
         return "bg-[#E8AA9B]/10 text-[#C85A35] border border-[#E8AA9B]/20 hover:bg-[#E8AA9B]/15";
       case "CANCELLED":
@@ -202,7 +202,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                           <Button
                             variant="outline"
                             size="sm"
-                            className="bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/30 hover:bg-[#769ABC]/20 hover:border-[#769ABC]/40 rounded-lg text-xs"
+                            className="bg-secondary/10 text-secondary border-secondary/30 hover:bg-secondary/20 hover:border-secondary/40 rounded-lg text-xs"
                             onClick={() => {
                               setSelectedBooking(booking);
                               setDialogMode("CONFIRM");
@@ -264,7 +264,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                 )}
                 {dialogMode === "CONFIRM" && (
                   <>
-                    <CheckCircle2 className="h-5 w-5 text-[#769ABC]" />
+                    <CheckCircle2 className="h-5 w-5 text-secondary" />
                     Confirm Booking
                   </>
                 )}
@@ -317,7 +317,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               )}
               {dialogMode === "CONFIRM" && (
                 <Button
-                  className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white"
+                  className="bg-secondary hover:bg-secondary/90 text-white"
                   disabled={loading}
                   onClick={() => handleStatusUpdate(selectedBooking.id, "CONFIRMED")}
                 >

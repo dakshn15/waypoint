@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 import {
   Sparkles,
   MapPin,
@@ -56,7 +58,7 @@ const DESTINATIONS = [
     reviews: 142,
     startingPrice: 14999,
     tag: "Adventure • Snow",
-    badgeColor: "bg-[#E46F44]",
+    badgeColor: "bg-primary",
     prompt: "Plan a 5-day adventure trip to Manali with Solang Valley paragliding and Beas river trekking",
   },
   {
@@ -69,7 +71,7 @@ const DESTINATIONS = [
     reviews: 218,
     startingPrice: 18500,
     tag: "Relaxing • Nature",
-    badgeColor: "bg-[#769ABC]",
+    badgeColor: "bg-secondary",
     prompt: "Plan a 6-day relaxing trip to Kerala backwaters with luxury houseboat and Munnar tea gardens",
   },
   {
@@ -82,7 +84,7 @@ const DESTINATIONS = [
     reviews: 189,
     startingPrice: 16200,
     tag: "Royal • Heritage",
-    badgeColor: "bg-[#1A3B5A]",
+    badgeColor: "bg-secondary",
     prompt: "Plan a 5-day royal heritage tour of Jaipur fort, Amer palace, and Udaipur lake cruise",
   },
   {
@@ -260,48 +262,48 @@ const FEATURES = [
     title: "AI Trip Builder",
     description:
       "Describe your dream trip in natural language and receive an absolute custom day-by-day itinerary structured in seconds.",
-    colorClass: "text-[#E46F44]",
-    bgClass: "bg-[#E46F44]/10",
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
   },
   {
     icon: MapPin,
     title: "Curated Packages",
     description:
       "Browse and book verified tour packages created by expert travel agencies. Easily customize templates to match your dates.",
-    colorClass: "text-[#769ABC]",
-    bgClass: "bg-[#769ABC]/10",
+    colorClass: "text-secondary",
+    bgClass: "bg-secondary/10",
   },
   {
     icon: Shield,
     title: "Secure Booking System",
     description:
       "Integrated Razorpay and Stripe checkouts offer complete payment security, instant invoice PDFs, and automatic itinerary links.",
-    colorClass: "text-[#1A3B5A]",
-    bgClass: "bg-[#1A3B5A]/10",
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
   },
   {
     icon: Globe,
     title: "Multi-Currency Engine",
     description:
       "Track prices in INR, USD, EUR, and GBP with real-time automatic conversions. Perfect for agencies catering to international tourists.",
-    colorClass: "text-[#769ABC]",
-    bgClass: "bg-[#769ABC]/10",
+    colorClass: "text-secondary",
+    bgClass: "bg-secondary/10",
   },
   {
     icon: Building2,
     title: "Agency Operations Panel",
     description:
       "Manage staff, delegate tasks to managers, keep track of package bookings, and run agency billing workflows.",
-    colorClass: "text-[#E8AA9B]",
-    bgClass: "bg-[#E8AA9B]/10",
+    colorClass: "text-primary",
+    bgClass: "bg-primary/10",
   },
   {
     icon: TrendingUp,
     title: "Analytics Dashboard",
     description:
       "Visualize revenue trends, active packages, booking rates, and staff completion metrics in a modern dashboard.",
-    colorClass: "text-[#1A3B5A]",
-    bgClass: "bg-[#1A3B5A]/10",
+    colorClass: "text-secondary",
+    bgClass: "bg-secondary/10",
   },
 ];
 
@@ -387,21 +389,11 @@ export default function LandingClient({ userSession }: LandingClientProps) {
   const [customPrompt, setCustomPrompt] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-
   const currentItinerary = SAMPLE_ITINERARIES.find(
     (item) => item.id === activeItineraryTab
   )!;
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newsletterEmail.trim()) {
-      toast.success("Subscribed! You will receive weekly AI travel digests.");
-      setNewsletterEmail("");
-    } else {
-      toast.error("Please enter a valid email address.");
-    }
-  };
+
 
   const handlePromptSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -419,97 +411,54 @@ export default function LandingClient({ userSession }: LandingClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
       {/* ═══════════════ FLOATING PILL NAVBAR ═══════════════ */}
-      <header className="fixed top-5 left-0 right-0 z-50 px-4 sm:px-6">
-        <div className="container mx-auto max-w-5xl h-[62px] bg-white/85 backdrop-blur-xl border border-slate-200/60 rounded-full flex items-center justify-between px-5 shadow-xl shadow-slate-200/30">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-[#1A3B5A] flex items-center justify-center shrink-0">
-              <Compass className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-extrabold tracking-tight text-slate-900 text-[15px]">Way<span className="text-[#E46F44]">point</span></span>
-          </Link>
-
-          {/* Nav Links */}
-          <nav className="hidden md:flex items-center gap-6 text-[13px] font-semibold text-slate-600">
-            <Link href="/packages" className="hover:text-[#E46F44] transition-colors">Packages</Link>
-            <Link href="/trip-builder" className="hover:text-[#E46F44] transition-colors flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-[#E46F44]" />AI Builder
-            </Link>
-            <a href="#destinations" className="hover:text-[#E46F44] transition-colors">Destinations</a>
-            <a href="#features" className="hover:text-[#E46F44] transition-colors">Features</a>
-            <a href="#faq" className="hover:text-[#E46F44] transition-colors">FAQ</a>
-          </nav>
-
-          {/* CTA Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
-            {userSession ? (
-              <Link href="/dashboard">
-                <Button className="rounded-full h-9 px-5 font-bold text-[12px] bg-[#E46F44] hover:bg-[#E46F44]/90 text-white">
-                  Dashboard <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="text-[13px] font-semibold text-slate-600 hover:text-[#E46F44] transition-colors hidden sm:block">
-                  Log in
-                </Link>
-                <Link href="/register">
-                  <Button className="rounded-full h-9 px-5 font-bold text-[12px] bg-[#1A3B5A] hover:bg-[#1A3B5A]/90 text-white">
-                    Get Started
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      <SiteHeader userSession={userSession} />
 
       {/* ═══════════════ HERO SECTION — Centered Content + Preview Below ═══════════════ */}
-      <section className="hero-sec relative pt-36 sm:pt-44 pb-0 overflow-hidden bg-[#FAFAF9]">
+      <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 lg:pt-40 overflow-hidden bg-[#FAFAF9]">
         {/* Aurora Ambient Glow Orbs */}
-        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-[#E46F44]/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute top-40 right-1/4 w-[500px] h-[500px] bg-[#769ABC]/8 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-[500px] h-[500px] bg-secondary/8 rounded-full blur-[160px] pointer-events-none" />
         {/* Dot pattern */}
         <div className="absolute inset-0 dot-pattern opacity-[0.05]" />
 
         {/* ── CENTERED HERO COPY ── */}
-        <div className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E46F44]/10 border border-[#E46F44]/20 text-[11px] font-bold uppercase tracking-widest text-[#E46F44] mb-7">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-widest text-primary md:mb-7 mb-5">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Powered by Gemini 2.0 AI</span>
+            <span>Powered by Gemini AI</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
             The intelligent way to{" "}
-            <span className="bg-gradient-to-r from-[#E46F44] via-[#E8AA9B] to-[#769ABC] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
               plan your journey.
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10">
-            Describe your dream trip in simple words and watch AI build an itemized day-by-day itinerary — or explore verified tour packages from local travel agencies across India.
+          <p className="md:text-base text-sm text-slate-500 md:leading-relaxed max-w-3xl mx-auto md:mb-8 mb-6">
+            Describe your dream trip in simple words and watch AI build an itemized day-by-day itinerary - or explore verified tour packages from local travel agencies across India.
           </p>
 
           {/* AI Prompt Input + CTA */}
           <form onSubmit={handlePromptSubmit} className="flex flex-col items-center gap-4 mb-8">
-            <div className="relative w-full max-w-2xl flex items-center bg-white border border-slate-200 rounded-2xl shadow-lg focus-within:border-[#E46F44] focus-within:ring-4 focus-within:ring-[#E46F44]/10 transition-all">
-              <Sparkles className="absolute left-4 h-5 w-5 text-[#E46F44] pointer-events-none shrink-0" />
+            <div className="relative w-full max-w-2xl flex items-center bg-white border border-slate-200 rounded-xl shadow-lg focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+              <Sparkles className="sm:block hidden absolute left-4 h-5 w-5 text-primary pointer-events-none shrink-0" />
               <Input
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
                 placeholder="Where do you want to go? e.g. 5-day Manali snow trek..."
-                className="flex-1 pl-12 pr-36 h-14 text-sm rounded-2xl bg-transparent border-0 text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="flex-1 sm:ps-12 ps-4 sm:pe-36 pe-32 sm:h-14 h-12 text-sm rounded-2xl bg-transparent border-0 text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
               <Button
                 type="submit"
                 variant="default"
-                className="absolute right-2 h-10 px-5 rounded-xl font-bold text-xs bg-[#E46F44] hover:bg-[#E46F44]/90 text-white cursor-pointer shadow-sm transition-all"
+                className="absolute sm:right-2 right-1 font-bold text-sm bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-sm transition-all"
               >
-                Generate <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                Generate <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
 
@@ -526,7 +475,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   key={pill.label}
                   type="button"
                   onClick={() => handlePillClick(pill.prompt)}
-                  className="px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-[11px] font-medium text-slate-600 hover:border-[#E46F44] hover:text-[#E46F44] transition-all cursor-pointer shadow-sm"
+                  className="px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-[11px] font-medium text-slate-600 hover:border-primary hover:text-primary transition-all cursor-pointer shadow-sm"
                 >
                   {pill.label}
                 </button>
@@ -535,7 +484,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
           </form>
 
           {/* Social Proof Row */}
-          <div className="flex items-center justify-center gap-5 mb-16">
+          <div className="flex sm:flex-row sm:text-start text-center flex-col items-center justify-center gap-5 gap-y-4 mb-8">
             <div className="flex -space-x-2.5 overflow-hidden">
               <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=120&auto=format&fit=crop" alt="Priya Mehta" className="inline-block h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm" />
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=120&auto=format&fit=crop" alt="Arjun Kapoor" className="inline-block h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm" />
@@ -544,7 +493,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=120&auto=format&fit=crop" alt="Meera Nair" className="inline-block h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm" />
             </div>
             <div className="text-left">
-              <div className="flex items-center gap-1 text-[#E46F44]">
+              <div className="flex items-center sm:justify-start justify-center mb-1 gap-1 text-primary">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current" />
                 ))}
@@ -558,39 +507,8 @@ export default function LandingClient({ userSession }: LandingClientProps) {
         {/* ── FULL-WIDTH APP PREVIEW BELOW CONTENT ── */}
         <div className="relative z-10 container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-          {/* Floating stat badges above the mockup */}
-          <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
-            <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200/80 shadow-lg rounded-2xl px-4 py-2.5 animate-bounce [animation-duration:3.5s]">
-              <div className="h-7 w-7 rounded-xl bg-[#E46F44]/10 flex items-center justify-center text-[#E46F44] shrink-0">
-                <Zap className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <span className="block text-[9px] text-slate-400 uppercase font-extrabold tracking-wider">AI Speed</span>
-                <span className="text-xs font-bold text-[#E46F44]">Generated in 24s</span>
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200/80 shadow-lg rounded-2xl px-4 py-2.5">
-              <div className="h-7 w-7 rounded-xl bg-[#769ABC]/10 flex items-center justify-center text-[#769ABC] shrink-0">
-                <Shield className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <span className="block text-[9px] text-slate-400 uppercase font-extrabold tracking-wider">Payments</span>
-                <span className="text-xs font-bold text-[#769ABC]">Razorpay & Stripe</span>
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-2.5 bg-white border border-slate-200/80 shadow-lg rounded-2xl px-4 py-2.5">
-              <div className="h-7 w-7 rounded-xl bg-[#1A3B5A]/10 flex items-center justify-center text-[#1A3B5A] shrink-0">
-                <Building2 className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <span className="block text-[9px] text-slate-400 uppercase font-extrabold tracking-wider">Agencies</span>
-                <span className="text-xs font-bold text-[#1A3B5A]">50+ Verified</span>
-              </div>
-            </div>
-          </div>
-
           {/* Browser-frame mockup — actual Waypoint dashboard */}
-          <div className="w-full bg-white border border-slate-200/80 rounded-t-2xl shadow-[0_-8px_60px_rgba(0,0,0,0.10)] overflow-hidden">
+          <div className="w-full bg-white border border-slate-200/80 rounded-2xl shadow-[0_-8px_60px_rgba(0,0,0,0.10)] overflow-hidden">
 
             {/* Browser chrome */}
             <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200/60 flex items-center gap-3">
@@ -606,20 +524,20 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             </div>
 
             {/* Dashboard layout */}
-            <div className="flex" style={{ minHeight: 520 }}>
+            <div className="flex">
 
               {/* ── SIDEBAR ── */}
-              <div className="hidden sm:flex flex-col w-44 shrink-0 border-r border-slate-100 bg-white relative">
+              <div className="hidden lg:flex flex-col w-44 shrink-0 border-r border-slate-100 bg-white relative">
                 {/* Logo */}
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
-                  <div className="w-7 h-7 rounded-lg bg-[#1A3B5A] flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                     <Compass className="h-3.5 w-3.5 text-white" />
                   </div>
-                  <span className="text-[12px] font-extrabold text-slate-900">Way<span className="text-[#E46F44]">point</span></span>
+                  <span className="text-[12px] font-extrabold text-slate-900">Way<span className="text-primary">point</span></span>
                 </div>
 
                 {/* Nav items */}
-                <nav className="flex-1 py-2">
+                <nav className="flex-1 py-2 space-y-2">
                   {[
                     { icon: Globe, label: "Dashboard", active: true },
                     { icon: Map, label: "My Trips", active: false },
@@ -630,11 +548,10 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   ].map(({ icon: Icon, label, active }) => (
                     <div
                       key={label}
-                      className={`flex items-center gap-2.5 px-4 py-2 text-[10px] font-semibold transition-colors ${
-                        active
-                          ? "bg-[#E46F44]/8 text-[#E46F44] border-r-2 border-[#E46F44]"
-                          : "text-slate-500"
-                      }`}
+                      className={`flex items-center gap-2.5 px-4 py-2 text-[12px] font-semibold transition-colors ${active
+                        ? "bg-primary/8 text-primary border-r-2 border-primary"
+                        : "text-slate-500"
+                        }`}
                     >
                       <Icon className="h-3 w-3 shrink-0" />
                       {label}
@@ -667,29 +584,29 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 max-w-xs">
                     <Globe className="h-3 w-3 text-slate-400 shrink-0" />
                     <span className="text-[10px] text-slate-400">Search packages...</span>
-                    <div className="ml-auto bg-[#769ABC] text-white text-[9px] font-bold px-2 py-0.5 rounded">Search</div>
+                    <div className="ml-auto bg-secondary text-white text-[9px] font-bold px-2 py-0.5 rounded">Search</div>
                   </div>
                   <div className="relative">
                     <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
                       <Globe className="h-3 w-3 text-slate-500" />
                     </div>
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#E46F44] text-[7px] text-white font-bold flex items-center justify-center">2</span>
+                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary text-[7px] text-white font-bold flex items-center justify-center">2</span>
                   </div>
                 </div>
 
                 {/* Page content */}
-                <div className="flex-1 p-4 space-y-3 overflow-hidden">
+                <div className="flex-1 p-4 md:space-y-4 overflow-hidden">
 
                   {/* Welcome header */}
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[14px] font-extrabold text-slate-900">Welcome back, Rohit 👋</span>
+                      <span className="text-lg font-extrabold text-slate-900">Welcome back, Rohit 👋</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Here's what's happening with your travels.</p>
+                    <p className="text-sm text-slate-500 mt-0.5">Here's what's happening with your travels.</p>
                   </div>
 
                   {/* 4 Stat Cards */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 sm:gap-4 gap-3 sm:mt-0 mt-4">
                     {[
                       { label: "AI Trips", value: "1", sub: "Generated plans", icon: Sparkles, color: "#E46F44" },
                       { label: "Active Bookings", value: "9", sub: "Total bookings", icon: Calendar, color: "#769ABC" },
@@ -698,37 +615,37 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                     ].map(({ label, value, sub, icon: Icon, color }) => (
                       <div key={label} className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[9px] font-semibold text-slate-500">{label}</span>
+                          <span className="text-[11px] font-semibold text-slate-500">{label}</span>
                           <Icon className="h-3 w-3" style={{ color }} />
                         </div>
-                        <div className="text-[18px] font-extrabold text-slate-900 leading-none">{value}</div>
-                        <div className="text-[8px] text-slate-400 mt-1">{sub}</div>
+                        <div className="text-2xl font-extrabold text-slate-900 leading-none">{value}</div>
+                        <div className="text-[10px] text-slate-400 mt-1">{sub}</div>
                       </div>
                     ))}
                   </div>
 
                   {/* 2 Quick Action Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-sm flex items-center justify-between group cursor-pointer hover:border-[#E46F44]/40 transition-colors">
+                  <div className="md:grid hidden grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="bg-white border border-slate-200/80 rounded-xl p-3 py-5 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary/40 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#769ABC]/15 flex items-center justify-center shrink-0">
-                          <Sparkles className="h-4 w-4 text-[#769ABC]" />
+                        <div className="w-8 h-8 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                          <Sparkles className="h-4 w-4 text-secondary" />
                         </div>
                         <div>
-                          <div className="text-[11px] font-bold text-slate-900">AI Trip Builder</div>
-                          <div className="text-[9px] text-slate-400">Create a personalized trip with AI</div>
+                          <div className="text-[14px] font-bold text-slate-900 mb-1">AI Trip Builder</div>
+                          <div className="text-[11px] text-slate-400">Create a personalized trip with AI</div>
                         </div>
                       </div>
                       <ArrowRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                     </div>
-                    <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-sm flex items-center justify-between group cursor-pointer hover:border-[#E46F44]/40 transition-colors">
+                    <div className="bg-white border border-slate-200/80 rounded-xl p-3 py-5 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary/40 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#E46F44]/15 flex items-center justify-center shrink-0">
-                          <MapPin className="h-4 w-4 text-[#E46F44]" />
+                        <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                          <MapPin className="h-4 w-4 text-primary" />
                         </div>
                         <div>
-                          <div className="text-[11px] font-bold text-slate-900">Browse Packages</div>
-                          <div className="text-[9px] text-slate-400">Explore curated travel packages</div>
+                          <div className="text-[14px] font-bold text-slate-900 mb-1">Browse Packages</div>
+                          <div className="text-[11px] text-slate-400">Explore curated travel packages</div>
                         </div>
                       </div>
                       <ArrowRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -736,20 +653,20 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   </div>
 
                   {/* Charts Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="md:grid hidden grid-cols-1 sm:grid-cols-2 gap-4">
 
                     {/* Monthly Spending Bar Chart */}
                     <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-sm">
                       <div className="flex items-center gap-1.5 mb-3">
                         <TrendingUp className="h-3 w-3 text-slate-500" />
-                        <span className="text-[10px] font-bold text-slate-900">Monthly Spending</span>
+                        <span className="text-xs font-bold text-slate-900">Monthly Spending</span>
                       </div>
                       {/* Y-axis labels + bars */}
-                      <div className="flex gap-1 items-end h-[90px] relative">
+                      <div className="flex gap-1 items-end h-[120px] relative">
                         {/* Y-axis */}
                         <div className="flex flex-col justify-between h-full text-right pr-1.5 shrink-0">
-                          {["₹600k","₹450k","₹300k","₹150k","₹0"].map(l => (
-                            <span key={l} className="text-[7px] text-slate-400 leading-none">{l}</span>
+                          {["₹600k", "₹450k", "₹300k", "₹150k", "₹0"].map(l => (
+                            <span key={l} className="text-[8px] text-slate-400 leading-none">{l}</span>
                           ))}
                         </div>
                         {/* Gridlines + Bars */}
@@ -773,7 +690,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                                   minHeight: 3,
                                 }}
                               />
-                              <span className="text-[7px] text-slate-400">{month}</span>
+                              <span className="text-[8px] text-slate-400">{month}</span>
                             </div>
                           ))}
                         </div>
@@ -784,12 +701,12 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                     <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-sm">
                       <div className="flex items-center gap-1.5 mb-3">
                         <Clock className="h-3 w-3 text-slate-500" />
-                        <span className="text-[10px] font-bold text-slate-900">Bookings by Status</span>
+                        <span className="text-xs font-bold text-slate-900">Bookings by Status</span>
                       </div>
                       <div className="flex items-center justify-between gap-3">
                         {/* SVG Donut */}
                         <div className="shrink-0">
-                          <svg width="80" height="80" viewBox="0 0 80 80">
+                          <svg width="120" height="120" viewBox="0 0 80 80">
                             {/* Background circle */}
                             <circle cx="40" cy="40" r="28" fill="none" stroke="#f1f5f9" strokeWidth="12" />
                             {/* Cancelled — orange 35% of 175.9 = 61.6 */}
@@ -807,7 +724,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                           </svg>
                         </div>
                         {/* Legend */}
-                        <div className="flex flex-col gap-1.5 text-[9px]">
+                        <div className="flex flex-col gap-1.5 text-[12px]">
                           <div className="flex items-center gap-1.5">
                             <span className="w-2.5 h-2.5 rounded-sm bg-amber-400 shrink-0" />
                             <span className="text-slate-600">Cancelled</span>
@@ -829,31 +746,27 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               </div>
             </div>
           </div>
-
-          {/* Fade into next section */}
-          <div className="h-16 bg-gradient-to-b from-white to-[#FAFAF9]" />
         </div>
       </section>
 
-
       {/* ═══════════════ STATS ROW ═══════════════ */}
-      <section className="stats-sec py-12 lg:py-20 bg-white border-y border-slate-200/50">
+      <section className="stats-sec py-10 lg:py16 bg-white border-y border-slate-200/50">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 lg:gap-0">
             {STATS.map((stat, index) => (
               <div
                 key={stat.label}
-                className="flex items-center gap-5 px-6 py-2 group transition-all duration-300 relative"
+                className="flex items-center md:justify-center gap-5 group transition-all duration-300 relative"
               >
                 {/* Visual Icon Accent */}
-                <div className="h-12 w-12 rounded-2xl bg-[#E46F44]/10 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-[#E46F44] group-hover:text-white transition-all duration-300 text-[#E46F44]">
-                  <stat.icon className="h-5.5 w-5.5 transition-colors duration-300" />
+                <div className="md:h-12 md:w-12 h-10 w-10 md:rounded-2xl rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 text-primary">
+                  <stat.icon className="md:h-5.5 md:w-5.5 h-4 w-4 transition-colors duration-300" />
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+                <div className="md:space-y-2 space-y-1">
+                  <h4 className="md:text-3xl text-2xl font-extrabold tracking-tight text-slate-900 font-display">
                     {stat.value}
                   </h4>
-                  <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest leading-none">
+                  <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
                     {stat.label}
                   </p>
                 </div>
@@ -869,22 +782,22 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ TOP TRENDING DESTINATIONS SHOWCASE ═══════════════ */}
-      <section id="destinations" className="destinations-sec py-16 lg:py-24 bg-[#FAFAF9]">
+      <section id="destinations" className="destinations-sec py-10 lg:py-16 bg-[#FAFAF9] scroll-mt-16">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#E46F44]/10 text-[#E46F44] text-[10px] font-bold uppercase tracking-widest border border-[#E46F44]/20">
+          <div className="flex flex-col md:flex-row md:items-end items-center justify-between lg:mb-12 mb-8 gap-6 ">
+            <div className="md:text-start text-center space-y-4">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
                 <Flame className="h-3.5 w-3.5" /> Trending Routes
               </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold tracking-[-0.03em] font-display text-slate-900">
-                Explore Popular <span className="text-[#E46F44]">Indian Destinations</span>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display text-slate-900">
+                Explore Popular <span className="text-primary">Indian Destinations</span>
               </h2>
-              <p className="text-slate-500 text-sm max-w-lg leading-relaxed">
+              <p className="text-slate-500 lg:text-base text-sm max-w-lg lg:leading-relaxed">
                 Hand-crafted itinerary templates and agency packages tailored for adventure, relaxation, and royal culture.
               </p>
             </div>
             <Link href="/packages" className="inline-flex">
-              <Button variant="outline" className="h-11 px-6 rounded-xl text-xs font-bold gap-2 cursor-pointer border-slate-200/80 hover:border-[#E46F44] transition-all">
+              <Button variant="outline" className="h-11 px-6 text-sm font-bold gap-2 cursor-pointer border-slate-200/80 hover:border-primary transition-all">
                 Browse All Packages <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -895,7 +808,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <div
                 key={item.id}
                 onClick={() => handlePillClick(item.prompt)}
-                className="group relative rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-[#E46F44] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer"
+                className="group relative rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-primary transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer"
               >
                 {/* Visual Image Container with Hover Zoom */}
                 <div className="h-52 w-full overflow-hidden relative">
@@ -905,7 +818,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent pointer-events-none" />
-                  
+
                   {/* Category Tag Badge */}
                   <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg ${item.badgeColor} text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm border border-white/10`}>
                     {item.tag}
@@ -913,7 +826,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
                   {/* Rating Badge */}
                   <span className="absolute top-3 right-3 px-2 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 border border-white/10 shadow-sm">
-                    <Star className="h-3 w-3 fill-[#E46F44] text-[#E46F44]" /> {item.rating} ({item.reviews})
+                    <Star className="h-3 w-3 fill-primary text-primary" /> {item.rating} ({item.reviews})
                   </span>
 
                   {/* Location Title Overlay */}
@@ -930,16 +843,16 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 {/* Content Info */}
                 <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="flex items-center justify-between text-xs text-slate-500">
-                    <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-[#769ABC]" /> {item.duration}</span>
+                    <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-secondary" /> {item.duration}</span>
                     <span className="text-[11px] font-semibold text-slate-400">AI Guided</span>
                   </div>
 
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-semibold">Starting from</span>
-                      <span className="text-base font-extrabold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
+                      <span className="text-xs text-slate-500 block font-semibold">Starting from</span>
+                      <span className="text-lg font-extrabold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
                     </div>
-                    <span className="h-8 px-3 rounded-lg bg-[#E46F44]/10 text-[#E46F44] text-[11px] font-bold flex items-center gap-1 group-hover:bg-[#E46F44] group-hover:text-white transition-all">
+                    <span className="h-8 px-3 rounded-lg bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 group-hover:bg-primary group-hover:text-white transition-all">
                       Build Trip <Sparkles className="h-3 w-3" />
                     </span>
                   </div>
@@ -951,16 +864,16 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ INTERACTIVE SAMPLE ITINERARY DEMOS ═══════════════ */}
-      <section id="itineraries" className="itineraries-sec py-12 lg:py-20 bg-slate-50/50">
+      <section id="itineraries" className="itineraries-sec py-10 lg:py-16 bg-white scroll-mt-16">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E46F44]/10 text-[#E46F44] text-[10px] font-bold uppercase tracking-widest">
+          <div className="text-center lg:mb-10 mb-6 space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-widest">
               <Sparkles className="h-3.5 w-3.5" /> AI Custom Outputs
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-[-0.03em] font-display">
-              See what Gemini AI plans in <span className="text-[#E46F44]">30 seconds</span>.
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
+              See what Gemini AI plans in <span className="text-primary">30 seconds</span>.
             </h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
               Explore dynamic itineraries built based on traveler tags, local guide feeds, and budget coordinates.
             </p>
 
@@ -970,11 +883,10 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 <button
                   key={item.id}
                   onClick={() => setActiveItineraryTab(item.id)}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
-                    activeItineraryTab === item.id
-                      ? "bg-[#E46F44] text-white border-transparent shadow-md scale-105"
-                      : "bg-white text-slate-600 border-slate-200/60 hover:border-[#E46F44]"
-                  }`}
+                  className={`sm:px-6 sm:py-2.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all cursor-pointer ${activeItineraryTab === item.id
+                    ? "bg-primary text-white border-transparent shadow-md scale-105"
+                    : "bg-white text-slate-600 border-slate-200/60 hover:border-primary"
+                    }`}
                 >
                   {item.tabTitle}
                 </button>
@@ -983,18 +895,18 @@ export default function LandingClient({ userSession }: LandingClientProps) {
           </div>
 
           {/* Active Tab Preview Display */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-12 lg:gap-8 gap-6 items-start max-w-5xl mx-auto">
             {/* Header info */}
-            <div className="lg:col-span-4 space-y-5 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-xs">
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#769ABC]/10 text-[#1A3B5A]">
+            <div className="lg:col-span-4 md:col-span-5 space-y-5 bg-white sm:p-6 p-4 rounded-2xl border border-slate-200/60 shadow-xs">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-secondary/10 text-secondary">
                 {currentItinerary.tag}
               </span>
-              <h3 className="text-xl font-bold font-display leading-tight text-slate-900">{currentItinerary.title}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{currentItinerary.summary}</p>
-              
+              <h3 className="sm:text-xl text-lg font-bold font-display leading-tight text-slate-900">{currentItinerary.title}</h3>
+              <p className="text-sm text-slate-500">{currentItinerary.summary}</p>
+
               <div className="pt-5 border-t border-slate-100">
                 <Link href="/trip-builder" className="w-full flex">
-                  <Button variant="default" className="w-full h-11 rounded-xl text-xs font-bold gap-1.5 cursor-pointer shadow-xs transition-all">
+                  <Button variant="default" className="w-full">
                     Plan Similar Trip <Sparkles className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
@@ -1002,27 +914,27 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             </div>
 
             {/* Days list preview - Dashed Timeline Flow */}
-            <div className="lg:col-span-8 relative space-y-6 pl-6 sm:pl-8 border-l-2 border-dashed border-slate-200 ml-3 sm:ml-6">
+            <div className="lg:col-span-8 md:col-span-7 relative space-y-6 pl-6 sm:pl-8 border-l-2 border-dashed border-slate-200 lg:ml-6">
               {currentItinerary.days.map((d, index) => (
                 <div
                   key={index}
-                  className="relative flex flex-col sm:flex-row gap-4 p-5 bg-white rounded-2xl border border-slate-200/60 shadow-xs hover:shadow-md transition-all duration-300 group"
+                  className="relative flex flex-col sm:flex-row gap-4 sm:p-5 p-4 bg-white rounded-2xl border border-slate-200/60 shadow-xs hover:shadow-md transition-all duration-300 group"
                 >
                   {/* Timeline Pulse Indicator */}
-                  <div className="absolute -left-[33px] sm:-left-[41px] top-8 h-4 w-4 rounded-full border-4 border-[#FAFAF9] bg-[#E46F44] group-hover:scale-125 transition-all shadow-xs" />
-                  
+                  <div className="absolute -left-[33px] sm:-left-[41px] top-8 h-4 w-4 rounded-full border-4 border-[#FAFAF9] bg-primary group-hover:scale-125 transition-all shadow-xs" />
+
                   {/* Icon Card */}
-                  <div className="h-10 w-10 rounded-xl bg-[#E46F44]/5 flex items-center justify-center shrink-0 group-hover:bg-[#E46F44]/10 transition-colors">
-                    <d.icon className="h-5 w-5 text-[#E46F44]" />
+                  <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
+                    <d.icon className="h-5 w-5 text-primary" />
                   </div>
-                  
-                  <div className="space-y-1.5 flex-1">
+
+                  <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-[10px] font-extrabold text-[#E46F44] uppercase tracking-widest">{d.day}</span>
+                      <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">{d.day}</span>
                       <span className="h-1 w-1 rounded-full bg-slate-300 hidden sm:inline-block" />
-                      <h4 className="text-sm sm:text-base font-bold text-slate-900 font-display leading-tight">{d.activity}</h4>
+                      <h4 className="text-lg font-bold text-slate-900 font-display leading-tight">{d.activity}</h4>
                     </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">{d.desc}</p>
+                    <p className="text-sm text-slate-500">{d.desc}</p>
                   </div>
                 </div>
               ))}
@@ -1032,19 +944,19 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ CORE FEATURES ═══════════════ */}
-      <section id="features" className="features-sec py-20 lg:py-28 bg-slate-50/60">
+      <section id="features" className="features-sec pb-10 lg:pb-16 bg-white scroll-mt-24">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A3B5A]/10 text-[#1A3B5A] text-[11px] font-bold uppercase tracking-widest border border-[#1A3B5A]/20">
+          <div className="text-center lg:mb-10 mb-6 space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 text-secondary text-[11px] font-bold uppercase tracking-widest border border-secondary/20">
               <Zap className="h-3.5 w-3.5" /> Platform Capabilities
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display text-slate-900">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
               Everything you need to{" "}
-              <span className="text-[#E46F44]">travel smarter.</span>
+              <span className="text-primary">travel smarter.</span>
             </h2>
-            <p className="text-slate-500 text-base max-w-2xl mx-auto leading-relaxed">
+            <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
               From AI-generated itineraries to agency dashboards and secure payments — all in one place.
             </p>
           </div>
@@ -1054,10 +966,10 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             {FEATURES.map((feat, i) => (
               <div
                 key={feat.title}
-                className="group relative p-7 bg-white rounded-2xl border border-slate-200 hover:border-[#E46F44]/60 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer overflow-hidden"
+                className="group relative md:p-7 sm:p-5 p-4 bg-white rounded-2xl border border-slate-200 hover:border-primary/60 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 overflow-hidden"
               >
                 {/* Number watermark */}
-                <span className="absolute top-4 right-5 text-[56px] font-black text-slate-100 select-none leading-none group-hover:text-[#E46F44]/8 transition-colors duration-300">
+                <span className="absolute top-4 right-5 text-[56px] font-black text-slate-100 select-none leading-none group-hover:text-primary/8 transition-colors duration-300">
                   {String(i + 1).padStart(2, "0")}
                 </span>
 
@@ -1068,13 +980,8 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
                 {/* Content */}
                 <div className="relative z-10 space-y-2.5">
-                  <h3 className="text-[15px] font-bold font-display text-slate-900 leading-snug">{feat.title}</h3>
-                  <p className="text-[13px] text-slate-500 leading-relaxed">{feat.description}</p>
-                </div>
-
-                {/* Hover CTA */}
-                <div className="relative z-10 pt-5 flex items-center gap-1.5 text-[11px] font-bold text-[#E46F44] opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-300">
-                  Learn more <ArrowRight className="h-3 w-3" />
+                  <h3 className="text-lg font-bold font-display text-slate-900 leading-snug">{feat.title}</h3>
+                  <p className="text-sm text-slate-500 lg:leading-relaxed">{feat.description}</p>
                 </div>
               </div>
             ))}
@@ -1083,18 +990,18 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-      <section id="how-it-works" className="how-it-works-sec py-20 lg:py-28 bg-slate-50">
+      <section id="how-it-works" className="how-it-works-sec py-10 lg:py-16 bg-slate-50 scroll-mt-16">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-16 space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#E46F44]/10 border border-[#E46F44]/20 text-[11px] font-bold uppercase tracking-widest text-[#E46F44]">
+          <div className="text-center lg:mb-10 mb-6 space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-widest text-primary">
               <Zap className="h-3.5 w-3.5" /> How It Works
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display text-slate-900">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
               From idea to itinerary{" "}
-              <span className="text-[#E46F44]">in 3 steps.</span>
+              <span className="text-primary">in 3 steps.</span>
             </h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
               Waypoint's AI engine turns your travel idea into a complete, bookable plan in under a minute.
             </p>
           </div>
@@ -1108,7 +1015,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 title: "Describe your trip",
                 desc: "Type your destination, budget, and travel style in plain words. Gemini AI reads your intent and local travel data in real-time.",
                 color: "#E46F44",
-                bg: "bg-[#E46F44]/10",
+                bg: "bg-primary/10",
                 highlight: "AI Prompt Engine",
                 pill: "\"Plan a 5-day trek to Manali with paragliding...\"",
               },
@@ -1118,7 +1025,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 title: "Get your itinerary",
                 desc: "Receive a full day-by-day plan: activities, dining stops, hotel picks, transportation, and estimated costs — all structured.",
                 color: "#769ABC",
-                bg: "bg-[#769ABC]/10",
+                bg: "bg-secondary/10",
                 highlight: "Day-by-Day Plan",
                 pill: "Day 1 → Solang Valley ● Day 2 → Beas Kund Trek",
               },
@@ -1127,17 +1034,13 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 icon: Shield,
                 title: "Book & confirm securely",
                 desc: "Pay via Razorpay or Stripe. Get instant PDF invoices, active ticket IDs, and booking confirmations on your dashboard.",
-                color: "#1A3B5A",
-                bg: "bg-[#1A3B5A]/10",
+                color: "#E46F44",
+                bg: "bg-primary/10",
                 highlight: "Secure Checkout",
                 pill: "Ticket #WP-4089 ● Razorpay Verified",
               },
             ].map((s, i) => (
-              <div key={s.step} className="group relative bg-white rounded-2xl border border-slate-200/70 p-7 hover:border-slate-300 hover:shadow-lg shadow-sm transition-all duration-300">
-                {/* Connector line — desktop only */}
-                {i < 2 && (
-                  <div className="hidden md:block absolute top-10 -right-4 w-8 h-px border-t-2 border-dashed border-slate-200 z-10" />
-                )}
+              <div key={s.step} className="group relative bg-white rounded-2xl border border-slate-200/70 lg:p-7 sm:p-5 p-4 hover:border-slate-300 hover:shadow-lg shadow-sm transition-all duration-300">
 
                 {/* Step badge */}
                 <div className="flex items-center gap-3 mb-5">
@@ -1148,8 +1051,8 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 </div>
 
                 {/* Text */}
-                <h3 className="text-[16px] font-bold text-slate-900 font-display mb-2.5 leading-snug">{s.title}</h3>
-                <p className="text-[13px] text-slate-500 leading-relaxed mb-5">{s.desc}</p>
+                <h3 className="text-lg font-bold text-slate-900 font-display mb-2.5 leading-snug">{s.title}</h3>
+                <p className="text-sm text-slate-500 lg:leading-relaxed mb-5">{s.desc}</p>
 
                 {/* Pill preview card */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5">
@@ -1163,128 +1066,123 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ TESTIMONIALS ═══════════════ */}
-      <section className="testimonials-sec py-20 lg:py-28 bg-white">
+      <section className="testimonials-sec py-10 lg:py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14 space-y-4">
+          <div className="text-center lg:mb-10 mb-6 space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 text-rose-500 text-[11px] font-bold uppercase tracking-widest border border-rose-500/20">
               <Heart className="h-3.5 w-3.5" /> Traveler Reviews
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display text-slate-900">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
               Loved by solo travelers{" "}
-              <span className="text-[#E46F44]">&amp; agencies.</span>
+              <span className="text-primary">&amp; agencies.</span>
             </h2>
-            <p className="text-slate-500 text-base max-w-xl mx-auto">
+            <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
               Real experiences from real travelers across India.
             </p>
           </div>
 
-          <div className="relative z-10 px-2 md:px-0">
-            <Swiper
-              modules={[Autoplay, Pagination]}
-              spaceBetween={20}
-              slidesPerView={1}
-              loop={true}
-              autoplay={{ delay: 3500, disableOnInteraction: false }}
-              pagination={{ clickable: true, dynamicBullets: true }}
-              breakpoints={{
-                640: { slidesPerView: 2, spaceBetween: 20 },
-                1024: { slidesPerView: 3, spaceBetween: 24 },
-              }}
-              className="testimonials-swiper !pb-12"
-            >
-              {TESTIMONIALS.map((t: any) => (
-                <SwiperSlide key={t.name} className="h-auto">
-                  <div className="h-full flex flex-col justify-between group px-1">
-                    {/* Quote card */}
-                    <div className="relative bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md group-hover:border-[#E46F44]/40 transition-all duration-300 flex-1 flex flex-col justify-between">
-                      <div className="space-y-3">
-                        {/* Stars */}
-                        <div className="flex gap-0.5 text-[#E46F44]">
-                          {Array.from({ length: t.rating }).map((_: any, i: number) => (
-                            <Star key={i} className="h-3.5 w-3.5 fill-current" />
-                          ))}
-                        </div>
-                        <p className="text-sm text-slate-600 leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={20}
+            slidesPerView={1}
+            loop={true}
+            autoplay={{ delay: 3500, disableOnInteraction: false }}
+            pagination={{ clickable: true, dynamicBullets: true }}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 24 },
+            }}
+            className="testimonials-swiper sm:!pb-12 !pb-8"
+          >
+            {TESTIMONIALS.map((t: any) => (
+              <SwiperSlide key={t.name} className="h-auto">
+                <div className="h-full flex flex-col justify-between group px-1">
+                  {/* Quote card */}
+                  <div className="relative bg-white border border-slate-200/80 rounded-2xl lg:p-6 sm:p-5 p-4 shadow-sm hover:shadow-md group-hover:border-primary/40 transition-all duration-300 flex-1 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      {/* Stars */}
+                      <div className="flex gap-0.5 text-primary">
+                        {Array.from({ length: t.rating }).map((_: any, i: number) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                        ))}
                       </div>
-                      {/* Speech bubble tail */}
-                      <div className="absolute -bottom-2 left-8 w-4 h-4 bg-white border-r border-b border-slate-200/80 rotate-45 group-hover:border-r-[#E46F44]/40 group-hover:border-b-[#E46F44]/40 transition-colors duration-300" />
+                      <p className="text-sm text-slate-600 sm:leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
                     </div>
-                    {/* Author */}
-                    <div className="flex items-center gap-3 mt-5 pl-4">
-                      <img src={t.avatar} alt={t.name} className="h-10 w-10 rounded-full object-cover shrink-0 border-2 border-white shadow-sm" />
-                      <div>
-                        <h5 className="text-xs font-bold text-slate-900 font-display leading-tight">{t.name}</h5>
-                        <p className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">{t.role}</p>
-                      </div>
+                    {/* Speech bubble tail */}
+                    <div className="absolute -bottom-2 left-8 w-4 h-4 bg-white border-r border-b border-slate-200/80 rotate-45 group-hover:border-r-primary/40 group-hover:border-b-primary/40 transition-colors duration-300" />
+                  </div>
+                  {/* Author */}
+                  <div className="flex items-center gap-3 mt-5 pl-5">
+                    <img src={t.avatar} alt={t.name} className="h-10 w-10 rounded-full object-cover shrink-0 border-2 border-white shadow-sm" />
+                    <div>
+                      <h5 className="text-base font-bold text-slate-900 font-display leading-tight mb-1">{t.name}</h5>
+                      <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">{t.role}</p>
                     </div>
                   </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 
       {/* ═══════════════ FREQUENTLY ASKED QUESTIONS (FAQ) ═══════════════ */}
-      <section id="faq" className="faq-sec py-20 lg:py-28 bg-slate-50 border-t border-slate-200/60">
-        <div className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <section id="faq" className="faq-sec py-10 lg:py-16 bg-slate-50 border-t border-slate-200/60 scroll-mt-16">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 lg:gap-12 gap-8 items-start">
 
             {/* Left sticky heading */}
-            <div className="lg:col-span-4 lg:sticky lg:top-28">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1A3B5A]/10 border border-[#1A3B5A]/20 text-[11px] font-bold uppercase tracking-widest text-[#1A3B5A] mb-5">
+            <div className="md:col-span-5 md:sticky md:top-28 md:text-start text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-bold uppercase tracking-widest text-secondary mb-5">
                 <HelpCircle className="h-3.5 w-3.5" /> FAQ
               </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-slate-900 mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display mb-4">
                 Frequently asked{" "}
-                <span className="text-[#E46F44]">questions.</span>
+                <span className="text-primary">questions.</span>
               </h2>
-              <p className="text-slate-500 text-sm leading-relaxed mb-8">
+              <p className="text-slate-500 lg:text-base text-sm lg:leading-relaxed lg:mb-8 mb-6">
                 Everything you need to know about AI itinerary generation, verified packages, and payment security.
               </p>
               <Link href="/contact">
-                <Button variant="outline" className="rounded-xl border-slate-200 hover:border-[#E46F44] hover:text-[#E46F44] text-sm font-semibold gap-2 cursor-pointer transition-all">
+                <Button variant="outline" className="border-slate-200 hover:border-primary hover:text-primary">
                   Ask a question <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             </div>
 
             {/* Right FAQ accordion */}
-            <div className="lg:col-span-8 space-y-3">
+            <div className="md:col-span-7 space-y-3">
               {FAQS.map((faq, index) => {
                 const isOpen = openFaq === index;
                 return (
                   <div
                     key={index}
-                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                      isOpen
-                        ? "border-[#E46F44]/50 bg-orange-50/60 shadow-sm"
-                        : "border-slate-200 bg-white hover:border-slate-300"
-                    }`}
+                    className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen
+                      ? "border-primary/50 bg-orange-50/60 shadow-sm"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
                   >
                     <button
                       type="button"
                       onClick={() => setOpenFaq(isOpen ? null : index)}
-                      className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
+                      className="w-full md:px-6 sm:p-5 p-4 md:py-5 text-left flex items-center justify-between gap-3 cursor-pointer focus:outline-none"
                     >
                       <span className="flex items-center gap-3.5">
-                        <span className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 transition-colors ${
-                          isOpen ? "bg-[#E46F44] text-white" : "bg-slate-100 text-slate-500"
-                        }`}>
+                        <span className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 transition-colors ${isOpen ? "bg-primary text-white" : "bg-slate-100 text-slate-500"
+                          }`}>
                           {index + 1}
                         </span>
                         <span className="text-[14px] font-semibold text-slate-900 leading-snug">{faq.question}</span>
                       </span>
                       <ChevronDown
-                        className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-300 ${
-                          isOpen ? "rotate-180 text-[#E46F44]" : ""
-                        }`}
+                        className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-180 text-primary" : ""
+                          }`}
                       />
                     </button>
 
                     {isOpen && (
-                      <div className="px-6 pb-5 text-[13px] text-slate-600 leading-relaxed border-t border-slate-100/80 pt-4">
+                      <div className="md:px-6 sm:p-5 p-4 md:pb-5 pt-0 text-[13px] text-slate-600 sm:leading-relaxed">
                         {faq.answer}
                       </div>
                     )}
@@ -1297,58 +1195,56 @@ export default function LandingClient({ userSession }: LandingClientProps) {
         </div>
       </section>
       {/* ═══════════════ CTA SECTION ═══════════════ */}
-      <section className="cta-sec py-16 lg:py-20 bg-white">
+      <section className="cta-sec py-10 lg:py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
           {/* CTA card with gradient bg */}
-          <div className="relative overflow-hidden rounded-3xl p-10 lg:p-12"
+          <div className="relative overflow-hidden rounded-3xl sm:p-8 p-5 lg:p-12"
             style={{ background: "linear-gradient(135deg, #1A3B5A 0%, #0f2540 60%, #1a2e3f 100%)" }}
           >
-            {/* Coral left accent border */}
-            <div className="absolute left-0 top-8 bottom-8 w-1 bg-gradient-to-b from-[#E46F44] via-[#E8AA9B] to-transparent rounded-full" />
             {/* Glows */}
-            <div className="absolute -top-20 -right-20 w-72 h-72 bg-[#E46F44]/12 rounded-full blur-[90px] pointer-events-none" />
-            <div className="absolute -bottom-10 left-1/3 w-64 h-64 bg-[#769ABC]/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/12 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute -bottom-10 left-1/3 w-64 h-64 bg-secondary/10 rounded-full blur-[80px] pointer-events-none" />
             <div className="absolute inset-0 dot-pattern opacity-[0.03] pointer-events-none" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
               {/* Left column */}
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E46F44]/15 border border-[#E46F44]/25 text-[10px] font-bold uppercase tracking-widest text-[#E8AA9B]">
-                  <Sparkles className="h-3 w-3" /> Gemini 2.0 AI
+              <div className="lg:space-y-6 space-y-5 lg:text-left text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/25 text-[10px] font-bold uppercase tracking-widest text-[#E8AA9B]">
+                  <Sparkles className="h-3 w-3" /> Gemini AI
                 </div>
 
                 <div>
                   <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-[1.15] font-display mb-3">
                     Plan smarter.{" "}
-                    <span className="bg-gradient-to-r from-[#E46F44] via-[#E8AA9B] to-[#769ABC] bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
                       Travel better.
                     </span>
                   </h2>
-                  <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                  <p className="text-slate-400 text-sm sm:leading-relaxed lg:max-w-md max-w-xl lg:mx-0 mx-auto">
                     Generate a complete day-by-day itinerary from a single sentence, then book directly with verified agencies — in under 60 seconds.
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start gap-3">
+                <div className="flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-3">
                   <Link href="/trip-builder">
-                    <Button className="h-11 px-7 rounded-xl bg-[#E46F44] hover:bg-[#E46F44]/90 text-white font-bold text-sm cursor-pointer shadow-lg hover:shadow-xl hover:shadow-[#E46F44]/20 hover:scale-105 transition-all duration-300 gap-2">
+                    <Button className="py-3 px-5">
                       <Sparkles className="h-4 w-4" /> Start Free — AI Builder
                     </Button>
                   </Link>
                   <Link href="/packages">
-                    <Button className="h-11 px-7 rounded-xl bg-white/8 border border-white/15 text-white/90 hover:bg-white/15 font-semibold text-sm cursor-pointer transition-all duration-300 gap-2">
+                    <Button className="py-3 px-5 bg-white/8 border border-white/15 text-white/90 hover:bg-white/15">
                       Browse Packages <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-1">
+                <div className="flex flex-wrap lg:justify-start justify-center gap-3 pt-1">
                   {[
                     { icon: Check, label: "Free AI Drafts" },
-                    { icon: Shield, label: "Razorpay Secured" },
                     { icon: Star, label: "4.9 / 5 Rated" },
+                    { icon: Shield, label: "Razorpay Secured" },
                   ].map(({ icon: Icon, label }) => (
                     <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/6 border border-white/10 text-[11px] font-medium text-slate-400">
                       <Icon className="h-3 w-3 text-[#E8AA9B]" /> {label}
@@ -1358,16 +1254,16 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               </div>
 
               {/* Right column — compact AI preview */}
-              <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 space-y-4">
+              <div className="lg:block hidden bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E46F44] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E46F44]" />
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
                     </span>
                     <span className="text-[11px] font-semibold text-slate-300">Gemini AI · Generating plan</span>
                   </div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#769ABC]/15 text-[#769ABC] border border-[#769ABC]/25">Live</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/15 text-white border border-white/25">Live</span>
                 </div>
 
                 <div className="bg-slate-900 rounded-xl p-3.5 border border-slate-800/60">
@@ -1397,7 +1293,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                     { day: "Day 3", act: "Old Manali Café &amp; Bonfire" },
                   ].map(({ day, act }) => (
                     <div key={day} className="flex items-center gap-2.5 text-[11px]">
-                      <span className="text-[#E46F44] font-bold shrink-0 w-10">{day}</span>
+                      <span className="text-primary font-bold shrink-0 w-10">{day}</span>
                       <div className="flex-1 h-px bg-slate-800" />
                       <span className="text-slate-400 font-medium" dangerouslySetInnerHTML={{ __html: act }} />
                     </div>
@@ -1405,7 +1301,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 </div>
 
                 <Link href="/trip-builder" className="block">
-                  <Button className="w-full h-9 rounded-xl bg-gradient-to-r from-[#E46F44] to-[#E8AA9B] text-white font-bold text-xs cursor-pointer gap-1.5 hover:opacity-90 transition-opacity">
+                  <Button className="w-full h-9 rounded-xl bg-gradient-to-r from-primary to-[#E8AA9B] text-white font-bold text-xs cursor-pointer gap-1.5 hover:opacity-90 transition-opacity">
                     Try It Free <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
@@ -1417,101 +1313,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       </section>
 
       {/* ═══════════════ FOOTER ═══════════════ */}
-      <footer className="footer-sec relative bg-[#0c1a27] text-slate-400 overflow-hidden">
-        {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E46F44]/60 to-transparent" />
-        {/* Subtle glow */}
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#E46F44]/3 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
-
-          {/* Main grid: Brand | Links | Newsletter */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 pt-14 pb-10">
-
-            {/* Col 1: Brand */}
-            <div>
-              <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#E46F44] to-[#1A3B5A] flex items-center justify-center">
-                  <Compass className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-lg font-extrabold font-display text-white tracking-tight">
-                  Way<span className="text-[#E46F44]">point</span>
-                </span>
-              </Link>
-              <p className="text-[13px] text-slate-500 leading-relaxed mb-5">
-                AI-powered travel planning. From idea to itinerary in under a minute, with verified agency bookings across India.
-              </p>
-              {/* Social */}
-              <div className="flex items-center gap-2">
-                {[
-                  { label: "Instagram", icon: (props: any) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> },
-                  { label: "Twitter", icon: (props: any) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg> },
-                  { label: "LinkedIn", icon: (props: any) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg> },
-                ].map(s => (
-                  <a key={s.label} href="#" aria-label={s.label}
-                    className="h-7 w-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-slate-500 hover:text-[#E46F44] hover:border-[#E46F44]/30 transition-all duration-200">
-                    <s.icon className="h-3.5 w-3.5" />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Col 2: Quick Links */}
-            <div>
-              <h5 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-5">Quick Links</h5>
-              <nav className="grid grid-cols-2 gap-x-4 gap-y-3">
-                {[
-                  { label: "AI Trip Builder", href: "/trip-builder" },
-                  { label: "Tour Packages", href: "/packages" },
-                  { label: "My Dashboard", href: "/dashboard" },
-                  { label: "About", href: "/about" },
-                  { label: "Contact", href: "/contact" },
-                  { label: "Privacy & Terms", href: "/privacy" },
-                ].map(link => (
-                  <Link key={link.label} href={link.href}
-                    className="text-[13px] text-slate-500 hover:text-white transition-colors duration-200">
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-
-            {/* Col 3: Newsletter */}
-            <div>
-              <h5 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-5">Stay Updated</h5>
-              <p className="text-[13px] text-slate-500 leading-relaxed mb-4">
-                Weekly travel trends, AI tips &amp; exclusive package drops.
-              </p>
-              <form onSubmit={handleSubscribe} className="space-y-2">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-600 pointer-events-none" />
-                  <Input
-                    type="email"
-                    value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="pl-9 h-10 text-xs rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus-visible:ring-1 focus-visible:ring-[#E46F44]"
-                  />
-                </div>
-                <Button type="submit" className="w-full h-9 rounded-xl text-xs font-bold bg-[#E46F44] hover:bg-[#E46F44]/90 text-white cursor-pointer gap-1.5">
-                  Subscribe <Send className="h-3 w-3" />
-                </Button>
-              </form>
-            </div>
-
-          </div>
-
-          {/* Bottom bar */}
-          <div className="border-t border-white/6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-600">
-            <span>© {new Date().getFullYear()} Waypoint Inc. · All rights reserved.</span>
-            <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-emerald-600 font-semibold">All systems operational</span>
-            </div>
-          </div>
-
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -283,9 +283,8 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 variant={filterVerified === "VERIFIED" ? "default" : "ghost"}
                 onClick={() => setFilterVerified("VERIFIED")}
                 size="sm"
-                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
-                  filterVerified === "VERIFIED" ? "bg-[#769ABC] hover:bg-[#769ABC]/90 text-white" : ""
-                }`}
+                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${filterVerified === "VERIFIED" ? "bg-secondary hover:bg-secondary/90 text-white" : ""
+                  }`}
               >
                 Verified
               </Button>
@@ -301,7 +300,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
+              className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
             >
               <Plus className="h-4 w-4" /> Add Agency
             </Button>
@@ -319,9 +318,8 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
           filteredAgencies.map((agency) => (
             <Card
               key={agency.id}
-              className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${
-                agency.active ? "border-slate-200" : "border-rose-500/20"
-              }`}
+              className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${agency.active ? "border-slate-200" : "border-rose-500/20"
+                }`}
             >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
@@ -333,7 +331,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                         className="h-10 w-10 rounded-xl object-cover border border-slate-200"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#769ABC] to-[#E8AA9B] flex items-center justify-center text-white">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-secondary to-[#E8AA9B] flex items-center justify-center text-white">
                         <Building2 className="h-5 w-5" />
                       </div>
                     )}
@@ -341,9 +339,9 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                       <CardTitle className="text-xl flex items-center gap-1.5 font-bold text-slate-900">
                         {agency.name}
                         {agency.verified ? (
-                          <CheckCircle2 className="h-5 w-5 text-[#769ABC] fill-[#769ABC]/10" />
+                          <CheckCircle2 className="h-5 w-5 text-secondary fill-secondary/10" />
                         ) : (
-                          <AlertCircle className="h-5 w-5 text-[#E46F44]" />
+                          <AlertCircle className="h-5 w-5 text-primary" />
                         )}
                       </CardTitle>
                       <CardDescription className="text-xs text-muted-foreground mt-0.5">
@@ -386,7 +384,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                         href={agency.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline text-[#769ABC] font-medium"
+                        className="hover:underline text-secondary font-medium"
                       >
                         {agency.website}
                       </a>
@@ -429,7 +427,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                       variant="outline"
                       size="xs"
                       onClick={() => handleOpenEdit(agency)}
-                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 border-slate-200 hover:border-[#769ABC]/20 hover:bg-[#769ABC]/5 hover:text-[#769ABC] cursor-pointer"
+                      className="text-xs h-8 px-3 rounded-lg flex items-center gap-1 border-slate-200 hover:border-secondary/20 hover:bg-secondary/5 hover:text-secondary cursor-pointer"
                     >
                       <Edit className="h-3.5 w-3.5" /> Edit Agency
                     </Button>
@@ -553,7 +551,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
+                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register Agency"}
               </Button>
@@ -679,7 +677,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
+                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving Changes..." : "Save Changes"}
               </Button>

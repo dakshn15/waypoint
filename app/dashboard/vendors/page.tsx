@@ -26,15 +26,15 @@ const CATEGORY_CONFIG: Record<
 > = {
   HOTEL: {
     icon: <Hotel className="h-4 w-4" />,
-    color: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   TRANSPORT: {
     icon: <Car className="h-4 w-4" />,
-    color: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   RESTAURANT: {
     icon: <Utensils className="h-4 w-4" />,
-    color: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
+    color: "bg-primary/10 text-primary border-primary/20",
   },
   ACTIVITY: {
     icon: <Camera className="h-4 w-4" />,
@@ -42,7 +42,7 @@ const CATEGORY_CONFIG: Record<
   },
   GUIDE: {
     icon: <Globe className="h-4 w-4" />,
-    color: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
+    color: "bg-secondary/10 text-secondary border-secondary/20",
   },
   OTHER: {
     icon: <Building2 className="h-4 w-4" />,
@@ -82,9 +82,9 @@ export default async function VendorsPage() {
 
   const vendors = agency
     ? await prisma.vendor.findMany({
-        where: { agencyId: agency.id },
-        orderBy: { createdAt: "desc" },
-      })
+      where: { agencyId: agency.id },
+      orderBy: { createdAt: "desc" },
+    })
     : [];
 
   const categoryCounts = vendors.reduce(

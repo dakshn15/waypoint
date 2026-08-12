@@ -57,14 +57,14 @@ const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
 };
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  SIGHTSEEING: "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20",
-  ADVENTURE: "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20",
+  SIGHTSEEING: "bg-secondary/10 text-secondary border-secondary/20",
+  ADVENTURE: "bg-primary/10 text-primary border-primary/20",
   DINING: "bg-rose-500/10 text-rose-600 border-rose-500/20",
   SHOPPING: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
-  RELAXATION: "bg-[#769ABC]/15 text-[#1A3B5A] border-[#769ABC]/30",
-  CULTURAL: "bg-[#E46F44]/15 text-[#E46F44] border-[#E46F44]/25",
-  TRANSPORTATION: "bg-[#1A3B5A]/10 text-[#1A3B5A] border-[#1A3B5A]/20",
-  CHECK_IN: "bg-[#769ABC]/10 text-[#1A3B5A] border-[#769ABC]/20",
+  RELAXATION: "bg-secondary/15 text-secondary border-secondary/30",
+  CULTURAL: "bg-primary/15 text-primary border-primary/25",
+  TRANSPORTATION: "bg-secondary/10 text-secondary border-secondary/20",
+  CHECK_IN: "bg-secondary/10 text-secondary border-secondary/20",
   CHECK_OUT: "bg-red-500/10 text-red-600 border-red-500/20",
 };
 
@@ -106,7 +106,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
     1,
     Math.ceil(
       (trip.endDate.getTime() - trip.startDate.getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     )
   );
 
@@ -194,17 +194,17 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                   {
                     label: "Accommodation",
                     value: costBreakdown.accommodation,
-                    color: "bg-[#1A3B5A]",
+                    color: "bg-secondary",
                   },
                   {
                     label: "Transport",
                     value: costBreakdown.transport,
-                    color: "bg-[#769ABC]",
+                    color: "bg-secondary",
                   },
                   {
                     label: "Activities",
                     value: costBreakdown.activities,
-                    color: "bg-[#E46F44]",
+                    color: "bg-primary",
                   },
                   {
                     label: "Food",
@@ -275,7 +275,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
         {/* Day-by-Day Itinerary */}
         <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-900">
-          <CalendarDays className="h-6 w-6 text-[#769ABC]" />
+          <CalendarDays className="h-6 w-6 text-secondary" />
           Day-by-Day Itinerary
         </h2>
         <div className="space-y-6">
@@ -295,10 +295,10 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                 className="glass-card overflow-hidden group"
               >
                 {/* Day header */}
-                <div className="bg-gradient-to-r from-[#1A3B5A]/5 to-transparent p-6 border-b border-slate-200">
+                <div className="bg-gradient-to-r from-secondary/5 to-transparent p-6 border-b border-slate-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#769ABC] to-[#1A3B5A] flex items-center justify-center text-white font-bold text-sm shadow-md">
+                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-secondary to-secondary flex items-center justify-center text-white font-bold text-sm shadow-md">
                         {day.dayNumber}
                       </div>
                       <div>
@@ -321,8 +321,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                 <CardContent className="p-6 space-y-4">
                   {/* Transport Banner */}
                   {day.transport && (
-                    <div className="flex items-center gap-3 bg-[#769ABC]/10 border border-[#769ABC]/20 rounded-xl p-4">
-                      <div className="h-8 w-8 rounded-lg bg-[#769ABC]/20 flex items-center justify-center text-[#1A3B5A]">
+                    <div className="flex items-center gap-3 bg-secondary/10 border border-secondary/20 rounded-xl p-4">
+                      <div className="h-8 w-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">
                         {TRANSPORT_ICONS[day.transport.type] || (
                           <CarFront className="h-4 w-4" />
                         )}
@@ -337,9 +337,9 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                           {day.transport.type} •{" "}
                           {day.transport.cost
                             ? formatCurrency(
-                                Number(day.transport.cost),
-                                trip.currency
-                              )
+                              Number(day.transport.cost),
+                              trip.currency
+                            )
                             : "Included"}
                         </div>
                       </div>
@@ -353,10 +353,9 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                         {/* Timeline line */}
                         <div className="flex flex-col items-center">
                           <div
-                            className={`h-8 w-8 rounded-lg border flex items-center justify-center shrink-0 ${
-                              ACTIVITY_COLORS[activity.type] ||
+                            className={`h-8 w-8 rounded-lg border flex items-center justify-center shrink-0 ${ACTIVITY_COLORS[activity.type] ||
                               "bg-zinc-100 text-zinc-500 border-zinc-200"
-                            }`}
+                              }`}
                           >
                             {ACTIVITY_ICONS[activity.type] || (
                               <Clock className="h-4 w-4" />
@@ -378,9 +377,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                                 )}
                                 <Badge
                                   variant="outline"
-                                  className={`text-[10px] px-1.5 py-0 ${
-                                    ACTIVITY_COLORS[activity.type] || ""
-                                  }`}
+                                  className={`text-[10px] px-1.5 py-0 ${ACTIVITY_COLORS[activity.type] || ""
+                                    }`}
                                 >
                                   {activity.type}
                                 </Badge>
@@ -425,7 +423,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                   {/* Hotel Info */}
                   {day.hotel && (
                     <div className="flex items-center gap-3 bg-[#E8AA9B]/10 border border-[#E8AA9B]/20 rounded-xl p-4 mt-2">
-                      <div className="h-8 w-8 rounded-lg bg-[#E46F44]/10 flex items-center justify-center text-[#E46F44]">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                         <Hotel className="h-4 w-4" />
                       </div>
                       <div className="flex-1">

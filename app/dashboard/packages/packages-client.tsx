@@ -83,13 +83,13 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                 <Badge
                   className={
                     pkg.status === "PUBLISHED"
-                      ? "bg-[#769ABC]/10 text-[#1A3B5A] border border-[#769ABC]/20 hover:bg-[#769ABC]/15 text-[10px] uppercase font-bold tracking-wider"
-                      : "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20 hover:bg-[#E46F44]/15 text-[10px] uppercase font-bold tracking-wider"
+                      ? "bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/15 text-[10px] uppercase font-bold tracking-wider"
+                      : "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15 text-[10px] uppercase font-bold tracking-wider"
                   }
                 >
                   {pkg.status}
                 </Badge>
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
@@ -122,13 +122,13 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
 
               <h3 className="font-bold text-lg mb-1 text-slate-900 line-clamp-1">{pkg.title}</h3>
               <p className="text-xs text-muted-foreground mb-4 font-medium">{pkg.duration} days tour</p>
-              
+
               <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                 <span className="text-md font-bold text-slate-900">
                   {formatCurrency(pkg.basePrice, pkg.currency)}
                 </span>
                 <Link href={`/packages/${pkg.id}`}>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-[#769ABC] hover:text-[#769ABC] hover:bg-[#769ABC]/5 cursor-pointer font-semibold rounded-lg">
+                  <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs text-secondary hover:text-secondary hover:bg-secondary/5 cursor-pointer font-semibold rounded-lg">
                     <Eye className="h-3.5 w-3.5" /> View Detail
                   </Button>
                 </Link>

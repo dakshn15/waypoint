@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Sparkles, Shield, Users, Heart } from "lucide-react";
+import { Sparkles, Shield, Users } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 export default async function AboutPage() {
   const session = await auth.api.getSession({
@@ -11,36 +11,15 @@ export default async function AboutPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:text-[#769ABC] transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            {session?.user ? (
-              <Link href="/dashboard">
-                <Button className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-full px-6">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
+      <SiteHeader userSession={session} />
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto max-w-4xl px-4 py-16 space-y-16">
+      <main className="flex-grow container mx-auto max-w-4xl px-4 py-16 space-y-16 md:pt-36 pt-28">
         {/* Hero */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">
-            About <span className="text-[#E46F44]">Waypoint</span>
+            About <span className="text-primary">Waypoint</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             We are redefining how the world plans, manages, and experiences travel by combining advanced AI engineering with robust tourism operations tools.
@@ -51,7 +30,7 @@ export default async function AboutPage() {
         <div className="grid gap-6 md:grid-cols-3">
           <Card className="glass-card border border-slate-200">
             <CardContent className="p-6 text-center space-y-3">
-              <div className="h-10 w-10 rounded-xl bg-[#E46F44]/10 text-[#E46F44] flex items-center justify-center mx-auto">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
                 <Sparkles className="h-5 w-5" />
               </div>
               <h3 className="font-bold text-lg text-slate-900">AI Planning</h3>
@@ -62,7 +41,7 @@ export default async function AboutPage() {
           </Card>
           <Card className="glass-card border border-slate-200">
             <CardContent className="p-6 text-center space-y-3">
-              <div className="h-10 w-10 rounded-xl bg-[#769ABC]/10 text-[#769ABC] flex items-center justify-center mx-auto">
+              <div className="h-10 w-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto">
                 <Users className="h-5 w-5" />
               </div>
               <h3 className="font-bold text-lg text-slate-900">Shared Platform</h3>
@@ -73,7 +52,7 @@ export default async function AboutPage() {
           </Card>
           <Card className="glass-card border border-slate-200">
             <CardContent className="p-6 text-center space-y-3">
-              <div className="h-10 w-10 rounded-xl bg-[#1A3B5A]/10 text-[#1A3B5A] flex items-center justify-center mx-auto">
+              <div className="h-10 w-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto">
                 <Shield className="h-5 w-5" />
               </div>
               <h3 className="font-bold text-lg text-slate-900">Trusted Network</h3>
@@ -94,27 +73,9 @@ export default async function AboutPage() {
             We built a centralized platform that bridges the gap between smart AI planning and practical booking logistics. Today, Waypoint serves thousands of traveler accounts and helps dozens of verified local travel agencies automate package creations, vendor accounts, and booking transactions under a single, modern dashboard.
           </p>
         </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center bg-gradient-to-br from-[#1A3B5A] to-slate-900 p-8 rounded-2xl text-white space-y-4">
-          <h3 className="text-xl font-bold">Ready to see it in action?</h3>
-          <p className="text-xs text-slate-300 max-w-md mx-auto">
-            Create a free traveler account or list your agency to start automating your travel operations today.
-          </p>
-          <div className="flex justify-center gap-4 pt-2">
-            <Link href="/register">
-              <Button className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-full px-6">
-                Register Now
-              </Button>
-            </Link>
-            <Link href="/packages">
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full px-6 bg-transparent">
-                Browse Packages
-              </Button>
-            </Link>
-          </div>
-        </div>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

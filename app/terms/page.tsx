@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 export default async function TermsPage() {
   const session = await auth.api.getSession({
@@ -11,34 +11,13 @@ export default async function TermsPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:text-[#769ABC] transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            {session?.user ? (
-              <Link href="/dashboard">
-                <Button className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-full px-6">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
+      <SiteHeader userSession={session} />
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto max-w-3xl px-4 py-16 space-y-8">
+      <main className="flex-grow container mx-auto max-w-3xl px-4 py-16 space-y-8 md:pt-36 pt-28">
         <div className="text-center space-y-4">
-          <div className="h-12 w-12 rounded-xl bg-[#1A3B5A]/10 text-[#1A3B5A] flex items-center justify-center mx-auto">
+          <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto">
             <FileText className="h-6 w-6" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
@@ -97,6 +76,8 @@ export default async function TermsPage() {
           </CardContent>
         </Card>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

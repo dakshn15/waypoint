@@ -67,7 +67,7 @@ export default async function FavoritesPage() {
             const avgRating =
               pkg.reviews.length > 0
                 ? pkg.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                  pkg.reviews.length
+                pkg.reviews.length
                 : 4.5;
 
             return (
@@ -76,7 +76,7 @@ export default async function FavoritesPage() {
                   <div className="h-40 bg-gradient-to-br from-[var(--waypoint-teal)]/20 to-[var(--waypoint-navy)]/30 flex items-center justify-center relative">
                     <MapPin className="h-8 w-8 text-[var(--waypoint-teal)] group-hover:scale-110 transition-transform" />
                     <div className="absolute top-3 right-3">
-                      <Heart className="h-5 w-5 fill-[#E46F44] text-[#E46F44]" />
+                      <Heart className="h-5 w-5 fill-primary text-primary" />
                     </div>
                   </div>
                   <CardContent className="p-5">

@@ -89,7 +89,7 @@ export function DashboardSidebar({ navItems, userName, userEmail, userRole, user
       {/* Logo Header */}
       <div className={cn("h-16 flex items-center px-4 border-b border-border", collapsed ? "justify-center" : "justify-between")}>
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#769ABC] to-[#1A3B5A] flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-secondary to-secondary flex items-center justify-center shrink-0">
             <span className="text-white font-bold text-sm">W</span>
           </div>
           {!collapsed && (
@@ -111,7 +111,7 @@ export function DashboardSidebar({ navItems, userName, userEmail, userRole, user
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                   isActive
-                    ? "bg-[#769ABC]/10 text-[#769ABC]"
+                    ? "bg-secondary/10 text-secondary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted",
                   collapsed && "justify-center px-2"
                 )}

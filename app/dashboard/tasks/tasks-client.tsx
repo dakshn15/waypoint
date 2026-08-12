@@ -177,7 +177,7 @@ export default function TasksClient({
       case "HIGH":
         return "bg-rose-500/10 text-rose-500 border border-rose-500/20";
       case "MEDIUM":
-        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20";
+        return "bg-primary/10 text-primary border border-primary/20";
       default:
         return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
         return "bg-slate-500/10 text-slate-500 border border-slate-500/20";
@@ -187,11 +187,11 @@ export default function TasksClient({
   const getCategoryIcon = (category: TaskCategory) => {
     switch (category) {
       case "BOOKING":
-        return <Calendar className="h-4 w-4 text-[#769ABC]" />;
+        return <Calendar className="h-4 w-4 text-secondary" />;
       case "CUSTOMER":
-        return <Users className="h-4 w-4 text-[#1A3B5A]" />;
+        return <Users className="h-4 w-4 text-secondary" />;
       case "PACKAGE":
-        return <FileText className="h-4 w-4 text-[#E46F44]" />;
+        return <FileText className="h-4 w-4 text-primary" />;
       default:
         return <Clock className="h-4 w-4 text-slate-500" />;
     }
@@ -213,7 +213,7 @@ export default function TasksClient({
       return (
         <Card className="glass-card mt-4">
           <CardContent className="flex flex-col items-center justify-center py-16 text-slate-500">
-            <CheckCircle2 className="h-12 w-12 mb-3 text-[#769ABC]" />
+            <CheckCircle2 className="h-12 w-12 mb-3 text-secondary" />
             <h3 className="text-lg font-semibold mb-1 text-slate-900">All caught up!</h3>
             <p className="text-sm text-slate-500">No tasks in this category.</p>
           </CardContent>
@@ -230,9 +230,8 @@ export default function TasksClient({
           return (
             <Card
               key={task.id}
-              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative ${
-                task.status === "COMPLETED" ? "opacity-70" : ""
-              }`}
+              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative ${task.status === "COMPLETED" ? "opacity-70" : ""
+                }`}
             >
               <CardContent className="p-5 flex flex-col justify-between h-full min-h-[170px]">
                 <div className="space-y-2">
@@ -242,9 +241,9 @@ export default function TasksClient({
                         {isManagerOrOwner && task.staff?.userId !== currentStaffUserId ? (
                           <div className="mr-1 pt-0.5">
                             {task.status === "COMPLETED" ? (
-                              <span title="Completed"><CheckCircle2 className="h-5 w-5 text-[#769ABC] shrink-0" /></span>
+                              <span title="Completed"><CheckCircle2 className="h-5 w-5 text-secondary shrink-0" /></span>
                             ) : task.status === "IN_PROGRESS" ? (
-                              <span title="In Progress"><Clock className="h-5 w-5 text-[#E46F44] shrink-0 animate-pulse" /></span>
+                              <span title="In Progress"><Clock className="h-5 w-5 text-primary shrink-0 animate-pulse" /></span>
                             ) : (
                               <span title="To Do"><AlertCircle className="h-5 w-5 text-slate-400 shrink-0" /></span>
                             )}
@@ -260,17 +259,16 @@ export default function TasksClient({
                               )
                             }
                             disabled={isPending || (userRole === "STAFF" && !isManagerOrOwner && task.staff?.userId !== currentStaffUserId)}
-                            className="h-5 w-5 rounded-lg border-slate-300 text-[#769ABC] focus:ring-[#769ABC] cursor-pointer disabled:opacity-50"
+                            className="h-5 w-5 rounded-lg border-slate-300 text-secondary focus:ring-secondary cursor-pointer disabled:opacity-50"
                           />
                         )}
                       </div>
                       <div>
                         <h3
-                          className={`font-bold text-base leading-snug ${
-                            task.status === "COMPLETED"
-                              ? "line-through text-slate-400"
-                              : "text-slate-900"
-                          }`}
+                          className={`font-bold text-base leading-snug ${task.status === "COMPLETED"
+                            ? "line-through text-slate-400"
+                            : "text-slate-900"
+                            }`}
                         >
                           {task.title}
                         </h3>
@@ -318,13 +316,12 @@ export default function TasksClient({
                         {task.priority}
                       </Badge>
                       <Badge
-                        className={`text-[9px] uppercase font-extrabold tracking-wider ${
-                          task.status === "COMPLETED"
-                            ? "bg-[#769ABC]/10 text-[#769ABC] border-[#769ABC]/20"
-                            : task.status === "IN_PROGRESS"
-                            ? "bg-[#E46F44]/10 text-[#E46F44] border-[#E46F44]/20"
+                        className={`text-[9px] uppercase font-extrabold tracking-wider ${task.status === "COMPLETED"
+                          ? "bg-secondary/10 text-secondary border-secondary/20"
+                          : task.status === "IN_PROGRESS"
+                            ? "bg-primary/10 text-primary border-primary/20"
                             : "bg-slate-500/10 text-slate-500 border border-slate-200"
-                        }`}
+                          }`}
                       >
                         {task.status.replace("_", " ")}
                       </Badge>
@@ -392,9 +389,9 @@ export default function TasksClient({
                               variant="outline"
                               onClick={() => handleUpdateStatus(task.id, "IN_PROGRESS")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 rounded-lg flex items-center gap-1 hover:bg-[#769ABC]/5 hover:text-[#769ABC] hover:border-[#769ABC]/20 cursor-pointer"
+                              className="text-xs h-7 px-2.5 rounded-lg flex items-center gap-1 hover:bg-secondary/5 hover:text-secondary hover:border-secondary/20 cursor-pointer"
                             >
-                              <Play className="h-3 w-3 fill-[#E46F44]" /> Start Work
+                              <Play className="h-3 w-3 fill-primary" /> Start Work
                             </Button>
                           )}
                           {task.status === "IN_PROGRESS" && (
@@ -402,7 +399,7 @@ export default function TasksClient({
                               size="xs"
                               onClick={() => handleUpdateStatus(task.id, "COMPLETED")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-lg flex items-center gap-1 cursor-pointer"
+                              className="text-xs h-7 px-2.5 bg-secondary hover:bg-secondary/90 text-white rounded-lg flex items-center gap-1 cursor-pointer"
                             >
                               <Check className="h-3.5 w-3.5" /> Mark Done
                             </Button>
@@ -434,7 +431,7 @@ export default function TasksClient({
         {isManagerOrOwner && (
           <Button
             onClick={() => setCreateOpen(true)}
-            className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 flex items-center gap-2 cursor-pointer shadow-md"
+            className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 flex items-center gap-2 cursor-pointer shadow-md"
           >
             <Plus className="h-4.5 w-4.5" /> Assign Task
           </Button>
@@ -446,7 +443,7 @@ export default function TasksClient({
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-[#769ABC]" /> Staff Workload & Performance
+                <Users className="h-5 w-5 text-secondary" /> Staff Workload & Performance
               </h2>
               <p className="text-xs text-slate-500">
                 Track completion progress and workload distribution across your operations team.
@@ -466,7 +463,7 @@ export default function TasksClient({
                   <CardContent className="p-4 space-y-3">
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-[#1A3B5A]/10 text-[#1A3B5A] flex items-center justify-center font-bold text-xs uppercase">
+                        <div className="h-8 w-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs uppercase">
                           {staff.user.name.slice(0, 2)}
                         </div>
                         <div>
@@ -486,11 +483,11 @@ export default function TasksClient({
                       </div>
                       <div>
                         <span className="text-[10px] text-slate-500 font-semibold block uppercase">Pending</span>
-                        <strong className="text-sm font-extrabold text-[#E46F44]">{pending}</strong>
+                        <strong className="text-sm font-extrabold text-primary">{pending}</strong>
                       </div>
                       <div>
                         <span className="text-[10px] text-slate-500 font-semibold block uppercase">Completed</span>
-                        <strong className="text-sm font-extrabold text-[#769ABC]">{completed}</strong>
+                        <strong className="text-sm font-extrabold text-secondary">{completed}</strong>
                       </div>
                     </div>
 
@@ -498,7 +495,7 @@ export default function TasksClient({
                     <div className="space-y-1 pt-1">
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[#769ABC] rounded-full transition-all duration-500"
+                          className="h-full bg-secondary rounded-full transition-all duration-500"
                           style={{ width: `${completionRate}%` }}
                         />
                       </div>
@@ -640,7 +637,7 @@ export default function TasksClient({
                 placeholder="Verify details for Booking #..."
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -652,7 +649,7 @@ export default function TasksClient({
                 placeholder="Describe the operations, steps, or requests..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl text-sm min-h-[80px]"
+                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl text-sm min-h-[80px]"
               />
             </div>
 
@@ -666,7 +663,7 @@ export default function TasksClient({
                   min={new Date().toISOString().split("T")[0]}
                   value={form.dueDate}
                   onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-xs"
+                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-xs"
                 />
               </div>
 

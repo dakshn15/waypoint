@@ -66,11 +66,11 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
   const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case "MANAGER":
-        return "bg-[#1A3B5A]/10 text-[#1A3B5A] border border-[#1A3B5A]/20";
+        return "bg-secondary/10 text-secondary border border-secondary/20";
       case "AGENT":
-        return "bg-[#769ABC]/10 text-[#769ABC] border border-[#769ABC]/20";
+        return "bg-secondary/10 text-secondary border border-secondary/20";
       case "SUPPORT":
-        return "bg-[#E46F44]/10 text-[#E46F44] border border-[#E46F44]/20";
+        return "bg-primary/10 text-primary border border-primary/20";
       default:
         return "bg-slate-100 text-slate-800 border-slate-200";
     }
@@ -183,7 +183,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white gap-2 font-semibold h-11 px-5 rounded-xl transition-colors cursor-pointer">
+              <Button className="bg-secondary hover:bg-secondary text-white gap-2 font-semibold h-11 px-5 rounded-xl transition-colors cursor-pointer">
                 <Plus className="h-4 w-4" /> Add Staff Member
               </Button>
             }
@@ -201,7 +201,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -214,7 +214,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -226,7 +226,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   placeholder="Defaults to: password123"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
                 <p className="text-[10px] text-slate-500 mt-0.5">Staff members will use this password to log in.</p>
               </div>
@@ -260,7 +260,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                  className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
                 >
                   {loading ? "Inviting..." : "Create Staff Account"}
                 </Button>
@@ -273,8 +273,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
       {staff.length === 0 ? (
         <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="h-16 w-16 bg-gradient-to-tr from-[#769ABC]/10 to-[#1A3B5A]/10 rounded-full flex items-center justify-center mb-4">
-              <Users className="h-8 w-8 text-[#769ABC]" />
+            <div className="h-16 w-16 bg-gradient-to-tr from-secondary/10 to-secondary/10 rounded-full flex items-center justify-center mb-4">
+              <Users className="h-8 w-8 text-secondary" />
             </div>
             <h3 className="text-xl font-bold mb-2">No Staff Members Yet</h3>
             <p className="text-sm text-slate-500 text-center max-w-md mb-6 leading-relaxed">
@@ -282,7 +282,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             </p>
             <Button
               onClick={() => setInviteOpen(true)}
-              className="bg-[#769ABC]/10 text-[#769ABC] hover:bg-[#769ABC]/20 border border-[#769ABC]/30 font-semibold h-11 px-6 rounded-xl cursor-pointer"
+              className="bg-secondary/10 text-secondary hover:bg-secondary/20 border border-secondary/30 font-semibold h-11 px-6 rounded-xl cursor-pointer"
             >
               Add Your First Staff Member
             </Button>
@@ -295,9 +295,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             return (
               <Card
                 key={s.id}
-                className={`glass-card hover:shadow-xl transition-all hover:-translate-y-0.5 border rounded-2xl overflow-hidden ${
-                  !s.active ? "opacity-65" : "border-slate-200"
-                }`}
+                className={`glass-card hover:shadow-xl transition-all hover:-translate-y-0.5 border rounded-2xl overflow-hidden ${!s.active ? "opacity-65" : "border-slate-200"
+                  }`}
               >
                 <CardContent className="p-6 relative">
                   <button
@@ -319,7 +318,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   </button>
 
                   <div className="flex items-center gap-3 mb-5">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#1A3B5A] to-slate-700 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary to-slate-700 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
                       {s.user.name?.charAt(0)?.toUpperCase() || "S"}
                     </div>
                     <div>
@@ -334,7 +333,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                     <Badge variant="outline" className={`text-[10px] font-extrabold tracking-widest uppercase ${getRoleBadgeStyle(s.role)}`}>
                       {s.role}
                     </Badge>
-                    
+
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-500 font-medium">
                         {s.active ? "Active" : "Disabled"}
@@ -368,7 +367,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 required
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -380,7 +379,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 placeholder="Leave empty to keep unchanged"
                 value={editFormData.password}
                 onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-[#769ABC] rounded-xl h-11 text-sm"
+                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -413,7 +412,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>

@@ -194,7 +194,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
     <Card className="glass-card sticky top-24 border border-slate-200 shadow-2xl rounded-2xl overflow-hidden">
       <CardHeader className="bg-slate-50/50 border-b border-slate-200 py-4 px-6">
         <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-900">
-          <Calendar className="h-5 w-5 text-[#769ABC]" />
+          <Calendar className="h-5 w-5 text-secondary" />
           Book Your Journey
         </CardTitle>
       </CardHeader>
@@ -211,11 +211,11 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 {(departureDates && departureDates.length > 0
                   ? departureDates
                   : [
-                      new Date(Date.now() + 24 * 60 * 60 * 1000 * 10),
-                      new Date(Date.now() + 24 * 60 * 60 * 1000 * 20),
-                      new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
-                      new Date(Date.now() + 24 * 60 * 60 * 1000 * 45),
-                    ]
+                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 10),
+                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 20),
+                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
+                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 45),
+                  ]
                 ).map((dateObj, i) => {
                   const d = new Date(dateObj);
                   return (
@@ -240,7 +240,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 variant="ghost"
                 size="sm"
                 onClick={handleAddTraveler}
-                className="text-[#769ABC] hover:text-[#769ABC]/80 text-xs p-0 h-auto gap-1 font-semibold hover:bg-transparent"
+                className="text-secondary hover:text-secondary/80 text-xs p-0 h-auto gap-1 font-semibold hover:bg-transparent"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Traveler
               </Button>
@@ -314,11 +314,10 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
               <button
                 type="button"
                 onClick={() => setGateway("razorpay")}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                  gateway === "razorpay"
-                    ? "border-[#769ABC] ring-2 ring-[#769ABC]/10 bg-[#769ABC]/5 text-[#769ABC] font-semibold shadow-sm"
-                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                }`}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${gateway === "razorpay"
+                  ? "border-secondary ring-2 ring-secondary/10 bg-secondary/5 text-secondary font-semibold shadow-sm"
+                  : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                  }`}
               >
                 <span className="text-sm font-semibold">Razorpay</span>
                 <span className="text-[9px] text-slate-400 mt-0.5">Cards / UPI / NetBanking</span>
@@ -326,11 +325,10 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
               <button
                 type="button"
                 onClick={() => setGateway("stripe")}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                  gateway === "stripe"
-                    ? "border-[#769ABC] ring-2 ring-[#769ABC]/10 bg-[#769ABC]/5 text-[#769ABC] font-semibold shadow-sm"
-                    : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                }`}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${gateway === "stripe"
+                  ? "border-secondary ring-2 ring-secondary/10 bg-secondary/5 text-secondary font-semibold shadow-sm"
+                  : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                  }`}
               >
                 <span className="text-sm font-semibold">Stripe</span>
                 <span className="text-[9px] text-slate-400 mt-0.5">Global Card Checkout</span>
@@ -350,7 +348,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
             </div>
             <div className="flex justify-between font-bold text-md border-t border-slate-200 pt-2.5 mt-1">
               <span className="text-slate-900">Total Price</span>
-              <span className="text-lg text-[#769ABC] font-bold">
+              <span className="text-lg text-secondary font-bold">
                 {formatCurrency(totalAmount, currency)}
               </span>
             </div>
@@ -360,7 +358,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-[#769ABC] to-[#1A3B5A] hover:from-[#769ABC]/95 hover:to-[#1A3B5A]/95 hover:scale-[1.01] active:scale-[0.99] transition-all text-white font-bold py-6 rounded-xl shadow-lg gap-2 cursor-pointer border-0"
+            className="w-full bg-gradient-to-r from-secondary to-secondary hover:from-secondary/95 hover:to-secondary/95 hover:scale-[1.01] active:scale-[0.99] transition-all text-white font-bold py-6 rounded-xl shadow-lg gap-2 cursor-pointer border-0"
           >
             <CreditCard className="h-4 w-4" />
             {loading ? "Initializing Secure Portal..." : "Confirm & Pay Now"}

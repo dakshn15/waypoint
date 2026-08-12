@@ -135,13 +135,13 @@ export function DashboardHeader() {
   function getIcon(type: Notification["type"]) {
     switch (type) {
       case "BOOKING":
-        return <CalendarCheck className="h-4 w-4 text-[#769ABC]" />;
+        return <CalendarCheck className="h-4 w-4 text-secondary" />;
       case "PAYMENT":
-        return <DollarSign className="h-4 w-4 text-[#769ABC]" />;
+        return <DollarSign className="h-4 w-4 text-secondary" />;
       case "TRIP":
-        return <Map className="h-4 w-4 text-[#1A3B5A]" />;
+        return <Map className="h-4 w-4 text-secondary" />;
       case "PROMOTION":
-        return <Sparkles className="h-4 w-4 text-[#E46F44]" />;
+        return <Sparkles className="h-4 w-4 text-primary" />;
       default:
         return <Info className="h-4 w-4 text-slate-500" />;
     }
@@ -157,12 +157,12 @@ export function DashboardHeader() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search packages..."
-            className="pl-9 pr-20 bg-slate-100/70 border-0 focus-visible:ring-[#769ABC] text-sm rounded-lg text-slate-900 placeholder:text-slate-500"
+            className="pl-9 pr-20 bg-slate-100/70 border-0 focus-visible:ring-secondary text-sm rounded-lg text-slate-900 placeholder:text-slate-500"
           />
           <Button
             type="submit"
             size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-md text-xs px-3 cursor-pointer"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-secondary hover:bg-secondary/90 text-white rounded-md text-xs px-3 cursor-pointer"
           >
             Search
           </Button>
@@ -176,7 +176,7 @@ export function DashboardHeader() {
           <DropdownMenuTrigger className="h-9 w-9 relative flex items-center justify-center rounded-full hover:bg-slate-100 border border-slate-200 focus:outline-none transition-colors cursor-pointer">
             <Bell className="h-4 w-4 text-slate-600" />
             {unreadCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px] font-bold bg-[#E46F44] border-white border-2 text-white">
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px] font-bold bg-primary border-white border-2 text-white">
                 {unreadCount}
               </Badge>
             )}
@@ -187,7 +187,7 @@ export function DashboardHeader() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="text-[10px] text-[#769ABC] hover:underline flex items-center gap-1 font-medium bg-transparent border-0 cursor-pointer"
+                  className="text-[10px] text-secondary hover:underline flex items-center gap-1 font-medium bg-transparent border-0 cursor-pointer"
                 >
                   <Check className="h-3 w-3" /> Mark all as read
                 </button>
@@ -204,23 +204,21 @@ export function DashboardHeader() {
                   <DropdownMenuItem
                     key={notif.id}
                     onClick={() => !notif.read && markAsRead(notif.id)}
-                    className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer text-left ${
-                      notif.read ? "opacity-75" : "bg-slate-50"
-                    }`}
+                    className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer text-left ${notif.read ? "opacity-75" : "bg-slate-50"
+                      }`}
                   >
                     <div className="mt-0.5 rounded-lg bg-slate-100 p-1.5 shrink-0">
                       {getIcon(notif.type)}
                     </div>
                     <div className="flex-1 space-y-0.5 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <p className={`text-xs font-medium truncate ${
-                          notif.read ? "text-slate-600" : "text-slate-900"
-                        }`}>
+                        <p className={`text-xs font-medium truncate ${notif.read ? "text-slate-600" : "text-slate-900"
+                          }`}>
                           {notif.title}
                         </p>
                         <div className="flex items-center gap-1 shrink-0">
                           {!notif.read && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#E46F44]" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                           )}
                           <button
                             onClick={(e) => deleteNotification(notif.id, e)}

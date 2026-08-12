@@ -275,13 +275,13 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <div className="relative group">
                     <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
                       {profileImage ? <AvatarImage src={profileImage} className="object-cover" /> : null}
-                      <AvatarFallback className="bg-gradient-to-br from-[#1A3B5A] to-[#769ABC] text-white text-3xl font-bold">
+                      <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary text-white text-3xl font-bold">
                         {profileName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <Label
                       htmlFor="avatar-file"
-                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
+                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-secondary hover:bg-secondary text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
                     >
                       <Camera className="h-3.5 w-3.5" />
                     </Label>
@@ -291,7 +291,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <div className="text-center sm:text-left space-y-1">
                     <h4 className="text-lg font-bold text-slate-900">{profileName}</h4>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1A3B5A]/10 text-[#1A3B5A]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary">
                       {user.role}
                     </span>
                   </div>
@@ -348,7 +348,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                    className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Save Changes
@@ -431,7 +431,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                      className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
                       Update Password
@@ -446,9 +446,9 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
               <CardContent className="p-6">
                 <SectionHeading icon={ShieldCheck} title="Two-Factor Authentication" desc="Add an extra layer of protection to your account with 2FA." />
 
-                <div className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-[#769ABC]/10 to-[#E8AA9B]/10 border border-[#769ABC]/30">
+                <div className="flex items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-secondary/10 to-[#E8AA9B]/10 border border-secondary/30">
                   <div className="flex items-center gap-4">
-                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${tfaEnabled ? 'bg-[#769ABC]' : 'bg-slate-300'} transition-colors`}>
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${tfaEnabled ? 'bg-secondary' : 'bg-slate-300'} transition-colors`}>
                       <ShieldCheck className="h-5 w-5 text-white" />
                     </div>
                     <div>
@@ -554,7 +554,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                 <div className="flex justify-end pt-5 mt-5 border-t border-slate-100">
                   <Button
                     type="submit"
-                    className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                    className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     <Save className="h-4 w-4" /> Save Preferences
                   </Button>
@@ -677,7 +677,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="h-11 bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                      className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       Save Agency Profile

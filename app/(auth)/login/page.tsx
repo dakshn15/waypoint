@@ -29,7 +29,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     await signIn.email({
       email,
       password,
@@ -62,11 +62,11 @@ export default function LoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="m@example.com" 
-              required 
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-white border-slate-200"
@@ -75,24 +75,24 @@ export default function LoginPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-sm font-medium text-[#769ABC] hover:underline">
+              <Link href="/forgot-password" className="text-sm font-medium text-secondary hover:underline">
                 Forgot password?
               </Link>
             </div>
-            <Input 
-              id="password" 
-              type="password" 
-              required 
+            <Input
+              id="password"
+              type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="bg-white border-slate-200"
             />
           </div>
-          <Button type="submit" className="w-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl h-11" disabled={loading}>
+          <Button type="submit" className="w-full bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
-        
+
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-slate-200" />
@@ -103,7 +103,7 @@ export default function LoginPage() {
             </span>
           </div>
         </div>
-        
+
         <Button variant="outline" type="button" className="w-full border-slate-200 rounded-xl h-11 font-semibold" onClick={handleGoogleLogin}>
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
@@ -129,7 +129,7 @@ export default function LoginPage() {
       <CardFooter className="flex flex-col gap-4 text-center">
         <div className="text-sm text-slate-500">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-[#769ABC] hover:underline font-medium">
+          <Link href="/register" className="text-secondary hover:underline font-medium">
             Sign up
           </Link>
         </div>

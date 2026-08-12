@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Mail, Phone, MapPin, Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 export default function ContactPage() {
   const { data: session } = useSession();
@@ -32,35 +33,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:text-[#769ABC] transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            {session?.user ? (
-              <Link href="/dashboard">
-                <Button className="bg-[#769ABC] hover:bg-[#769ABC]/90 text-white rounded-full px-6">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
+      <SiteHeader userSession={session} />
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto max-w-5xl px-4 py-16">
+      <main className="flex-grow container mx-auto max-w-5xl px-4 py-16 md:pt-36 pt-28">
         <div className="text-center space-y-4 mb-16">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">
-            Contact <span className="text-[#E46F44]">Support</span>
+            Contact <span className="text-primary">Support</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Have questions about our travel planner or looking to onboard your travel agency? We are here to help.
@@ -73,7 +53,7 @@ export default function ContactPage() {
             <Card className="glass-card">
               <CardContent className="p-6 space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2 text-slate-900">
-                  <MessageSquare className="h-5 w-5 text-[#769ABC]" />
+                  <MessageSquare className="h-5 w-5 text-secondary" />
                   Contact Info
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
@@ -85,7 +65,7 @@ export default function ContactPage() {
                     <Mail className="h-5 w-5 text-slate-400 shrink-0" />
                     <div>
                       <p className="font-semibold text-slate-900">Support Email</p>
-                      <a href="mailto:support@waypoint.dev" className="text-[#769ABC] hover:underline">
+                      <a href="mailto:support@waypoint.dev" className="text-secondary hover:underline">
                         support@waypoint.dev
                       </a>
                     </div>
@@ -174,7 +154,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-[#1A3B5A] hover:bg-[#769ABC] text-white gap-2"
+                    className="w-full bg-secondary hover:bg-secondary text-white gap-2"
                   >
                     <Send className="h-4 w-4" />
                     {submitting ? "Sending..." : "Submit Message"}
@@ -185,6 +165,8 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

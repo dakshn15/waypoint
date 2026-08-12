@@ -238,9 +238,9 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
       case "ADMIN":
         return <Badge className="bg-rose-500/15 text-rose-500 border border-rose-500/25">Admin</Badge>;
       case "AGENCY":
-        return <Badge className="bg-[#769ABC]/15 text-[#769ABC] border border-[#769ABC]/25">Agency</Badge>;
+        return <Badge className="bg-secondary/15 text-secondary border border-secondary/25">Agency</Badge>;
       case "STAFF":
-        return <Badge className="bg-[#1A3B5A]/15 text-[#1A3B5A] border border-[#1A3B5A]/25">Staff</Badge>;
+        return <Badge className="bg-secondary/15 text-secondary border border-secondary/25">Staff</Badge>;
       default:
         return <Badge variant="outline" className="text-muted-foreground border-slate-300">Traveler</Badge>;
     }
@@ -277,7 +277,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl gap-1.5 shadow-sm transition-all"
+              className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl gap-1.5 shadow-sm transition-all"
             >
               <Plus className="h-4 w-4" />
               Add User
@@ -314,7 +314,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                   >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#769ABC] to-[#E8AA9B] flex items-center justify-center text-white font-semibold text-sm">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-secondary to-[#E8AA9B] flex items-center justify-center text-white font-semibold text-sm">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <span className="font-semibold text-slate-900">
@@ -352,7 +352,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpenEdit(user)} className="cursor-pointer">
-                              <Edit2 className="mr-2 h-4 w-4 text-[#769ABC]" />
+                              <Edit2 className="mr-2 h-4 w-4 text-secondary" />
                               Edit User Details
                             </DropdownMenuItem>
                             <DropdownMenuItem
@@ -477,7 +477,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
+                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register User"}
               </Button>
@@ -583,7 +583,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1A3B5A] hover:bg-[#769ABC] text-white font-semibold rounded-xl px-5"
+                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>
