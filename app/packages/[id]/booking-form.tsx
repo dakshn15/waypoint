@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash, Calendar, Users, CreditCard } from "lucide-react";
+import { Plus, Trash2, Users, CreditCard, ShieldCheck, ArrowRight, Clock, CalendarDays, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createBooking } from "@/app/actions/bookings";
@@ -33,10 +32,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
-      if ((window as any).Razorpay) {
-        resolve(true);
-        return;
-      }
+      if ((window as any).Razorpay) { resolve(true); return; }
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
@@ -46,10 +42,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
   };
 
   const handleAddTraveler = () => {
-    if (travelers.length >= 10) {
-      toast.error("Maximum 10 travelers allowed per booking.");
-      return;
-    }
+    if (travelers.length >= 10) { toast.error("Maximum 10 travelers allowed."); return; }
     setTravelers([...travelers, { name: "", age: "" }]);
   };
 
@@ -60,6 +53,10 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
   const handleTravelerChange = (index: number, field: "name" | "age", value: string) => {
     const updated = [...travelers];
+    if (field === "age") {
+      const num = parseInt(value);
+      if (value && (num < 0 || num > 120)) return;
+    }
     updated[index][field] = value;
     setTravelers(updated);
   };
@@ -68,303 +65,282 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!travelDate) {
-      toast.error("Please select a travel date.");
-      return;
-    }
-
-    // Validate travelers
+    if (!travelDate) { toast.error("Please select a travel date."); return; }
     for (let i = 0; i < travelers.length; i++) {
-      if (!travelers[i].name.trim()) {
-        toast.error(`Please enter a name for traveler #${i + 1}`);
-        return;
-      }
-      if (!travelers[i].age.trim() || isNaN(parseInt(travelers[i].age))) {
-        toast.error(`Please enter a valid age for traveler #${i + 1}`);
-        return;
-      }
+      if (!travelers[i].name.trim()) { toast.error(`Please enter a name for traveler #${i + 1}`); return; }
+      if (!travelers[i].age.trim() || isNaN(parseInt(travelers[i].age))) { toast.error(`Please enter a valid age for traveler #${i + 1}`); return; }
     }
 
     setLoading(true);
     try {
-      const formattedTravelers = travelers.map((t) => ({
-        name: t.name,
-        age: parseInt(t.age),
-      }));
-
-      // 1. Create Booking in database
-      const booking = await createBooking({
-        packageId,
-        travelDate,
-        travelers: formattedTravelers,
-        specialRequests,
-        totalAmount,
-        currency,
-      });
-
-      // 2. Initiate Payment Session
-      const paymentResponse = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookingId: booking.id,
-          gateway,
-        }),
-      });
-
+      const formattedTravelers = travelers.map((t) => ({ name: t.name, age: parseInt(t.age) }));
+      const booking = await createBooking({ packageId, travelDate, travelers: formattedTravelers, specialRequests, totalAmount, currency });
+      const paymentResponse = await fetch("/api/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bookingId: booking.id, gateway }) });
       const paymentData = await paymentResponse.json();
-
-      if (!paymentResponse.ok) {
-        throw new Error(paymentData.error || "Payment session initiation failed");
-      }
+      if (!paymentResponse.ok) throw new Error(paymentData.error || "Payment session initiation failed");
 
       if (gateway === "stripe") {
-        if (paymentData.sessionUrl) {
-          toast.success("Redirecting to Stripe payment gateway...");
-          window.location.href = paymentData.sessionUrl;
-        } else {
-          throw new Error("Stripe session URL not returned from server");
-        }
+        if (paymentData.sessionUrl) { toast.success("Redirecting to Stripe..."); window.location.href = paymentData.sessionUrl; }
+        else throw new Error("Stripe session URL not returned");
       } else if (gateway === "razorpay") {
         const isLoaded = await loadRazorpayScript();
-        if (!isLoaded) {
-          throw new Error("Failed to load Razorpay SDK. Please check your network connection.");
-        }
-
-        toast.info("Opening Razorpay payment portal...");
-
+        if (!isLoaded) throw new Error("Failed to load Razorpay SDK.");
+        toast.info("Opening Razorpay...");
         const options = {
-          key: paymentData.key,
-          amount: paymentData.amount,
-          currency: paymentData.currency,
-          name: "Waypoint Travel",
-          description: `Booking #${booking.bookingNumber}`,
-          order_id: paymentData.orderId,
+          key: paymentData.key, amount: paymentData.amount, currency: paymentData.currency,
+          name: "Waypoint Travel", description: `Booking #${booking.bookingNumber}`, order_id: paymentData.orderId,
           handler: async function (response: any) {
             setLoading(true);
             try {
-              // 3. Verify Payment
-              const verifyResponse = await fetch("/api/payments/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  gateway: "razorpay",
-                  bookingId: booking.id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              });
-
+              const verifyResponse = await fetch("/api/payments/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ gateway: "razorpay", bookingId: booking.id, razorpay_order_id: response.razorpay_order_id, razorpay_payment_id: response.razorpay_payment_id, razorpay_signature: response.razorpay_signature }) });
               const verifyData = await verifyResponse.json();
-              if (verifyData.success) {
-                toast.success("Payment verified successfully! Welcome aboard.");
-                router.push("/dashboard/bookings?payment=success");
-              } else {
-                toast.error(verifyData.error || "Payment verification failed.");
-              }
-            } catch (err: any) {
-              toast.error("Failed to verify Razorpay signature.");
-            } finally {
-              setLoading(false);
-            }
+              if (verifyData.success) { toast.success("Payment verified!"); router.push("/dashboard/bookings?payment=success"); }
+              else toast.error(verifyData.error || "Payment verification failed.");
+            } catch { toast.error("Failed to verify payment."); } finally { setLoading(false); }
           },
-          prefill: {
-            name: travelers[0]?.name || "",
-          },
-          theme: {
-            color: "#0D9488",
-          },
+          prefill: { name: travelers[0]?.name || "" },
+          theme: { color: "#E46F44" },
         };
-
         const rzp = new (window as any).Razorpay(options);
         rzp.open();
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to create booking. Please log in first.");
-      if (err.message?.includes("logged in")) {
-        router.push("/login");
-      }
-    } finally {
-      setLoading(false);
-    }
+      if (err.message?.includes("logged in")) router.push("/login");
+    } finally { setLoading(false); }
   };
 
+  const availableDates = departureDates && departureDates.length > 0
+    ? departureDates
+    : [new Date(Date.now() + 864e5 * 10), new Date(Date.now() + 864e5 * 20), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)];
+
   return (
-    <Card className="glass-card sticky top-24 border border-slate-200 shadow-2xl rounded-2xl overflow-hidden">
-      <CardHeader className="bg-slate-50/50 border-b border-slate-200 py-4 px-6">
-        <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-900">
-          <Calendar className="h-5 w-5 text-secondary" />
-          Book Your Journey
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Travel Date */}
-          <div className="space-y-2">
-            <Label htmlFor="travelDate" className="text-xs font-semibold text-slate-700">Departure Date <span className="text-red-500">*</span></Label>
-            <Select value={travelDate} onValueChange={(v: string | null) => v && setTravelDate(v)}>
-              <SelectTrigger className="w-full h-11 bg-white border border-slate-200 rounded-xl px-3.5 text-sm">
-                <SelectValue placeholder="Choose a date..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(departureDates && departureDates.length > 0
-                  ? departureDates
-                  : [
-                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 10),
-                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 20),
-                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
-                    new Date(Date.now() + 24 * 60 * 60 * 1000 * 45),
-                  ]
-                ).map((dateObj, i) => {
-                  const d = new Date(dateObj);
-                  return (
-                    <SelectItem key={i} value={d.toISOString().split("T")[0]}>
-                      {formatDate(d)}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+
+      {/* ═══ Price Header ═══ */}
+      <div className="px-6 pt-6 pb-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+        {/* Subtle pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Starting from</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+              <Clock className="h-3 w-3" />
+              {duration}D / {duration - 1}N
+            </span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl font-extrabold font-display tracking-tight">
+              {formatCurrency(basePrice, currency)}
+            </span>
+            <span className="text-sm text-white/40 font-medium">/person</span>
+          </div>
+        </div>
+      </div>
+
+
+      {/* ═══ Form Body ═══ */}
+      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+        {/* ── 1. Departure Date ── */}
+        <div className="space-y-2.5">
+          <label className="text-[13px] font-bold text-slate-800 block">
+            Departure Date <span className="text-primary text-xs">*</span>
+          </label>
+          <Select value={travelDate} onValueChange={(v: string | null) => v && setTravelDate(v)}>
+            <SelectTrigger className="w-full !h-12 data-[size=default]:!h-12 bg-[#FAFAF9] border border-slate-200 rounded-xl px-4 text-sm hover:border-slate-300 focus-visible:ring-2 focus-visible:!ring-primary/15 focus-visible:!border-primary/40 transition-all cursor-pointer">
+              <div className="flex items-center gap-2.5">
+                <CalendarDays className="h-4 w-4 text-slate-400 shrink-0" />
+                <SelectValue placeholder="Choose your travel date" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border border-slate-200 shadow-lg p-1.5 bg-white" alignItemWithTrigger={false} sideOffset={6}>
+              {availableDates.map((dateObj, i) => {
+                const d = new Date(dateObj);
+                return (
+                  <SelectItem
+                    key={i}
+                    value={d.toISOString().split("T")[0]}
+                    className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 focus:bg-primary/5 focus:text-slate-900 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <CalendarDays className="h-3.5 w-3.5 text-primary/60 shrink-0" />
+                      <span>{formatDate(d)}</span>
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+
+
+        {/* ── 2. Travelers ── */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-[13px] font-bold text-slate-800 flex items-center gap-1.5">
+              Travelers <span className="text-primary text-xs">*</span>
+              <span className="text-[11px] font-normal text-slate-400">({travelers.length})</span>
+            </label>
+            <button
+              type="button"
+              onClick={handleAddTraveler}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/5 text-[11px] font-bold text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+            >
+              <Plus className="h-3 w-3" /> Add traveler
+            </button>
           </div>
 
-          {/* Travelers List */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                <Users className="h-4 w-4 text-slate-400" />
-                Traveler Details <span className="text-red-500">*</span>
-              </Label>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleAddTraveler}
-                className="text-secondary hover:text-secondary/80 text-xs p-0 h-auto gap-1 font-semibold hover:bg-transparent"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add Traveler
-              </Button>
-            </div>
-
-            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-              {travelers.map((traveler, index) => (
-                <div key={index} className="flex gap-2 items-center bg-slate-50 p-3 rounded-xl border border-slate-200 transition-colors">
-                  <span className="text-xs font-bold text-slate-400 min-w-[1.25rem]">
-                    #{index + 1}
-                  </span>
-                  <div className="flex-1 grid grid-cols-4 gap-2">
-                    <div className="col-span-3">
-                      <Input
-                        placeholder="Full Name"
-                        value={traveler.name}
-                        required
-                        onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
-                        className="h-9 text-xs bg-white border-slate-200 rounded-lg"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <Input
-                        placeholder="Age"
-                        type="number"
-                        min={1}
-                        max={120}
-                        value={traveler.age}
-                        required
-                        onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
-                        className="h-9 text-xs bg-white border-slate-200 rounded-lg text-center"
-                      />
-                    </div>
-                  </div>
+          {/* Scrollable traveler list — shows ~3, rest scroll */}
+          <div className="space-y-2.5 max-h-[280px] overflow-y-auto pr-0.5 scrollbar-thin">
+            {travelers.map((traveler, index) => (
+              <div key={index} className="rounded-xl border border-slate-200 bg-[#FAFAF9] p-3 space-y-2">
+                {/* Row header */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-400">Traveler {index + 1}</span>
                   {travelers.length > 1 && (
-                    <Button
+                    <button
                       type="button"
-                      variant="ghost"
-                      size="icon"
                       onClick={() => handleRemoveTraveler(index)}
-                      className="h-9 w-9 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg shrink-0"
+                      className="text-[11px] font-medium text-rose-400 hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-0.5"
                     >
-                      <Trash className="h-3.5 w-3.5" />
-                    </Button>
+                      <Trash2 className="h-3 w-3" /> Remove
+                    </button>
                   )}
                 </div>
-              ))}
-            </div>
+                {/* Fields row */}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Full name"
+                    value={traveler.name}
+                    required
+                    onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
+                    className="h-10 text-sm bg-white border-slate-200 rounded-lg flex-1 focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:border-primary/30"
+                  />
+                  <Input
+                    placeholder="Age"
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={traveler.age}
+                    required
+                    onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
+                    className="h-10 text-sm bg-white border-slate-200 rounded-lg w-20 text-center focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:border-primary/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Special Requests */}
-          <div className="space-y-2">
-            <Label htmlFor="specialRequests" className="text-xs font-semibold text-slate-700">Special Requests (Optional)</Label>
-            <Textarea
-              id="specialRequests"
-              placeholder="e.g. Dietary preferences, room configurations..."
-              value={specialRequests}
-              onChange={(e) => setSpecialRequests(e.target.value)}
-              className="bg-white text-xs border border-slate-200 rounded-xl"
-              rows={2}
-            />
-          </div>
 
-          {/* Payment Method Selector */}
-          <div className="space-y-2.5 border-t border-slate-200 pt-4">
-            <Label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-              <CreditCard className="h-4 w-4 text-slate-400" />
-              Choose Payment Gateway
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
+        {/* ── 3. Special Requests ── */}
+        <div className="space-y-2.5">
+          <label className="text-[13px] font-bold text-slate-800 block">
+            Special Requests <span className="text-xs font-normal text-slate-400">(Optional)</span>
+          </label>
+          <Textarea
+            id="specialRequests"
+            placeholder="Dietary preferences, room configurations, accessibility needs..."
+            value={specialRequests}
+            onChange={(e) => setSpecialRequests(e.target.value)}
+            className="bg-[#FAFAF9] text-sm border border-slate-200 rounded-xl resize-none focus:bg-white focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:border-primary/30 transition-colors"
+            rows={2}
+          />
+        </div>
+
+
+        {/* ── 4. Payment Method ── */}
+        <div className="space-y-3 border-t border-slate-100 pt-5">
+          <label className="text-[13px] font-bold text-slate-800 block">
+            Payment Method
+          </label>
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { key: "razorpay" as const, name: "Razorpay", desc: "UPI • Cards • NetBanking" },
+              { key: "stripe" as const, name: "Stripe", desc: "International Cards" },
+            ].map((g) => (
               <button
+                key={g.key}
                 type="button"
-                onClick={() => setGateway("razorpay")}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${gateway === "razorpay"
-                  ? "border-secondary ring-2 ring-secondary/10 bg-secondary/5 text-secondary font-semibold shadow-sm"
-                  : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                  }`}
+                onClick={() => setGateway(g.key)}
+                className={`relative p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                  gateway === g.key
+                    ? "border-primary bg-primary/5"
+                    : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                }`}
               >
-                <span className="text-sm font-semibold">Razorpay</span>
-                <span className="text-[9px] text-slate-400 mt-0.5">Cards / UPI / NetBanking</span>
+                {/* Radio indicator */}
+                <div className={`absolute top-3 right-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                  gateway === g.key ? "border-primary bg-primary" : "border-slate-300"
+                }`}>
+                  {gateway === g.key && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                  )}
+                </div>
+                <span className={`text-sm font-bold block ${gateway === g.key ? "text-slate-900" : "text-slate-600"}`}>
+                  {g.name}
+                </span>
+                <span className="text-[11px] text-slate-400 block mt-0.5">{g.desc}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setGateway("stripe")}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${gateway === "stripe"
-                  ? "border-secondary ring-2 ring-secondary/10 bg-secondary/5 text-secondary font-semibold shadow-sm"
-                  : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                  }`}
-              >
-                <span className="text-sm font-semibold">Stripe</span>
-                <span className="text-[9px] text-slate-400 mt-0.5">Global Card Checkout</span>
-              </button>
-            </div>
+            ))}
           </div>
+        </div>
 
-          {/* Price Summary */}
-          <div className="border border-dashed border-slate-200 p-4 rounded-xl bg-slate-50/50 space-y-2">
-            <div className="flex justify-between text-xs text-slate-500">
-              <span>Base price (per person)</span>
-              <span className="font-semibold text-slate-800">{formatCurrency(basePrice, currency)}</span>
-            </div>
-            <div className="flex justify-between text-xs text-slate-500">
-              <span>Total travelers</span>
-              <span className="font-semibold text-slate-800">x {travelers.length}</span>
-            </div>
-            <div className="flex justify-between font-bold text-md border-t border-slate-200 pt-2.5 mt-1">
-              <span className="text-slate-900">Total Price</span>
-              <span className="text-lg text-secondary font-bold">
-                {formatCurrency(totalAmount, currency)}
+
+        {/* ── 5. Price Breakdown ── */}
+        <div className="rounded-xl bg-[#FAFAF9] border border-slate-100 overflow-hidden">
+          <div className="p-4 space-y-2.5">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">
+                {formatCurrency(basePrice, currency)} × {travelers.length} traveler{travelers.length !== 1 ? "s" : ""}
               </span>
+              <span className="font-semibold text-slate-700">{formatCurrency(totalAmount, currency)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">Trip duration</span>
+              <span className="font-semibold text-slate-700">{duration} Days / {duration - 1} Nights</span>
             </div>
           </div>
+          <div className="border-t border-slate-200 bg-white px-4 py-3.5 flex justify-between items-center">
+            <span className="text-sm font-bold text-slate-900">Total Amount</span>
+            <span className="text-xl font-extrabold text-primary font-display">
+              {formatCurrency(totalAmount, currency)}
+            </span>
+          </div>
+        </div>
 
-          {/* Submit */}
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-secondary to-secondary hover:from-secondary/95 hover:to-secondary/95 hover:scale-[1.01] active:scale-[0.99] transition-all text-white font-bold py-6 rounded-xl shadow-lg gap-2 cursor-pointer border-0"
-          >
-            <CreditCard className="h-4 w-4" />
-            {loading ? "Initializing Secure Portal..." : "Confirm & Pay Now"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+
+        {/* ── 6. CTA Button ── */}
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all gap-2 cursor-pointer text-sm"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+              Processing...
+            </span>
+          ) : (
+            <>Confirm & Pay <ArrowRight className="h-4 w-4" /></>
+          )}
+        </Button>
+
+        {/* Trust */}
+        <div className="flex items-center justify-center gap-4 pt-1">
+          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+            <ShieldCheck className="h-3 w-3 text-emerald-500" />
+            <span>Secure checkout</span>
+          </div>
+          <div className="w-px h-3 bg-slate-200" />
+          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+            <CreditCard className="h-3 w-3 text-slate-400" />
+            <span>Instant confirmation</span>
+          </div>
+        </div>
+
+      </form>
+    </div>
   );
 }

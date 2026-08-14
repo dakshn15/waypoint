@@ -1,104 +1,104 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { Badge } from "@/components/ui/badge";
-import { Clock, Star, ArrowLeft, ShieldCheck, Check, X, MapPin, CalendarDays, Hotel, Plane } from "lucide-react";
+import { Clock, Star, MapPin, CalendarDays, Hotel, Plane, Check, X, ShieldCheck, ChevronRight, Sparkles, Users, Mountain, Utensils, Camera, ShoppingBag, Bus, Coffee } from "lucide-react";
 import Link from "next/link";
 import BookingForm from "./booking-form";
 import { FavoriteButton } from "@/components/favorite-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 
-// Demo data for fallback
+/* ═══════════════════════════════════════════════════════
+   DESTINATION IMAGES
+   ═══════════════════════════════════════════════════════ */
+const DESTINATION_IMAGES: Record<string, string> = {
+  delhi: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=1200&auto=format&fit=crop",
+  agra: "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1200&auto=format&fit=crop",
+  jaipur: "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=1200&auto=format&fit=crop",
+  kochi: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=1200&auto=format&fit=crop",
+  munnar: "https://images.unsplash.com/photo-1516815231560-d1bbd6c13a5c?q=80&w=1200&auto=format&fit=crop",
+  alleppey: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?q=80&w=1200&auto=format&fit=crop",
+  manali: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=1200&auto=format&fit=crop",
+  leh: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
+  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
+  udaipur: "https://images.unsplash.com/photo-1568495248636-6432b97bd949?q=80&w=1200&auto=format&fit=crop",
+  jodhpur: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=1200&auto=format&fit=crop",
+  jaisalmer: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=1200&auto=format&fit=crop",
+  shillong: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?q=80&w=1200&auto=format&fit=crop",
+  kaziranga: "https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=1200&auto=format&fit=crop",
+  "north goa": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
+  "south goa": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
+  "nubra valley": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
+  cherrapunji: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?q=80&w=1200&auto=format&fit=crop",
+};
+const FALLBACK_HERO = [
+  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1200&auto=format&fit=crop",
+];
+
+function getHeroImage(destinations: string[]): string {
+  for (const dest of destinations) {
+    const key = dest.toLowerCase().trim();
+    if (DESTINATION_IMAGES[key]) return DESTINATION_IMAGES[key];
+    const first = key.split(" ")[0];
+    if (DESTINATION_IMAGES[first]) return DESTINATION_IMAGES[first];
+  }
+  return FALLBACK_HERO[0];
+}
+
+/* ═══════════════════════════════════════════════════════
+   DEMO PACKAGES
+   ═══════════════════════════════════════════════════════ */
 const DEMO_PACKAGES = [
   {
-    id: "1",
-    title: "Golden Triangle Tour",
-    description: "Explore Delhi, Agra, and Jaipur — India's most iconic destinations.",
-    highlights: ["Visit the Taj Mahal at sunrise", "Explore Jaipur's Amber Fort", "Shop in historic Delhi markets"],
+    id: "1", title: "Golden Triangle Tour",
+    description: "Explore Delhi, Agra, and Jaipur — India's most iconic destinations. Walk through centuries of Mughal grandeur, vibrant bazaars, and pink-walled palaces on this classic heritage trail.",
+    highlights: ["Visit the Taj Mahal at sunrise", "Explore Jaipur's Amber Fort", "Shop in historic Delhi markets", "Heritage walk through Old Delhi"],
     inclusions: ["4-star hotel stays", "Daily breakfast", "Private AC car and driver", "Local tour guides"],
     exclusions: ["Monument entry fees", "Lunch & dinner", "Flights/trains to Delhi", "Personal expenses"],
-    destinations: ["Delhi", "Agra", "Jaipur"],
-    duration: 7,
-    basePrice: 24999,
-    currency: "INR",
-    rating: 4.8,
-    reviews: 124,
-    difficulty: "EASY",
+    destinations: ["Delhi", "Agra", "Jaipur"], duration: 7, basePrice: 24999, currency: "INR", rating: 4.8, reviews: 124, difficulty: "EASY",
   },
   {
-    id: "2",
-    title: "Kerala Backwaters Bliss",
-    description: "Cruise through serene backwaters, explore tea gardens, and relax on pristine beaches.",
-    highlights: ["Overnight stay in a private luxury houseboat", "Explore Munnar's sprawling tea estates", "Relax on Kovalam's sandy shores"],
+    id: "2", title: "Kerala Backwaters Bliss",
+    description: "Cruise through serene backwaters, explore tea gardens, and relax on pristine beaches. Experience the lush green paradise of God's own country.",
+    highlights: ["Overnight stay in a private luxury houseboat", "Explore Munnar's sprawling tea estates", "Relax on Kovalam's sandy shores", "Traditional Kathakali performance"],
     inclusions: ["3-star resort stays & houseboat", "Houseboat meals included", "AC sedan transportation", "Spice plantation tour"],
     exclusions: ["Airfare/train fare", "Sightseeing entry charges", "Any activities like boat ride/jeep safari", "Tips"],
-    destinations: ["Kochi", "Munnar", "Alleppey"],
-    duration: 5,
-    basePrice: 18999,
-    currency: "INR",
-    rating: 4.9,
-    reviews: 89,
-    difficulty: "EASY",
+    destinations: ["Kochi", "Munnar", "Alleppey"], duration: 5, basePrice: 18999, currency: "INR", rating: 4.9, reviews: 89, difficulty: "EASY",
   },
   {
-    id: "3",
-    title: "Himalayan Adventure",
-    description: "Trek through breathtaking mountain trails and experience Himalayan culture.",
-    highlights: ["Drive through high-altitude Khardung La pass", "Camp under the stars in Nubra Valley", "Visit Pangong Lake on the Indo-China border"],
+    id: "3", title: "Himalayan Adventure",
+    description: "Trek through breathtaking mountain trails and experience Himalayan culture. Conquer the world's highest motorable passes and camp under star-filled skies.",
+    highlights: ["Drive through high-altitude Khardung La pass", "Camp under the stars in Nubra Valley", "Visit Pangong Lake on the Indo-China border", "White-water rafting in Zanskar"],
     inclusions: ["Camp & hotel accommodations", "Breakfast & Dinner", "Inner Line Permits", "Oxygen cylinders in vehicle"],
     exclusions: ["Flights to/from Leh", "Lunch", "Adventure activities like rafting", "Travel insurance"],
-    destinations: ["Manali", "Leh", "Nubra Valley"],
-    duration: 10,
-    basePrice: 35999,
-    currency: "INR",
-    rating: 4.7,
-    reviews: 67,
-    difficulty: "CHALLENGING",
+    destinations: ["Manali", "Leh", "Nubra Valley"], duration: 10, basePrice: 35999, currency: "INR", rating: 4.7, reviews: 67, difficulty: "CHALLENGING",
   },
   {
-    id: "4",
-    title: "Goa Beach Paradise",
-    description: "Sun, sand, and seafood — the ultimate Goa beach vacation experience.",
-    highlights: ["Enjoy water sports on Baga Beach", "Explore historic Portuguese churches", "Watch sunset from Chapora Fort"],
+    id: "4", title: "Goa Beach Paradise",
+    description: "Sun, sand, and seafood — the ultimate Goa beach vacation experience. From thrilling water sports to peaceful sunset cruises along the Arabian Sea.",
+    highlights: ["Enjoy water sports on Baga Beach", "Explore historic Portuguese churches", "Watch sunset from Chapora Fort", "Cruise along the Mandovi river"],
     inclusions: ["Beach resort stay", "Airport transfers", "Scuba diving and water sports package", "South Goa sightseeing"],
     exclusions: ["Meals other than breakfast", "Sightseeing entry fees", "Flight bookings", "Personal expenses"],
-    destinations: ["North Goa", "South Goa"],
-    duration: 4,
-    basePrice: 12999,
-    currency: "INR",
-    rating: 4.6,
-    reviews: 210,
-    difficulty: "EASY",
+    destinations: ["North Goa", "South Goa"], duration: 4, basePrice: 12999, currency: "INR", rating: 4.6, reviews: 210, difficulty: "EASY",
   },
   {
-    id: "5",
-    title: "Rajasthan Royal Heritage",
-    description: "Step back in time to explore majestic forts, palaces, and desert landscapes.",
-    highlights: ["Boat ride on Udaipur's Lake Pichola", "Desert camel safari & camp in Jaisalmer", "Visit Mehrangarh Fort in Jodhpur"],
+    id: "5", title: "Rajasthan Royal Heritage",
+    description: "Step back in time to explore majestic forts, palaces, and desert landscapes. Live like royalty in heritage havelis and witness the golden sands of the Thar.",
+    highlights: ["Boat ride on Udaipur's Lake Pichola", "Desert camel safari & camp in Jaisalmer", "Visit Mehrangarh Fort in Jodhpur", "Traditional Rajasthani folk dinner"],
     inclusions: ["Heritage hotel stays & desert camp", "Breakfast included", "AC SUV transport", "Desert cultural show with dinner"],
     exclusions: ["Flights/trains", "Monument entry tickets", "Guides fee", "Camera charges"],
-    destinations: ["Udaipur", "Jodhpur", "Jaisalmer"],
-    duration: 8,
-    basePrice: 29999,
-    currency: "INR",
-    rating: 4.8,
-    reviews: 93,
-    difficulty: "MODERATE",
+    destinations: ["Udaipur", "Jodhpur", "Jaisalmer"], duration: 8, basePrice: 29999, currency: "INR", rating: 4.8, reviews: 93, difficulty: "MODERATE",
   },
   {
-    id: "6",
-    title: "Northeast Explorer",
-    description: "Discover the untouched beauty of India's northeast — lush valleys and tribal culture.",
-    highlights: ["Visit clean village Mawlynnong", "Trek to Double Decker Living Root Bridges", "Spot one-horned rhinos in Kaziranga"],
+    id: "6", title: "Northeast Explorer",
+    description: "Discover the untouched beauty of India's northeast — lush valleys and tribal culture. Home to living root bridges, rolling hills, and exotic wildlife.",
+    highlights: ["Visit clean village Mawlynnong", "Trek to Double Decker Living Root Bridges", "Spot one-horned rhinos in Kaziranga", "Explore Shillong's Scottish highlands"],
     inclusions: ["Hotel stays", "Daily breakfast", "AC vehicle transport", "Kaziranga Elephant Safari"],
     exclusions: ["Airfare/train fare", "Lunches/dinners", "National park entry and camera fee", "Personal laundry"],
-    destinations: ["Shillong", "Cherrapunji", "Kaziranga"],
-    duration: 6,
-    basePrice: 22999,
-    currency: "INR",
-    rating: 4.9,
-    reviews: 42,
-    difficulty: "MODERATE",
+    destinations: ["Shillong", "Cherrapunji", "Kaziranga"], duration: 6, basePrice: 22999, currency: "INR", rating: 4.9, reviews: 42, difficulty: "MODERATE",
   },
 ];
 
@@ -106,18 +106,14 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+/* ═══════════════════════════════════════════════════════
+   DEMO ITINERARY GENERATOR
+   ═══════════════════════════════════════════════════════ */
 function getDemoItineraries(packageId: string, duration: number, destinations: string[]) {
   const itineraries = [];
   const destName = destinations[0] || "Destination";
 
-  // A pool of unique activities to prevent repetitive days
-  const activityPools: Record<string, {
-    sightseeings: string[];
-    adventures: string[];
-    dinings: string[];
-    shoppings: string[];
-    culturals: string[];
-  }> = {
+  const activityPools: Record<string, { sightseeings: string[]; adventures: string[]; dinings: string[]; shoppings: string[]; culturals: string[] }> = {
     goa: {
       sightseeings: ["Fort Aguada & Lighthouse Walk", "Basilica of Bom Jesus tour", "Dona Paula Viewpoint", "Mangueshi Temple visit"],
       adventures: ["Parasailing & jet-skiing at Baga", "Dudhsagar Waterfalls jeep safari", "Scuba diving at Grand Island", "Crocodile spotting river cruise"],
@@ -153,521 +149,486 @@ function getDemoItineraries(packageId: string, duration: number, destinations: s
     : cleanDestName.includes("delhi") || cleanDestName.includes("jaipur") || cleanDestName.includes("agra") ? "delhi"
       : (cleanDestName.includes("kerala") || cleanDestName.includes("munnar") || cleanDestName.includes("alleppey") || cleanDestName.includes("kochi")) ? "kerala"
         : "generic";
-
   const pool = activityPools[destKey];
 
   for (let i = 1; i <= duration; i++) {
     const dest = destinations[(i - 1) % destinations.length] || destName;
     const isFirstDay = i === 1;
     const isLastDay = i === duration;
-
-    // Choose index modulo list length to avoid undefined
-    const sightIndex1 = (i * 2 - 2) % pool.sightseeings.length;
-    const sightIndex2 = (i * 2 - 1) % pool.sightseeings.length;
-    const advIndex = (i - 1) % pool.adventures.length;
-    const dineIndex1 = (i * 2 - 2) % pool.dinings.length;
-    const dineIndex2 = (i * 2 - 1) % pool.dinings.length;
-    const shopIndex = (i - 1) % pool.shoppings.length;
-    const cultIndex = (i - 1) % pool.culturals.length;
-
-    const dayActivities = [];
+    const sI1 = (i * 2 - 2) % pool.sightseeings.length;
+    const sI2 = (i * 2 - 1) % pool.sightseeings.length;
+    const aI = (i - 1) % pool.adventures.length;
+    const dI1 = (i * 2 - 2) % pool.dinings.length;
+    const dI2 = (i * 2 - 1) % pool.dinings.length;
+    const shI = (i - 1) % pool.shoppings.length;
+    const cI = (i - 1) % pool.culturals.length;
+    const acts = [];
 
     if (isFirstDay) {
-      dayActivities.push({
-        id: `act-${packageId}-${i}-1`,
-        time: "10:00 AM",
-        title: `Arrival at ${dest}`,
-        description: `Meet your driver and transfer to your accommodation. Receive a brief orientation of the local area.`,
-        location: `${dest} Transit Terminal`,
-        duration: "1.5 hours",
-        type: "TRANSPORTATION",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-2`,
-        time: "12:00 PM",
-        title: "Hotel Check-in & Rest",
-        description: `Unpack and refresh at your hotel.`,
-        location: `${dest} Resort`,
-        duration: "1 hour",
-        type: "CHECK_IN",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-3`,
-        time: "02:00 PM",
-        title: pool.dinings[dineIndex1],
-        description: `Savor local flavors at a handpicked restaurant nearby.`,
-        location: `${dest} Market District`,
-        duration: "1.5 hours",
-        type: "DINING",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-4`,
-        time: "04:30 PM",
-        title: pool.sightseeings[sightIndex1],
-        description: `Stroll through iconic streets and landmarks to kick off your trip.`,
-        location: `${dest} Historical Zone`,
-        duration: "2 hours",
-        type: "SIGHTSEEING",
-        cost: 0,
-      });
+      acts.push({ id: `a-${packageId}-${i}-1`, time: "10:00 AM", title: `Arrival at ${dest}`, description: `Meet your driver and transfer to your accommodation.`, location: `${dest} Transit Terminal`, duration: "1.5 hrs", type: "TRANSPORT" });
+      acts.push({ id: `a-${packageId}-${i}-2`, time: "12:00 PM", title: "Hotel Check-in & Rest", description: `Unpack and refresh at your hotel.`, location: `${dest} Resort`, duration: "1 hr", type: "CHECK_IN" });
+      acts.push({ id: `a-${packageId}-${i}-3`, time: "02:00 PM", title: pool.dinings[dI1], description: `Savor local flavors at a handpicked restaurant.`, location: `${dest} Market District`, duration: "1.5 hrs", type: "DINING" });
+      acts.push({ id: `a-${packageId}-${i}-4`, time: "04:30 PM", title: pool.sightseeings[sI1], description: `Stroll through iconic streets and landmarks.`, location: `${dest} Historical Zone`, duration: "2 hrs", type: "SIGHTSEEING" });
     } else if (isLastDay) {
-      dayActivities.push({
-        id: `act-${packageId}-${i}-1`,
-        time: "09:00 AM",
-        title: "Farewell Breakfast & Checkout",
-        description: `Enjoy a final breakfast and check out from your hotel.`,
-        location: `${dest} Accommodation`,
-        duration: "1.5 hours",
-        type: "CHECK_OUT",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-2`,
-        time: "11:00 AM",
-        title: pool.shoppings[shopIndex],
-        description: `Pick up local souvenirs, spices, and gifts for family and friends.`,
-        location: `${dest} Central Market`,
-        duration: "2 hours",
-        type: "SHOPPING",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-3`,
-        time: "01:30 PM",
-        title: pool.dinings[dineIndex2],
-        description: `Enjoy a relaxed final lunch before departure.`,
-        location: `${dest} Food Center`,
-        duration: "1.5 hours",
-        type: "DINING",
-        cost: 0,
-      });
-      dayActivities.push({
-        id: `act-${packageId}-${i}-4`,
-        time: "04:00 PM",
-        title: "Departure Transfer",
-        description: `AC vehicle transfer back to the transit hub for your journey home.`,
-        location: `${dest} Airport/Station`,
-        duration: "1.5 hours",
-        type: "TRANSPORTATION",
-        cost: 0,
-      });
+      acts.push({ id: `a-${packageId}-${i}-1`, time: "09:00 AM", title: "Farewell Breakfast & Checkout", description: `Enjoy a final breakfast and check out.`, location: `${dest} Accommodation`, duration: "1.5 hrs", type: "CHECK_OUT" });
+      acts.push({ id: `a-${packageId}-${i}-2`, time: "11:00 AM", title: pool.shoppings[shI], description: `Pick up souvenirs, spices, and gifts.`, location: `${dest} Central Market`, duration: "2 hrs", type: "SHOPPING" });
+      acts.push({ id: `a-${packageId}-${i}-3`, time: "01:30 PM", title: pool.dinings[dI2], description: `Enjoy a relaxed final lunch before departure.`, location: `${dest} Food Center`, duration: "1.5 hrs", type: "DINING" });
+      acts.push({ id: `a-${packageId}-${i}-4`, time: "04:00 PM", title: "Departure Transfer", description: `AC vehicle transfer to the transit hub.`, location: `${dest} Airport/Station`, duration: "1.5 hrs", type: "TRANSPORT" });
+    } else if (i % 2 === 0) {
+      acts.push({ id: `a-${packageId}-${i}-1`, time: "09:00 AM", title: pool.adventures[aI], description: `Kickstart your morning with an outdoor activity.`, location: `${dest} Activity Hub`, duration: "3 hrs", type: "ADVENTURE" });
+      acts.push({ id: `a-${packageId}-${i}-2`, time: "01:00 PM", title: pool.dinings[dI1], description: `Relax over a traditional regional lunch.`, location: `${dest} Food Quarter`, duration: "1 hr", type: "DINING" });
+      acts.push({ id: `a-${packageId}-${i}-3`, time: "03:00 PM", title: pool.sightseeings[sI2], description: `Discover viewpoints and local museums.`, location: `${dest} Heritage Site`, duration: "2 hrs", type: "SIGHTSEEING" });
     } else {
-      // Middle days
-      if (i % 2 === 0) {
-        dayActivities.push({
-          id: `act-${packageId}-${i}-1`,
-          time: "09:00 AM",
-          title: pool.adventures[advIndex],
-          description: `Kickstart your morning with an exciting outdoor activity.`,
-          location: `${dest} Activity Hub`,
-          duration: "3 hours",
-          type: "ADVENTURE",
-          cost: 0,
-        });
-        dayActivities.push({
-          id: `act-${packageId}-${i}-2`,
-          time: "01:00 PM",
-          title: pool.dinings[dineIndex1],
-          description: `Relax over a traditional regional lunch.`,
-          location: `${dest} Food Quarter`,
-          duration: "1 hour",
-          type: "DINING",
-          cost: 0,
-        });
-        dayActivities.push({
-          id: `act-${packageId}-${i}-3`,
-          time: "03:00 PM",
-          title: pool.sightseeings[sightIndex2],
-          description: `Discover key viewpoints, architectural sights, or local museums.`,
-          location: `${dest} Heritage Site`,
-          duration: "2 hours",
-          type: "SIGHTSEEING",
-          cost: 0,
-        });
-      } else {
-        dayActivities.push({
-          id: `act-${packageId}-${i}-1`,
-          time: "09:30 AM",
-          title: pool.sightseeings[sightIndex1],
-          description: `Tour historical structures and take in panoramic views of the area.`,
-          location: `${dest} Landmark Area`,
-          duration: "2.5 hours",
-          type: "SIGHTSEEING",
-          cost: 0,
-        });
-        dayActivities.push({
-          id: `act-${packageId}-${i}-2`,
-          time: "01:00 PM",
-          title: "Leisurely Lunch",
-          description: `Savor regional dishes and seasonal beverages.`,
-          location: `${dest} Diner`,
-          duration: "1 hour",
-          type: "DINING",
-          cost: 0,
-        });
-        dayActivities.push({
-          id: `act-${packageId}-${i}-3`,
-          time: "03:00 PM",
-          title: pool.culturals[cultIndex],
-          description: `Engage with local guides to learn about region-specific traditions and folk arts.`,
-          location: `${dest} Cultural Center`,
-          duration: "2.5 hours",
-          type: "CULTURAL",
-          cost: 0,
-        });
-      }
+      acts.push({ id: `a-${packageId}-${i}-1`, time: "09:30 AM", title: pool.sightseeings[sI1], description: `Tour historical structures and panoramic views.`, location: `${dest} Landmark Area`, duration: "2.5 hrs", type: "SIGHTSEEING" });
+      acts.push({ id: `a-${packageId}-${i}-2`, time: "01:00 PM", title: "Leisurely Lunch", description: `Savor regional dishes and seasonal beverages.`, location: `${dest} Diner`, duration: "1 hr", type: "DINING" });
+      acts.push({ id: `a-${packageId}-${i}-3`, time: "03:00 PM", title: pool.culturals[cI], description: `Learn about region-specific traditions and folk arts.`, location: `${dest} Cultural Center`, duration: "2.5 hrs", type: "CULTURAL" });
     }
 
     itineraries.push({
       dayNumber: i,
-      title: isFirstDay ? `Welcome & Orientation Tour` : isLastDay ? `Farewell & Souvenir Shopping` : `Exploring the Wonders of ${dest}`,
-      description: `Experience the best sights, flavors, and local activities around ${dest}.`,
-      activities: dayActivities,
-      hotel: isLastDay ? null : {
-        name: `${dest} Grand Resort & Spa`,
-        address: `${dest} City Center`,
-        rating: 4.8,
-        pricePerNight: 5000,
-      },
-      transport: isFirstDay ? {
-        type: "CAR",
-        from: "Airport/Station",
-        to: `${dest} Grand Resort`,
-        cost: 0,
-      } : null,
+      title: isFirstDay ? `Welcome & Orientation` : isLastDay ? `Farewell & Departure` : `Exploring ${dest}`,
+      description: `Experience the best of ${dest}.`,
+      activities: acts,
+      hotel: isLastDay ? null : { name: `${dest} Grand Resort & Spa`, address: `${dest} City Center`, rating: 4.8, pricePerNight: 5000 },
+      transport: isFirstDay ? { type: "CAR", from: "Airport/Station", to: `${dest} Grand Resort`, cost: 0 } : null,
     });
   }
   return itineraries;
 }
 
+/* ═══════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════ */
+function difficultyColor(d: string) {
+  switch (d.toUpperCase()) {
+    case "EASY": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "MODERATE": return "bg-amber-50 text-amber-700 border-amber-200";
+    case "CHALLENGING": return "bg-rose-50 text-rose-700 border-rose-200";
+    default: return "bg-slate-50 text-slate-600 border-slate-200";
+  }
+}
+
+function activityIcon(type: string) {
+  switch (type) {
+    case "SIGHTSEEING": return <Camera className="h-3 w-3" />;
+    case "ADVENTURE": return <Mountain className="h-3 w-3" />;
+    case "DINING": return <Utensils className="h-3 w-3" />;
+    case "CULTURAL": return <Sparkles className="h-3 w-3" />;
+    case "SHOPPING": return <ShoppingBag className="h-3 w-3" />;
+    case "TRANSPORT": case "TRANSPORTATION": return <Bus className="h-3 w-3" />;
+    case "CHECK_IN": case "CHECK_OUT": return <Coffee className="h-3 w-3" />;
+    default: return <MapPin className="h-3 w-3" />;
+  }
+}
+
+function activityColor(type: string) {
+  switch (type) {
+    case "SIGHTSEEING": return "bg-primary/10 text-primary border-primary/20";
+    case "ADVENTURE": return "bg-amber-50 text-amber-600 border-amber-200";
+    case "DINING": return "bg-emerald-50 text-emerald-600 border-emerald-200";
+    case "CULTURAL": return "bg-violet-50 text-violet-600 border-violet-200";
+    case "SHOPPING": return "bg-pink-50 text-pink-600 border-pink-200";
+    case "TRANSPORT": case "TRANSPORTATION": return "bg-sky-50 text-sky-600 border-sky-200";
+    case "CHECK_IN": case "CHECK_OUT": return "bg-slate-100 text-slate-600 border-slate-200";
+    default: return "bg-slate-50 text-slate-600 border-slate-200";
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGE COMPONENT
+   ═══════════════════════════════════════════════════════ */
 export default async function PackageDetailPage({ params }: PageProps) {
   const { id } = await params;
-
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await auth.api.getSession({ headers: await headers() });
 
   const isFavorited = session
-    ? !!(await prisma.favorite.findUnique({
-      where: {
-        userId_packageId: {
-          userId: session.user.id,
-          packageId: id,
-        },
-      },
-    }))
+    ? !!(await prisma.favorite.findUnique({ where: { userId_packageId: { userId: session.user.id, packageId: id } } }))
     : false;
 
   let pkg: any = null;
 
-  // 1. Try to find in DB first
   try {
     const dbPkg = await prisma.package.findUnique({
       where: { id },
-      include: {
-        agency: true,
-        reviews: true,
-        itineraries: {
-          include: {
-            activities: true,
-            hotel: true,
-            transport: true,
-          },
-          orderBy: { dayNumber: "asc" },
-        },
-      },
+      include: { agency: true, reviews: true, itineraries: { include: { activities: true, hotel: true, transport: true }, orderBy: { dayNumber: "asc" } } },
     });
-
     if (dbPkg) {
-      const destinationsArray = Array.isArray(dbPkg.destinations)
-        ? (dbPkg.destinations as any[]).map((d) => d.name || d)
-        : [];
-
-      const avgRating = dbPkg.reviews.length > 0
-        ? dbPkg.reviews.reduce((sum, r) => sum + r.rating, 0) / dbPkg.reviews.length
-        : 4.8;
-
+      const dArr = Array.isArray(dbPkg.destinations) ? (dbPkg.destinations as any[]).map((d) => d.name || d) : [];
+      const avg = dbPkg.reviews.length > 0 ? dbPkg.reviews.reduce((s, r) => s + r.rating, 0) / dbPkg.reviews.length : 4.8;
       pkg = {
-        id: dbPkg.id,
-        isDb: true,
-        title: dbPkg.title,
-        description: dbPkg.description,
-        highlights: dbPkg.highlights,
-        inclusions: dbPkg.inclusions,
-        exclusions: dbPkg.exclusions,
-        destinations: destinationsArray,
-        duration: dbPkg.duration,
-        basePrice: Number(dbPkg.basePrice),
-        currency: dbPkg.currency,
-        difficulty: dbPkg.difficulty || "EASY",
-        rating: parseFloat(avgRating.toFixed(1)),
-        reviews: dbPkg.reviews.length,
-        agencyName: dbPkg.agency.name,
-        itineraries: dbPkg.itineraries && dbPkg.itineraries.length > 0
-          ? dbPkg.itineraries
-          : getDemoItineraries(dbPkg.id, dbPkg.duration, destinationsArray),
-        departureDates: dbPkg.departureDates && dbPkg.departureDates.length > 0
-          ? dbPkg.departureDates
-          : [
-            new Date(Date.now() + 24 * 60 * 60 * 1000 * 10),
-            new Date(Date.now() + 24 * 60 * 60 * 1000 * 20),
-            new Date(Date.now() + 24 * 60 * 60 * 1000 * 30),
-            new Date(Date.now() + 24 * 60 * 60 * 1000 * 45),
-          ],
+        id: dbPkg.id, isDb: true, title: dbPkg.title, description: dbPkg.description, highlights: dbPkg.highlights,
+        inclusions: dbPkg.inclusions, exclusions: dbPkg.exclusions, destinations: dArr, duration: dbPkg.duration,
+        basePrice: Number(dbPkg.basePrice), currency: dbPkg.currency, difficulty: dbPkg.difficulty || "EASY",
+        rating: parseFloat(avg.toFixed(1)), reviews: dbPkg.reviews.length, agencyName: dbPkg.agency.name,
+        itineraries: dbPkg.itineraries?.length ? dbPkg.itineraries : getDemoItineraries(dbPkg.id, dbPkg.duration, dArr),
+        departureDates: dbPkg.departureDates?.length ? dbPkg.departureDates : [new Date(Date.now() + 864e5 * 10), new Date(Date.now() + 864e5 * 20), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)],
       };
     }
-  } catch (e) {
-    console.error("DB Query failed:", e);
-  }
+  } catch (e) { console.error("DB Query failed:", e); }
 
-  // 2. Fall back to demo data if not found in DB
   if (!pkg) {
     const demo = DEMO_PACKAGES.find((d) => d.id === id);
     if (demo) {
-      pkg = {
-        ...demo,
-        isDb: false,
-        agencyName: "Waypoint Verified Partner",
-        itineraries: getDemoItineraries(demo.id, demo.duration, demo.destinations),
-        departureDates: [
-          new Date(Date.now() + 24 * 60 * 60 * 1000 * 15), // 15 days from now
-          new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // 30 days from now
-          new Date(Date.now() + 24 * 60 * 60 * 1000 * 45), // 45 days from now
-        ],
-      };
+      pkg = { ...demo, isDb: false, agencyName: "Waypoint Verified Partner", itineraries: getDemoItineraries(demo.id, demo.duration, demo.destinations), departureDates: [new Date(Date.now() + 864e5 * 15), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)] };
     }
   }
 
-  if (!pkg) {
-    notFound();
-  }
-
+  if (!pkg) notFound();
   pkg.isFavorited = isFavorited;
 
+  const heroImage = getHeroImage(pkg.destinations);
+
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/packages" className="flex items-center gap-2 text-sm font-medium hover:text-secondary transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Back to Packages
-          </Link>
-          <div className="flex items-center gap-4">
+    <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
+
+      {/* ═══════════════ NAVBAR ═══════════════ */}
+      <SiteHeader userSession={session} />
+
+
+      {/* ═══════════════ CINEMATIC HERO ═══════════════ */}
+      <section className="relative md:pt-20 pt-16 overflow-hidden">
+        <div className="relative h-[340px] sm:h-[400px] md:h-[460px] lg:h-[500px]">
+          <img src={heroImage} alt={pkg.title} className="w-full h-full object-cover" />
+          {/* Multi-layer gradient for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#09111b] via-[#09111b]/50 to-[#09111b]/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#09111b]/40 via-transparent to-transparent" />
+
+          {/* Hero Content */}
+          <div className="absolute bottom-0 left-0 right-0 z-10">
+            <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-8 md:pb-10">
+
+              {/* Breadcrumb */}
+              <nav className="flex items-center gap-1.5 text-[11px] font-medium text-white/50 mb-5">
+                <Link href="/" className="hover:text-white/80 transition-colors">Home</Link>
+                <ChevronRight className="h-3 w-3" />
+                <Link href="/packages" className="hover:text-white/80 transition-colors">Packages</Link>
+                <ChevronRight className="h-3 w-3" />
+                <span className="text-white/80 truncate max-w-[180px]">{pkg.title}</span>
+              </nav>
+
+              {/* Title */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-white font-display mb-3">
+                {pkg.title}
+              </h1>
+
+              {/* Description */}
+              <p className="text-sm md:text-base text-white/60 leading-relaxed max-w-2xl mb-5">
+                {pkg.description}
+              </p>
+
+              {/* Destinations route */}
+              <div className="flex items-center gap-1.5 text-xs text-white/70 font-medium mb-2">
+                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>{pkg.destinations.join("  →  ")}</span>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Favorite button top-right */}
+          <div className="absolute top-4 right-4 z-20 md:top-6 md:right-6">
             <FavoriteButton
               packageId={id}
               initialFavorited={pkg.isFavorited}
+              className="bg-black/30 backdrop-blur-md border border-white/10 rounded-full p-2.5 hover:bg-black/50 transition-all"
             />
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-secondary to-secondary flex items-center justify-center">
-                <span className="text-white font-bold text-xs">W</span>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ═══════════════ FLOATING STATS STRIP ═══════════════ */}
+      <section className="relative z-20">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10">
+          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-lg p-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4">
+              {/* Duration */}
+              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
+                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Clock className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Duration</p>
+                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">{pkg.duration} Days</p>
+                </div>
+                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
               </div>
-              <span className="font-bold text-sm text-slate-900">Waypoint</span>
-            </div>
-          </div>
-        </div>
-      </header>
 
-      {/* Hero Header */}
-      <div className="bg-gradient-to-br from-secondary to-slate-900 text-white py-16 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Badge className="bg-secondary text-white hover:bg-secondary/90 px-3 py-1 text-xs">
-              {pkg.difficulty}
-            </Badge>
-            <Badge variant="outline" className="text-slate-300 border-slate-700 px-3 py-1 text-xs">
-              <Clock className="h-3.5 w-3.5 mr-1 text-secondary inline" />
-              {pkg.duration} Days
-            </Badge>
-            <div className="flex items-center gap-1 text-sm text-slate-300 ml-2">
-              <Star className="h-4 w-4 fill-primary text-primary" />
-              <span className="font-semibold text-white">{pkg.rating}</span>
-              <span>({pkg.reviews || 12} reviews)</span>
-            </div>
-          </div>
+              {/* Difficulty */}
+              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
+                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                  <Mountain className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Difficulty</p>
+                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display capitalize">{pkg.difficulty.toLowerCase()}</p>
+                </div>
+                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
+              </div>
 
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-            {pkg.title}
-          </h1>
+              {/* Rating */}
+              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
+                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Star className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-primary fill-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Rating</p>
+                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">{pkg.rating}<span className="text-slate-400 font-normal text-xs ml-1">({pkg.reviews || 12})</span></p>
+                </div>
+                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
+              </div>
 
-          <p className="text-slate-300 text-lg max-w-3xl mb-0 leading-relaxed">
-            {pkg.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Main Body Grid */}
-      <div className="container mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-3">
-
-          {/* Details (Left 2 cols) */}
-          <div className="lg:col-span-2 space-y-8">
-
-            {/* Visual Header Banner */}
-            <div className="h-64 md:h-96 rounded-2xl bg-gradient-to-tr from-secondary/20 to-secondary/30 border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden group shadow-xl">
-              <MapPin className="h-16 w-16 text-secondary animate-pulse" />
-              <div className="absolute bottom-4 left-4 right-4 text-center bg-black/40 backdrop-blur-md border border-white/10 p-3 rounded-xl">
-                <span className="text-xs text-slate-300">Route Map & Destinations</span>
-                <div className="text-sm font-semibold text-white mt-1">
-                  {pkg.destinations.join(" → ")}
+              {/* Price */}
+              <div className="flex items-center gap-3 sm:p-5 p-3.5">
+                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <span className="sm:text-base text-sm font-extrabold text-emerald-600">₹</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Starting at</p>
+                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">₹{pkg.basePrice.toLocaleString("en-IN")}<span className="text-slate-400 font-normal text-xs ml-0.5">/person</span></p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* highlights */}
-            {pkg.highlights && pkg.highlights.length > 0 && (
-              <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900">
-                  <ShieldCheck className="h-5 w-5 text-secondary" />
-                  Tour Highlights
-                </h2>
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {pkg.highlights.map((h: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-slate-600 align-top animate-fade-in">
-                      <span className="text-secondary font-bold">✦</span>
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
-            {/* Inclusions & Exclusions */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              {/* Inclusions */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold mb-4 text-secondary flex items-center gap-2">
-                  <Check className="h-5 w-5" /> Inclusions
-                </h3>
-                <ul className="space-y-2.5">
-                  {pkg.inclusions && pkg.inclusions.length > 0 ? (
-                    pkg.inclusions.map((inc: string, i: number) => (
-                      <li key={i} className="flex gap-2 text-sm text-slate-600">
-                        <Check className="h-4 w-4 text-secondary shrink-0 mt-0.5" />
+      {/* ═══════════════ MAIN CONTENT ═══════════════ */}
+      <section className="flex-1 lg:py-12 py-8">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1fr_360px] items-start">
+
+            {/* ═══ LEFT COLUMN ═══ */}
+            <div className="space-y-8">
+
+              {/* ── HIGHLIGHTS ── */}
+              {pkg.highlights && pkg.highlights.length > 0 && (
+                <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                  <div className="sm:px-7 sm:py-5 px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <h2 className="text-lg font-extrabold font-display text-slate-900">Tour Highlights</h2>
+                  </div>
+                  <div className="sm:p-7 p-5">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {pkg.highlights.map((h: string, i: number) => (
+                        <div key={i} className="flex gap-3 items-start">
+                          <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check className="h-3.5 w-3.5 text-primary" />
+                          </div>
+                          <span className="text-sm text-slate-600 leading-relaxed">{h}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+
+              {/* ── INCLUSIONS & EXCLUSIONS ── */}
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Inclusions */}
+                <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                  <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    </div>
+                    <h3 className="text-sm font-extrabold font-display text-slate-900">What&apos;s Included</h3>
+                  </div>
+                  <ul className="p-5 space-y-3">
+                    {(pkg.inclusions && pkg.inclusions.length > 0 ? pkg.inclusions : ["Accommodations and daily activities"]).map((inc: string, i: number) => (
+                      <li key={i} className="flex gap-2.5 text-sm text-slate-600">
+                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                         <span>{inc}</span>
                       </li>
-                    ))
-                  ) : (
-                    <li className="text-sm text-slate-600">Accommodations and daily activities</li>
-                  )}
-                </ul>
-              </div>
-
-              {/* Exclusions */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold mb-4 text-rose-600 flex items-center gap-2">
-                  <X className="h-5 w-5" /> Exclusions
-                </h3>
-                <ul className="space-y-2.5">
-                  {pkg.exclusions && pkg.exclusions.length > 0 ? (
-                    pkg.exclusions.map((exc: string, i: number) => (
-                      <li key={i} className="flex gap-2 text-sm text-slate-600">
-                        <X className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    ))}
+                  </ul>
+                </div>
+                {/* Exclusions */}
+                <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                  <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                      <X className="h-3.5 w-3.5 text-rose-500" />
+                    </div>
+                    <h3 className="text-sm font-extrabold font-display text-slate-900">Not Included</h3>
+                  </div>
+                  <ul className="p-5 space-y-3">
+                    {(pkg.exclusions && pkg.exclusions.length > 0 ? pkg.exclusions : ["Personal expenses, laundry, tips"]).map((exc: string, i: number) => (
+                      <li key={i} className="flex gap-2.5 text-sm text-slate-600">
+                        <X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
                         <span>{exc}</span>
                       </li>
-                    ))
-                  ) : (
-                    <li className="text-sm text-slate-600">Personal expenses, laundry, tips</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-
-            {/* Day-by-Day Itinerary */}
-            {pkg.itineraries && pkg.itineraries.length > 0 && (
-              <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <h2 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900">
-                  <CalendarDays className="h-5 w-5 text-secondary" />
-                  Day-by-Day Itinerary
-                </h2>
-                <p className="text-sm text-slate-600 mt-0.5">Explore the detailed daily tour plans, sightseeing stops, and activities.</p>
-
-                <div className="space-y-6 mt-4">
-                  {pkg.itineraries.map((day: any) => (
-                    <div key={day.dayNumber} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
-                      <div className="p-4 bg-slate-100/60 border-b border-slate-200 flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-secondary to-secondary flex items-center justify-center text-white font-bold text-sm shadow">
-                          {day.dayNumber}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">{day.title}</h3>
-                          {day.description && <p className="text-xs text-slate-600 mt-0.5">{day.description}</p>}
-                        </div>
-                      </div>
-
-                      <div className="p-5 space-y-4">
-                        {/* Transport */}
-                        {day.transport && (
-                          <div className="flex items-center gap-3 bg-secondary/10 border border-secondary/20 rounded-lg p-3 text-xs">
-                            <Plane className="h-4 w-4 text-secondary" />
-                            <div>
-                              <span className="font-semibold text-slate-900">Transfer: {day.transport.from} → {day.transport.to}</span>
-                              <span className="text-slate-600 block mt-0.5">Mode: {day.transport.type}</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Activities */}
-                        <div className="space-y-4 pl-2 border-l border-slate-200 ml-4">
-                          {day.activities?.map((act: any, aIdx: number) => (
-                            <div key={act.id || aIdx} className="relative pl-6">
-                              <span className="absolute left-[-21px] top-1.5 h-2.5 w-2.5 rounded-full bg-secondary border-2 border-white shadow-sm" />
-                              <div className="text-xs font-semibold text-secondary">{act.time}</div>
-                              <h4 className="text-sm font-semibold mt-0.5 text-slate-900">{act.title}</h4>
-                              {act.description && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{act.description}</p>}
-                              <div className="text-xs text-slate-500 mt-1.5 flex gap-3 flex-wrap">
-                                <span>📍 {act.location}</span>
-                                <span>⏱️ {act.duration}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Hotel */}
-                        {day.hotel && (
-                          <div className="flex items-center gap-3 bg-[#E8AA9B]/10 border border-[#E8AA9B]/20 rounded-lg p-3 text-xs mt-2">
-                            <Hotel className="h-4 w-4 text-primary" />
-                            <div>
-                              <span className="font-semibold text-slate-900">Accommodation: {day.hotel.name}</span>
-                              <span className="text-slate-600 block mt-0.5">{day.hotel.address} • Rating: ⭐{day.hotel.rating}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </ul>
                 </div>
               </div>
-            )}
 
-            {/* Agency/Partner info */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <span className="text-xs text-slate-500">Organized By</span>
-                <h4 className="text-md font-bold text-slate-900 mt-0.5">{pkg.agencyName}</h4>
+
+              {/* ── DAY-BY-DAY ITINERARY ── */}
+              {pkg.itineraries && pkg.itineraries.length > 0 && (
+                <div className="space-y-5">
+                  {/* Section Header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <CalendarDays className="h-4.5 w-4.5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-extrabold font-display text-slate-900">Day-by-Day Itinerary</h2>
+                      <p className="text-xs text-slate-500 mt-0.5">Detailed daily plan with activities, dining, and accommodations</p>
+                    </div>
+                  </div>
+
+                  {/* Timeline */}
+                  <div className="relative">
+                    {/* Vertical connector line */}
+                    <div className="absolute left-[18px] top-6 bottom-6 w-px bg-slate-200 hidden sm:block" />
+
+                    <div className="space-y-4">
+                      {pkg.itineraries.map((day: any, dayIdx: number) => (
+                        <div key={day.dayNumber} className="relative sm:pl-12 pl-0">
+                          {/* Day number circle on the vertical line */}
+                          <div className="hidden sm:flex absolute left-0 top-5 w-[37px] h-[37px] rounded-full bg-gradient-to-br from-primary to-primary/80 items-center justify-center text-white font-extrabold text-sm shadow-md border-[3px] border-[#FAFAF9] z-10">
+                            {day.dayNumber}
+                          </div>
+
+                          {/* Day Card */}
+                          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                            {/* Day header */}
+                            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                              {/* Mobile day number */}
+                              <div className="sm:hidden w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-sm">
+                                {day.dayNumber}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-extrabold text-slate-900 font-display">{day.title}</h3>
+                                <p className="text-xs text-slate-500 mt-0.5">{day.description}</p>
+                              </div>
+                              <span className={`hidden sm:inline-flex text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide ${difficultyColor(pkg.difficulty)}`}>
+                                Day {day.dayNumber}
+                              </span>
+                            </div>
+
+                            <div className="p-5 space-y-3">
+                              {/* Transport */}
+                              {day.transport && (
+                                <div className="flex items-center gap-3 bg-sky-50/70 border border-sky-100 rounded-xl p-3 text-xs">
+                                  <div className="w-7 h-7 rounded-lg bg-sky-100 flex items-center justify-center shrink-0">
+                                    <Plane className="h-3.5 w-3.5 text-sky-600" />
+                                  </div>
+                                  <div>
+                                    <span className="font-bold text-slate-900">Transfer: {day.transport.from} → {day.transport.to}</span>
+                                    <span className="text-slate-500 block mt-0.5">Mode: {day.transport.type}</span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Activities */}
+                              {day.activities?.map((act: any, aIdx: number) => (
+                                <div key={act.id || aIdx} className="flex gap-3 p-3 rounded-xl hover:bg-slate-50/80 transition-colors">
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${activityColor(act.type)}`}>
+                                    {activityIcon(act.type)}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-0.5">
+                                      <span className="text-[11px] font-bold text-primary">{act.time}</span>
+                                      <span className="text-[9px] text-slate-400">•</span>
+                                      <span className="text-[10px] text-slate-400 font-medium">{act.duration}</span>
+                                    </div>
+                                    <h4 className="text-sm font-bold text-slate-900 leading-snug">{act.title}</h4>
+                                    {act.description && <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{act.description}</p>}
+                                    <div className="flex items-center gap-1 mt-1 text-[11px] text-slate-400">
+                                      <MapPin className="h-3 w-3 shrink-0" />
+                                      <span className="truncate">{act.location}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* Hotel */}
+                              {day.hotel && (
+                                <div className="flex items-center gap-3 bg-primary/5 border border-primary/10 rounded-xl p-3 text-xs">
+                                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                    <Hotel className="h-3.5 w-3.5 text-primary" />
+                                  </div>
+                                  <div>
+                                    <span className="font-bold text-slate-900">{day.hotel.name}</span>
+                                    <span className="text-slate-500 block mt-0.5">{day.hotel.address} • ⭐ {day.hotel.rating}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+
+              {/* ── AGENCY INFO ── */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                <div className="sm:p-6 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                      <Users className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Organized By</p>
+                      <h4 className="text-base font-extrabold text-slate-900 font-display">{pkg.agencyName}</h4>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+                    <ShieldCheck className="h-3 w-3" />
+                    Verified Partner
+                  </span>
+                </div>
               </div>
-              <Badge variant="outline" className="border-secondary/30 text-secondary bg-secondary/5 px-2.5 py-1">
-                Verified Agency Partner
-              </Badge>
+
+            </div>
+
+
+            {/* ═══ RIGHT COLUMN — BOOKING (desktop sticky, mobile after content) ═══ */}
+            <div id="booking" className="lg:sticky lg:top-28 scroll-mt-24">
+              <BookingForm
+                packageId={pkg.isDb ? pkg.id : undefined}
+                basePrice={pkg.basePrice}
+                currency={pkg.currency}
+                duration={pkg.duration}
+                departureDates={pkg.departureDates || []}
+              />
             </div>
 
           </div>
+        </div>
+      </section>
 
-          {/* Booking form (Right 1 col) */}
+
+      {/* ═══════════════ FOOTER ═══════════════ */}
+      <SiteFooter />
+
+      {/* ═══════════════ MOBILE FLOATING BOOK BAR ═══════════════ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200 px-4 py-3 safe-area-pb">
+        <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
           <div>
-            <BookingForm
-              packageId={pkg.isDb ? pkg.id : undefined}
-              basePrice={pkg.basePrice}
-              currency={pkg.currency}
-              duration={pkg.duration}
-              departureDates={pkg.departureDates || []}
-            />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">From</p>
+            <p className="text-xl font-extrabold text-slate-900 font-display">
+              ₹{pkg.basePrice.toLocaleString("en-IN")}
+              <span className="text-xs text-slate-400 font-normal ml-0.5">/person</span>
+            </p>
           </div>
-
+          <a
+            href="#booking"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
+          >
+            Book Now
+          </a>
         </div>
       </div>
+      {/* Spacer for mobile floating bar */}
+      <div className="lg:hidden h-[72px]" />
     </div>
   );
 }

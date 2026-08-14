@@ -123,6 +123,27 @@
   @apply bg-white border border-border-card shadow-md hover:shadow-xl transition-all duration-300;
 }
 
+/* Thin scrollbar utility */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+/* Safe area padding for mobile floating bars */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
 /* Custom premium visual elements */
 .dot-pattern {
   background-image: radial-gradient(circle at 1.2px 1.2px, var(--wp-secondary) 1.2px, transparent 0);

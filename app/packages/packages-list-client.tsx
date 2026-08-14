@@ -158,18 +158,19 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
 
           {/* Search */}
           <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl mx-auto flex items-center bg-white border border-slate-200 rounded-xl shadow-lg focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
-            <Search className="sm:block hidden absolute left-4 h-5 w-5 text-slate-400 pointer-events-none shrink-0" />
+            <Search className="absolute left-3.5 sm:left-4 h-4 sm:h-5 w-4 sm:w-5 text-slate-400 pointer-events-none shrink-0" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by destination, package name..."
-              className="flex-1 sm:ps-12 ps-4 sm:pe-28 pe-24 sm:h-14 h-12 text-sm rounded-2xl bg-transparent border-0 text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder="Search by destination, package..."
+              className="flex-1 ps-9 sm:ps-12 pe-28 sm:h-14 h-12 text-xs sm:text-sm rounded-2xl bg-transparent border-0 text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             <Button
               type="submit"
-              className="absolute sm:right-2 right-1 font-bold text-sm bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-sm transition-all"
+              className="absolute right-1.5 sm:right-2"
             >
-              Search <ArrowRight className="h-3.5 w-3.5" />
+              <span>Search</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </form>
 
@@ -192,16 +193,16 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
 
 
       {/* ═══════════════ CONTENT ═══════════════ */}
-      <section className="flex-1 pt-10 pb-20">
+      <section className="flex-1 lg:py-16 py-10">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* ── Controls Bar ── */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-xl font-extrabold font-display text-slate-900">
+              <h2 className="text-2xl font-extrabold font-display text-slate-900">
                 {filteredPackages.length} package{filteredPackages.length !== 1 ? "s" : ""} found
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-sm text-slate-500 mt-2">
                 Browse our curated selection of verified travel experiences
               </p>
             </div>
@@ -238,7 +239,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
               <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
 
                 {/* Sidebar Header */}
-                <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div className="sm:px-5 sm:py-4 p-4 border-b border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Filter className="h-3.5 w-3.5 text-primary" />
@@ -255,7 +256,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   )}
                 </div>
 
-                <div className="p-5 space-y-6">
+                <div className="sm:p-5 p-4 space-y-6">
 
                   {/* ── Price Range ── */}
                   <div className="space-y-3">
@@ -289,7 +290,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
                       Difficulty Level
                     </label>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {[
                         { key: "ALL", label: "All Levels", desc: "Show everything", icon: "◎" },
                         { key: "EASY", label: "Easy", desc: "Family friendly", icon: "🟢" },
@@ -306,11 +307,11 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                           }`}
                         >
                           <span className="text-sm">{diff.icon}</span>
-                          <div className="flex-1 min-w-0">
-                            <span className={`text-[13px] font-semibold block ${difficulty === diff.key ? "text-primary" : "text-slate-800"}`}>
+                          <div className="flex-1 flex flex-col gap-0.5">
+                            <span className={`text-sm font-semibold block ${difficulty === diff.key ? "text-primary" : "text-slate-800"}`}>
                               {diff.label}
                             </span>
-                            <span className="text-[11px] text-slate-400">{diff.desc}</span>
+                            <span className="text-xs text-slate-500">{diff.desc}</span>
                           </div>
                           {difficulty === diff.key && (
                             <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
@@ -327,7 +328,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
                       Trip Duration
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {[
                         { key: "ALL", label: "Any", sub: "All durations" },
                         { key: "SHORT", label: "Short", sub: "1–5 days" },
@@ -343,10 +344,10 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                               : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
                           }`}
                         >
-                          <span className={`text-[13px] font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
+                          <span className={`text-sm font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
                             {dur.label}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-medium">{dur.sub}</span>
+                          <span className="text-xs text-slate-400 font-medium">{dur.sub}</span>
                         </button>
                       ))}
                     </div>
@@ -411,9 +412,9 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         </div>
 
                         {/* Content */}
-                        <div className="p-5 space-y-3">
+                        <div className="sm:p-5 p-4 space-y-3">
                           <div>
-                            <h3 className="font-extrabold text-base text-slate-900 group-hover:text-primary transition-colors line-clamp-1 font-display">
+                            <h3 className="capitalize font-bold text-base text-slate-900 group-hover:text-primary transition-colors line-clamp-1 font-display">
                               {pkg.title}
                             </h3>
                             <p className="text-[13px] text-slate-500 line-clamp-2 mt-1.5 leading-relaxed">
