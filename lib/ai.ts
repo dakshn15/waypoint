@@ -70,22 +70,31 @@ export function buildTripPrompt(request: TripRequest): string {
     Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
   );
 
-  return `You are an expert travel planner specializing in Indian and international travel. Create a detailed ${days}-day travel itinerary based on these preferences:
+  const perPersonPerDayBudget = Math.round(request.budget / (days * request.travelers));
+
+  return `You are an elite travel concierge and travel planner. Create a highly realistic, detailed ${days}-day travel itinerary tailored to the following specifications:
 
 **Destination:** ${request.destination}
-**Travel Dates:** ${request.startDate} to ${request.endDate} (${days} days)
+**Travel Dates:** ${request.startDate} to ${request.endDate} (${days} days, ${days - 1} nights)
 **Travelers:** ${request.travelers} person(s)
-**Total Budget:** ${request.currency} ${request.budget.toLocaleString()} (for all travelers combined)
+**Total Budget:** ${request.currency} ${request.budget.toLocaleString()} (${request.currency} ${perPersonPerDayBudget.toLocaleString()} per person/day for ALL expenses)
 **Travel Style:** ${request.travelStyle}
-**Interests:** ${request.interests.join(", ") || "General sightseeing"}
+**Interests:** ${request.interests.join(", ") || "General sightseeing, culture, local dining"}
 **Stay Preference:** ${request.stayPreference}
 **Transport Preference:** ${request.transportPreference}
 
-Generate a COMPLETE day-by-day itinerary. Respond ONLY with valid JSON (no markdown, no code blocks, no explanation) in this exact format:
+### Budget & Feasibility Directives:
+1. **Realistic Allocation:** Allocate ~35% accommodation, ~25% transport, ~20% activities, ~15% food/dining, ~5% misc.
+2. **Style Alignment:** 
+   - If Travel Style is LUXURY/PREMIUM: Recommend 5-star / 4-star hotels, gourmet dining, private transfers, and top-tier experiences.
+   - If Travel Style is BUDGET/STANDARD: Recommend clean boutique hotels, hostels, authentic local eateries, and efficient public/private transport.
+3. **If Budget is Tight:** Adapt the itinerary dynamically to match ${request.currency} ${request.budget.toLocaleString()}. Prioritize free landmarks, local markets, street food, and budget-friendly stays. Add a practical budget tip in the "tips" array.
+
+Generate a COMPLETE day-by-day itinerary. Respond ONLY with valid JSON (no markdown block, no code fence, no commentary) in this exact JSON schema:
 
 {
-  "title": "A catchy trip title",
-  "summary": "A 2-3 sentence overview of the trip",
+  "title": "Evocative, catchy title for the trip",
+  "summary": "2-3 sentence engaging overview highlighting key experiences",
   "totalEstimatedCost": <number in ${request.currency}>,
   "costBreakdown": {
     "accommodation": <number>,
@@ -94,33 +103,33 @@ Generate a COMPLETE day-by-day itinerary. Respond ONLY with valid JSON (no markd
     "food": <number>,
     "miscellaneous": <number>
   },
-  "tips": ["tip1", "tip2", "tip3", "tip4", "tip5"],
+  "tips": ["Destination-specific tip 1", "Budget tip 2", "Local transport tip 3", "Culture tip 4", "Packing tip 5"],
   "itinerary": [
     {
       "dayNumber": 1,
-      "title": "Day title",
-      "description": "Brief day overview",
+      "title": "Day theme / title",
+      "description": "Brief summary of the day's focus",
       "activities": [
         {
           "time": "09:00 AM",
-          "title": "Activity name",
-          "description": "What you'll do",
-          "location": "Place name, City",
+          "title": "Specific activity name",
+          "description": "Detailed description of experience",
+          "location": "Specific location or area in ${request.destination}",
           "duration": "2 hours",
           "type": "SIGHTSEEING",
           "estimatedCost": <number>
         }
       ],
       "hotel": {
-        "name": "Hotel name",
-        "area": "Area/neighborhood",
+        "name": "Specific hotel/resort name matching ${request.travelStyle}",
+        "area": "Neighborhood / district in ${request.destination}",
         "pricePerNight": <number>,
-        "rating": 4.2
+        "rating": 4.5
       },
       "transport": {
         "type": "FLIGHT",
-        "from": "City A",
-        "to": "City B",
+        "from": "Origin / Station",
+        "to": "Hotel / Destination",
         "cost": <number>,
         "duration": "2 hours"
       }
@@ -129,15 +138,12 @@ Generate a COMPLETE day-by-day itinerary. Respond ONLY with valid JSON (no markd
 }
 
 Rules:
-- Each day must have 3-6 activities spread across the day
-- Activity types: SIGHTSEEING, ADVENTURE, DINING, SHOPPING, RELAXATION, CULTURAL, TRANSPORTATION, CHECK_IN, CHECK_OUT
-- Transport types: FLIGHT, TRAIN, BUS, CAR, FERRY, WALK
-- All costs in ${request.currency}
-- Stay within the total budget of ${request.currency} ${request.budget.toLocaleString()}
-- Include realistic hotel names and prices for the ${request.travelStyle} travel style
-- Set transport to null for days without intercity travel
-- Include local food recommendations as DINING activities
-- Tips should be practical and destination-specific`;
+- Each day must contain 3 to 5 realistic, chronological activities with realistic times (e.g. 09:00 AM, 01:00 PM, 04:30 PM, 07:30 PM).
+- Allowed Activity Types: SIGHTSEEING, ADVENTURE, DINING, SHOPPING, RELAXATION, CULTURAL, TRANSPORTATION, CHECK_IN, CHECK_OUT
+- Allowed Transport Types: FLIGHT, TRAIN, BUS, CAR, FERRY, WALK
+- All costs must be in ${request.currency}.
+- Set "transport" to null on middle days without intercity transfers.
+- Set "hotel" to null on the final departure day.`;
 }
 
 export async function generateTrip(request: TripRequest): Promise<GeneratedTrip> {

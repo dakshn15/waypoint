@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { Clock, Star, MapPin, CalendarDays, Hotel, Plane, Check, X, ShieldCheck, ChevronRight, Sparkles, Users, Mountain, Utensils, Camera, ShoppingBag, Bus, Coffee } from "lucide-react";
+import { Clock, Star, MapPin, CalendarDays, Hotel, Plane, Check, X, ShieldCheck, ChevronRight, Sparkles, Users, Mountain, Utensils, Camera, ShoppingBag, Bus, Coffee, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import BookingForm from "./booking-form";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -210,14 +210,14 @@ function difficultyColor(d: string) {
 
 function activityIcon(type: string) {
   switch (type) {
-    case "SIGHTSEEING": return <Camera className="h-3 w-3" />;
-    case "ADVENTURE": return <Mountain className="h-3 w-3" />;
-    case "DINING": return <Utensils className="h-3 w-3" />;
-    case "CULTURAL": return <Sparkles className="h-3 w-3" />;
-    case "SHOPPING": return <ShoppingBag className="h-3 w-3" />;
-    case "TRANSPORT": case "TRANSPORTATION": return <Bus className="h-3 w-3" />;
-    case "CHECK_IN": case "CHECK_OUT": return <Coffee className="h-3 w-3" />;
-    default: return <MapPin className="h-3 w-3" />;
+    case "SIGHTSEEING": return <Camera className="h-3.5 w-3.5" />;
+    case "ADVENTURE": return <Mountain className="h-3.5 w-3.5" />;
+    case "DINING": return <Utensils className="h-3.5 w-3.5" />;
+    case "CULTURAL": return <Sparkles className="h-3.5 w-3.5" />;
+    case "SHOPPING": return <ShoppingBag className="h-3.5 w-3.5" />;
+    case "TRANSPORT": case "TRANSPORTATION": return <Bus className="h-3.5 w-3.5" />;
+    case "CHECK_IN": case "CHECK_OUT": return <Coffee className="h-3.5 w-3.5" />;
+    default: return <MapPin className="h-3.5 w-3.5" />;
   }
 }
 
@@ -286,51 +286,56 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
 
       {/* ═══════════════ CINEMATIC HERO ═══════════════ */}
-      <section className="relative md:pt-20 pt-16 overflow-hidden">
-        <div className="relative h-[340px] sm:h-[400px] md:h-[460px] lg:h-[500px]">
-          <img src={heroImage} alt={pkg.title} className="w-full h-full object-cover" />
-          {/* Multi-layer gradient for depth */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#09111b] via-[#09111b]/50 to-[#09111b]/10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#09111b]/40 via-transparent to-transparent" />
+      <section className="relative w-full overflow-hidden bg-slate-950">
+        <div className="relative w-full h-[450px] sm:h-[500px] md:h-[600px]">
+          <img
+            src={heroImage}
+            alt={pkg.title}
+            className="w-full h-full object-cover object-center"
+          />
+
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09111b]/85 via-[#09111b]/40 to-[#09111b]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#09111b]/60 via-transparent to-transparent" />
 
           {/* Hero Content */}
-          <div className="absolute bottom-0 left-0 right-0 z-10">
-            <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-8 md:pb-10">
+          <div className="absolute inset-0 z-10 flex flex-col justify-end">
+            <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24 md:pb-28">
 
               {/* Breadcrumb */}
-              <nav className="flex items-center gap-1.5 text-[11px] font-medium text-white/50 mb-5">
-                <Link href="/" className="hover:text-white/80 transition-colors">Home</Link>
-                <ChevronRight className="h-3 w-3" />
-                <Link href="/packages" className="hover:text-white/80 transition-colors">Packages</Link>
-                <ChevronRight className="h-3 w-3" />
-                <span className="text-white/80 truncate max-w-[180px]">{pkg.title}</span>
+              <nav className="flex items-center gap-1.5 text-xs font-semibold text-white/70 mb-4 flex-wrap">
+                <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                <ChevronRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                <Link href="/packages" className="hover:text-white transition-colors">Packages</Link>
+                <ChevronRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                <span className="text-white/90 font-bold truncate max-w-[200px] sm:max-w-xs">{pkg.title}</span>
               </nav>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-white font-display mb-3">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white font-display mb-4 max-w-4xl">
                 {pkg.title}
               </h1>
 
               {/* Description */}
-              <p className="text-sm md:text-base text-white/60 leading-relaxed max-w-2xl mb-5">
+              <p className="text-xs sm:text-sm md:text-base text-white/80 leading-relaxed max-w-2xl mb-5 line-clamp-3 sm:line-clamp-none">
                 {pkg.description}
               </p>
 
               {/* Destinations route */}
-              <div className="flex items-center gap-1.5 text-xs text-white/70 font-medium mb-2">
-                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span>{pkg.destinations.join("  →  ")}</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/90 font-medium">
+                <MapPin className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">{pkg.destinations.join("  →  ")}</span>
               </div>
 
             </div>
           </div>
 
           {/* Favorite button top-right */}
-          <div className="absolute top-4 right-4 z-20 md:top-6 md:right-6">
+          <div className="absolute top-20 right-4 top-24 sm:right-6 md:top-28 md:right-8 z-20">
             <FavoriteButton
               packageId={id}
               initialFavorited={pkg.isFavorited}
-              className="bg-black/30 backdrop-blur-md border border-white/10 rounded-full p-2.5 hover:bg-black/50 transition-all"
+              className="bg-black/40 backdrop-blur-md border border-white/20 rounded-full p-1.5 sm:p-3 hover:bg-black/60 transition-all text-white shadow-lg"
             />
           </div>
         </div>
@@ -339,55 +344,59 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
       {/* ═══════════════ FLOATING STATS STRIP ═══════════════ */}
       <section className="relative z-20">
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10">
-          <div className="bg-white border border-slate-200/80 rounded-2xl shadow-lg p-1">
-            <div className="grid grid-cols-2 sm:grid-cols-4">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 -mt-12 sm:-mt-14">
+          <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xl lg:p-8 md:p-6 p-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 lg:gap-6 gap-5">
+
               {/* Duration */}
-              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
-                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Clock className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-primary" />
+              <div className="flex items-center gap-3 relative">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Duration</p>
-                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">{pkg.duration} Days</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Duration</p>
+                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">{pkg.duration} Days</p>
                 </div>
-                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
               </div>
 
               {/* Difficulty */}
-              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
-                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Mountain className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-secondary" />
+              <div className="flex items-center gap-3 relative">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                  <Mountain className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Difficulty</p>
-                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display capitalize">{pkg.difficulty.toLowerCase()}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Difficulty</p>
+                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display capitalize truncate">{pkg.difficulty.toLowerCase()}</p>
                 </div>
-                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
               </div>
 
               {/* Rating */}
-              <div className="flex items-center gap-3 sm:p-5 p-3.5 relative">
-                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Star className="sm:h-4.5 sm:w-4.5 h-3.5 w-3.5 text-primary fill-primary" />
+              <div className="flex items-center gap-3 relative">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Star className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 fill-amber-500" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Rating</p>
-                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">{pkg.rating}<span className="text-slate-400 font-normal text-xs ml-1">({pkg.reviews || 12})</span></p>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Rating</p>
+                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">
+                    {pkg.rating} <span className="text-slate-400 font-normal text-xs">({pkg.reviews || 12})</span>
+                  </p>
                 </div>
-                <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-slate-100" />
               </div>
 
               {/* Price */}
-              <div className="flex items-center gap-3 sm:p-5 p-3.5">
-                <div className="sm:w-10 sm:h-10 w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                  <span className="sm:text-base text-sm font-extrabold text-emerald-600">₹</span>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <span className="text-sm sm:text-base font-extrabold text-emerald-600">₹</span>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Starting at</p>
-                  <p className="sm:text-lg text-base font-extrabold text-slate-900 font-display">₹{pkg.basePrice.toLocaleString("en-IN")}<span className="text-slate-400 font-normal text-xs ml-0.5">/person</span></p>
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Starting at</p>
+                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">
+                    ₹{pkg.basePrice.toLocaleString("en-IN")}
+                    <span className="text-slate-400 font-normal text-xs ml-0.5">/person</span>
+                  </p>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -395,23 +404,23 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
 
       {/* ═══════════════ MAIN CONTENT ═══════════════ */}
-      <section className="flex-1 lg:py-12 py-8">
+      <section className="flex-1 lg:py-20 py-12">
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1fr_360px] items-start">
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px] items-start">
 
             {/* ═══ LEFT COLUMN ═══ */}
-            <div className="space-y-8">
+            <div className="lg:space-y-8 space-y-6">
 
               {/* ── HIGHLIGHTS ── */}
               {pkg.highlights && pkg.highlights.length > 0 && (
                 <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
-                  <div className="sm:px-7 sm:py-5 px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <div className="sm:p-7 p-4 border-b border-slate-100 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <h2 className="text-lg font-extrabold font-display text-slate-900">Tour Highlights</h2>
+                    <h2 className="text-base sm:text-lg font-extrabold font-display text-slate-900">Tour Highlights</h2>
                   </div>
-                  <div className="sm:p-7 p-5">
+                  <div className="sm:p-7 p-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                       {pkg.highlights.map((h: string, i: number) => (
                         <div key={i} className="flex gap-3 items-start">
@@ -475,7 +484,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                       <CalendarDays className="h-4.5 w-4.5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-extrabold font-display text-slate-900">Day-by-Day Itinerary</h2>
+                      <h2 className="text-lg sm:text-xl font-extrabold font-display text-slate-900">Day-by-Day Itinerary</h2>
                       <p className="text-xs text-slate-500 mt-0.5">Detailed daily plan with activities, dining, and accommodations</p>
                     </div>
                   </div>
@@ -496,29 +505,29 @@ export default async function PackageDetailPage({ params }: PageProps) {
                           {/* Day Card */}
                           <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
                             {/* Day header */}
-                            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
+                            <div className="px-4 sm:px-5 py-4 border-b border-slate-100 flex items-center gap-3">
                               {/* Mobile day number */}
                               <div className="sm:hidden w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-sm">
                                 {day.dayNumber}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-extrabold text-slate-900 font-display">{day.title}</h3>
-                                <p className="text-xs text-slate-500 mt-0.5">{day.description}</p>
+                                <h3 className="text-sm font-extrabold text-slate-900 font-display truncate">{day.title}</h3>
+                                <p className="text-xs text-slate-500 mt-0.5 truncate">{day.description}</p>
                               </div>
-                              <span className={`hidden sm:inline-flex text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide ${difficultyColor(pkg.difficulty)}`}>
+                              <span className={`hidden sm:inline-flex text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide shrink-0 ${difficultyColor(pkg.difficulty)}`}>
                                 Day {day.dayNumber}
                               </span>
                             </div>
 
-                            <div className="p-5 space-y-3">
+                            <div className="p-4 sm:p-5 space-y-3">
                               {/* Transport */}
                               {day.transport && (
                                 <div className="flex items-center gap-3 bg-sky-50/70 border border-sky-100 rounded-xl p-3 text-xs">
                                   <div className="w-7 h-7 rounded-lg bg-sky-100 flex items-center justify-center shrink-0">
                                     <Plane className="h-3.5 w-3.5 text-sky-600" />
                                   </div>
-                                  <div>
-                                    <span className="font-bold text-slate-900">Transfer: {day.transport.from} → {day.transport.to}</span>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-slate-900 block">Transfer: {day.transport.from} → {day.transport.to}</span>
                                     <span className="text-slate-500 block mt-0.5">Mode: {day.transport.type}</span>
                                   </div>
                                 </div>
@@ -552,8 +561,8 @@ export default async function PackageDetailPage({ params }: PageProps) {
                                   <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                     <Hotel className="h-3.5 w-3.5 text-primary" />
                                   </div>
-                                  <div>
-                                    <span className="font-bold text-slate-900">{day.hotel.name}</span>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-slate-900 block">{day.hotel.name}</span>
                                     <span className="text-slate-500 block mt-0.5">{day.hotel.address} • ⭐ {day.hotel.rating}</span>
                                   </div>
                                 </div>
@@ -591,7 +600,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
 
             {/* ═══ RIGHT COLUMN — BOOKING (desktop sticky, mobile after content) ═══ */}
-            <div id="booking" className="lg:sticky lg:top-28 scroll-mt-24">
+            <div id="booking" className="lg:sticky lg:top-28 scroll-mt-28 lg:order-2 -order-1">
               <BookingForm
                 packageId={pkg.isDb ? pkg.id : undefined}
                 basePrice={pkg.basePrice}
@@ -605,30 +614,39 @@ export default async function PackageDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-
       {/* ═══════════════ FOOTER ═══════════════ */}
       <SiteFooter />
 
       {/* ═══════════════ MOBILE FLOATING BOOK BAR ═══════════════ */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200 px-4 py-3 safe-area-pb">
-        <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">From</p>
-            <p className="text-xl font-extrabold text-slate-900 font-display">
-              ₹{pkg.basePrice.toLocaleString("en-IN")}
-              <span className="text-xs text-slate-400 font-normal ml-0.5">/person</span>
-            </p>
+      <div
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl border-t border-slate-200/60 shadow-[0_-6px_24px_rgba(0,0,0,0.1)]"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="flex items-center justify-between gap-3 px-4 py-2.5 max-w-lg mx-auto">
+          <div className="min-w-0">
+            <div className="flex items-baseline gap-1">
+              <span className="text-lg font-extrabold text-slate-900 font-display leading-tight">
+                ₹{pkg.basePrice.toLocaleString("en-IN")}
+              </span>
+              <span className="text-[11px] text-slate-400 font-medium">/person</span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+              <span className="text-[11px] font-bold text-slate-500">{pkg.rating}</span>
+              <span className="text-[9px] text-slate-300">•</span>
+              <span className="text-[11px] text-slate-400">{pkg.duration}D</span>
+            </div>
           </div>
           <a
             href="#booking"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-xl shadow-md transition-all active:scale-[0.98]"
+            className="inline-flex items-center justify-center gap-1.5 py-2.5 sm:px-6 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-md shadow-md shadow-primary/20 transition-all active:scale-[0.97] shrink-0"
           >
             Book Now
+            <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
       </div>
-      {/* Spacer for mobile floating bar */}
-      <div className="lg:hidden h-[72px]" />
+
     </div>
   );
 }

@@ -40,30 +40,80 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Build request payload for AI planner
-    const tripRequest: TripRequest = {
-      destination,
-      startDate,
-      endDate,
-      travelers: parseInt(travelers) || 2,
-      budget: parseFloat(budget),
-      currency,
-      travelStyle,
-      interests,
-      stayPreference,
-      transportPreference,
-    };
-
-    // Generate the trip using Gemini AI
-    const generatedTrip = await generateTrip(tripRequest);
-
-    // Calculate days
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid date format provided." },
+        { status: 400 }
+      );
+    }
+
+    if (end <= start) {
+      return NextResponse.json(
+        { error: "Return/End date must be after Departure/Start date." },
+        { status: 400 }
+      );
+    }
+
     const days = Math.max(
       1,
       Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
     );
+
+    if (days > 30) {
+      return NextResponse.json(
+        { error: "Trip duration cannot exceed 30 days for AI generation." },
+        { status: 400 }
+      );
+    }
+
+    const numTravelers = parseInt(travelers) || 1;
+    if (numTravelers < 1 || numTravelers > 20) {
+      return NextResponse.json(
+        { error: "Number of travelers must be between 1 and 20." },
+        { status: 400 }
+      );
+    }
+
+    const numBudget = parseFloat(budget);
+    if (isNaN(numBudget) || numBudget <= 0) {
+      return NextResponse.json(
+        { error: "Please provide a valid budget amount." },
+        { status: 400 }
+      );
+    }
+
+    // Absolute minimum threshold check (₹500 per person per day)
+    const minViableBudget = days * numTravelers * 500;
+    if (numBudget < minViableBudget) {
+      return NextResponse.json(
+        { 
+          error: `Your budget of ${currency} ${numBudget.toLocaleString()} is too low for a ${days}-day trip for ${numTravelers} traveler(s). Minimum viable budget is ${currency} ${minViableBudget.toLocaleString()}.` 
+        },
+        { status: 400 }
+      );
+    }
+
+    // Build request payload for AI planner
+    const tripRequest: TripRequest = {
+      destination: destination.trim(),
+      startDate,
+      endDate,
+      travelers: numTravelers,
+      budget: numBudget,
+      currency,
+      travelStyle,
+      interests: Array.isArray(interests) ? interests : [],
+      stayPreference: stayPreference || "Hotel",
+      transportPreference: transportPreference || "Flight",
+    };
+
+    // Generate the trip using Gemini AI
+    const generatedTrip = await generateTrip(tripRequest);
 
     // Save trip to database
     const trip = await prisma.trip.create({

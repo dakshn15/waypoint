@@ -118,7 +118,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
     <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
 
       {/* ═══ Price Header ═══ */}
-      <div className="px-6 pt-6 pb-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+      <div className="sm:p-6 p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
         {/* Subtle pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
         <div className="relative z-10">
@@ -140,7 +140,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
 
       {/* ═══ Form Body ═══ */}
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="sm:p-6 p-4 sm:space-y-6 space-y-5">
 
         {/* ── 1. Departure Date ── */}
         <div className="space-y-2.5">
@@ -148,7 +148,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
             Departure Date <span className="text-primary text-xs">*</span>
           </label>
           <Select value={travelDate} onValueChange={(v: string | null) => v && setTravelDate(v)}>
-            <SelectTrigger className="w-full !h-12 data-[size=default]:!h-12 bg-[#FAFAF9] border border-slate-200 rounded-xl px-4 text-sm hover:border-slate-300 focus-visible:ring-2 focus-visible:!ring-primary/15 focus-visible:!border-primary/40 transition-all cursor-pointer">
+            <SelectTrigger className="w-full bg-[#FAFAF9] border border-slate-200 px-4 text-sm hover:border-slate-300 focus-visible:ring-2 focus-visible:!ring-primary/15 focus-visible:!border-primary/40 transition-all cursor-pointer">
               <div className="flex items-center gap-2.5">
                 <CalendarDays className="h-4 w-4 text-slate-400 shrink-0" />
                 <SelectValue placeholder="Choose your travel date" />
@@ -194,7 +194,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
           {/* Scrollable traveler list — shows ~3, rest scroll */}
           <div className="space-y-2.5 max-h-[280px] overflow-y-auto pr-0.5 scrollbar-thin">
             {travelers.map((traveler, index) => (
-              <div key={index} className="rounded-xl border border-slate-200 bg-[#FAFAF9] p-3 space-y-2">
+              <div key={index} className="rounded-md border border-slate-200 bg-[#FAFAF9] p-3 space-y-2">
                 {/* Row header */}
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-slate-400">Traveler {index + 1}</span>
@@ -264,7 +264,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 key={g.key}
                 type="button"
                 onClick={() => setGateway(g.key)}
-                className={`relative p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                className={`relative p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer ${
                   gateway === g.key
                     ? "border-primary bg-primary/5"
                     : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
@@ -315,7 +315,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all gap-2 cursor-pointer text-sm"
+          className="w-full rounded-lg hover:scale-[1.01] active:scale-[0.99] transition-all gap-2 cursor-pointer"
         >
           {loading ? (
             <span className="flex items-center gap-2">

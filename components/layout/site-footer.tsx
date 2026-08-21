@@ -156,8 +156,8 @@ export function SiteFooter({ children }: SiteFooterProps) {
           </div>
         </div>
 
-        {/* ── Bottom bar ── */}
-        <div className="border-t border-white/[0.06] py-5 flex flex-col sm:flex-row items-center justify-between gap-4 gap-y-2">
+        {/* ── Bottom bar — padded on mobile so floating bottom bar never covers legal links ── */}
+        <div className="border-t border-white/[0.06] py-5 pb-20 lg:pb-5 flex flex-col sm:flex-row items-center justify-between gap-4 gap-y-2">
           <p className="text-sm text-slate-400">
             © {new Date().getFullYear()} Waypoint Inc. All rights reserved.
           </p>

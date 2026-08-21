@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Compass,
@@ -20,13 +21,14 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const navLinks = [
+    { label: "Home", href: "/" },
     { label: "Packages", href: "/packages" },
-    { label: "AI Builder", href: "/trip-builder", icon: <Sparkles className="h-3 w-3 text-primary" /> },
-    { label: "Destinations", href: "/#destinations" },
-    { label: "Features", href: "/#features" },
-    { label: "FAQ", href: "/#faq" },
+    { label: "AI Builder", href: "/trip-builder", icon: <Sparkles className="h-3.5 w-3.5 text-primary" /> },
+    { label: "About Us", href: "/about" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (
@@ -44,20 +46,17 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
           {/* Desktop Nav Links (lg and above) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-800">
             {navLinks.map((link) => {
-              const isActive = activeRoute === link.href;
-              const isHashLink = link.href.startsWith("/#");
-              const LinkTag = isHashLink ? "a" : Link;
-              const href = isHashLink ? link.href.replace("/", "") : link.href;
+              const isActive = activeRoute === link.href || pathname === link.href;
 
               return (
-                <LinkTag
+                <Link
                   key={link.label}
-                  href={href}
-                  className={`hover:text-primary transition-colors flex items-center gap-1 ${isActive ? "text-primary" : ""}`}
+                  href={link.href}
+                  className={`hover:text-primary transition-colors flex items-center gap-1.5 ${isActive ? "text-primary font-bold" : ""}`}
                 >
                   {link.icon}
                   {link.label}
-                </LinkTag>
+                </Link>
               );
             })}
           </nav>
@@ -100,23 +99,20 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
           <div className="lg:hidden mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-2xl p-4 shadow-xl transition-all animate-in fade-in slide-in-from-top-2 duration-200">
             <nav className="flex flex-col gap-1 font-semibold text-slate-700 text-sm">
               {navLinks.map((link) => {
-                const isActive = activeRoute === link.href;
-                const isHashLink = link.href.startsWith("/#");
-                const LinkTag = isHashLink ? "a" : Link;
-                const href = isHashLink ? link.href.replace("/", "") : link.href;
+                const isActive = activeRoute === link.href || pathname === link.href;
 
                 return (
-                  <LinkTag
+                  <Link
                     key={link.label}
-                    href={href}
+                    href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`px-3 py-2.5 rounded-md hover:bg-slate-100/80 hover:text-primary transition-colors flex items-center gap-2 ${
-                      isActive ? "bg-primary/5 text-primary" : ""
+                      isActive ? "bg-primary/5 text-primary font-bold" : ""
                     }`}
                   >
                     {link.icon && <span className="text-primary">{link.icon}</span>}
                     {link.label}
-                  </LinkTag>
+                  </Link>
                 );
               })}
 

@@ -7,25 +7,19 @@ import {
   Map as MapIcon,
   Heart,
   Sparkles,
-  TrendingUp,
   Users,
   Package,
   DollarSign,
   ArrowRight,
   ListTodo,
   Clock,
-  Play,
   CheckCircle2,
   AlertCircle,
-  ShieldAlert,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import AnalyticsCharts from "./analytics/charts";
 import { Badge } from "@/components/ui/badge";
-
-
-import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -106,65 +100,76 @@ async function TravelerDashboard({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-3xl font-extrabold tracking-tight text-secondary font-display">
           Welcome back,{" "}
-          <span className="text-gradient-primary">{userName}</span> 👋
+          <span className="text-primary">{userName}</span> 👋
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm">
           Here&apos;s what&apos;s happening with your travels.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-card">
+        <Card className="glass-card border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">AI Trips</CardTitle>
-            <Sparkles className="h-4 w-4 text-[var(--waypoint-amber)]" />
+            <CardTitle className="text-sm font-bold text-slate-700">AI Trips</CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <Sparkles className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{tripsCount}</div>
+            <div className="text-2xl font-extrabold text-secondary">{tripsCount}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {tripsCount > 0 ? "Generated plans" : "Start planning"}
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Active Bookings
             </CardTitle>
-            <CalendarCheck className="h-4 w-4 text-[var(--waypoint-teal)]" />
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <CalendarCheck className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{bookingsCount}</div>
+            <div className="text-2xl font-extrabold text-secondary">{bookingsCount}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {bookingsCount > 0 ? "Total bookings" : "No bookings"}
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Saved Packages
             </CardTitle>
-            <Heart className="h-4 w-4 text-primary" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <Heart className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{favoritesCount}</div>
+            <div className="text-2xl font-extrabold text-secondary">{favoritesCount}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Browse packages
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Destinations
             </CardTitle>
-            <MapIcon className="h-4 w-4 text-[var(--waypoint-teal)]" />
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <MapIcon className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">∞</div>
+            <div className="text-2xl font-extrabold text-secondary">50+</div>
             <p className="text-xs text-muted-foreground mt-1">To explore</p>
           </CardContent>
         </Card>
@@ -172,34 +177,34 @@ async function TravelerDashboard({
 
       <div className="grid gap-4 md:grid-cols-2">
         <Link href="/trip-builder">
-          <Card className="glass-card group cursor-pointer hover:shadow-2xl hover:shadow-[var(--waypoint-teal)]/10 transition-all hover:-translate-y-1">
+          <Card className="glass-card group cursor-pointer border border-slate-200/80 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all hover:-translate-y-0.5">
             <CardContent className="flex items-center gap-4 p-6">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-[var(--waypoint-teal)] to-sky-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Sparkles className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 rounded-xl bg-primary text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-md shadow-primary/20">
+                <Sparkles className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg">AI Trip Builder</h3>
-                <p className="text-sm text-muted-foreground">
-                  Create a personalized trip with AI
+                <h3 className="font-bold text-lg text-secondary">AI Trip Builder</h3>
+                <p className="text-xs text-slate-500">
+                  Create a custom itinerary in under 30 seconds
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-[var(--waypoint-teal)] transition-colors" />
+              <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
             </CardContent>
           </Card>
         </Link>
         <Link href="/packages">
-          <Card className="glass-card group cursor-pointer hover:shadow-2xl hover:shadow-[var(--waypoint-amber)]/10 transition-all hover:-translate-y-1">
+          <Card className="glass-card group cursor-pointer border border-slate-200/80 hover:border-secondary/40 hover:shadow-xl hover:shadow-secondary/5 transition-all hover:-translate-y-0.5">
             <CardContent className="flex items-center gap-4 p-6">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-tr from-[var(--waypoint-amber)] to-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Package className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 rounded-xl bg-secondary text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-md shadow-secondary/20">
+                <Package className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-lg">Browse Packages</h3>
-                <p className="text-sm text-muted-foreground">
-                  Explore curated travel packages
+                <h3 className="font-bold text-lg text-secondary">Browse Packages</h3>
+                <p className="text-xs text-slate-500">
+                  Explore curated travel packages from verified agencies
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-[var(--waypoint-amber)] transition-colors" />
+              <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-secondary transition-colors" />
             </CardContent>
           </Card>
         </Link>
@@ -283,28 +288,29 @@ async function AgencyDashboard({
     ([status, count]) => ({ status: status as string, count: count as number })
   );
 
-
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-3xl font-extrabold tracking-tight text-secondary font-display">
           Agency Dashboard
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm">
           Welcome back, {userName}. Manage your travel operations.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-card">
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Total Revenue
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-secondary" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <DollarSign className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-extrabold text-secondary">
               {formatCurrency(totalRevenue, "INR")}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -312,43 +318,52 @@ async function AgencyDashboard({
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Active Bookings
             </CardTitle>
-            <CalendarCheck className="h-4 w-4 text-[var(--waypoint-teal)]" />
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <CalendarCheck className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allBookings.length}</div>
+            <div className="text-2xl font-extrabold text-secondary">{allBookings.length}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Recent bookings
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Published Packages
             </CardTitle>
-            <Package className="h-4 w-4 text-[var(--waypoint-amber)]" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <Package className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{packagesCount}</div>
+            <div className="text-2xl font-extrabold text-secondary">{packagesCount}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Active packages
             </p>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Total Travelers
             </CardTitle>
-            <Users className="h-4 w-4 text-secondary" />
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <Users className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{uniqueTravelers}</div>
+            <div className="text-2xl font-extrabold text-secondary">{uniqueTravelers}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Unique customers
             </p>
@@ -357,9 +372,9 @@ async function AgencyDashboard({
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="glass-card md:col-span-1">
+        <Card className="glass-card md:col-span-1 border border-slate-200/80">
           <CardHeader>
-            <CardTitle className="text-lg">Recent Bookings</CardTitle>
+            <CardTitle className="text-lg font-bold text-secondary">Recent Bookings</CardTitle>
           </CardHeader>
           <CardContent>
             {recentBookings.length > 0 ? (
@@ -367,15 +382,15 @@ async function AgencyDashboard({
                 {recentBookings.map((b) => (
                   <div
                     key={b.id}
-                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
+                    className="flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-200/80"
                   >
                     <div>
-                      <p className="text-sm font-medium">{b.user.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-bold text-slate-800">{b.user.name}</p>
+                      <p className="text-xs text-slate-500">
                         {b.package?.title || "Custom Trip"}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold">
+                    <span className="text-sm font-extrabold text-primary">
                       {formatCurrency(Number(b.totalAmount), b.currency)}
                     </span>
                   </div>
@@ -383,12 +398,12 @@ async function AgencyDashboard({
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No bookings yet. Share your packages to start receiving
-                bookings.
+                No bookings yet. Share your packages to start receiving bookings.
               </p>
             )}
           </CardContent>
         </Card>
+
         <div className="md:col-span-2">
           <AnalyticsCharts
             monthlyRevenue={monthlyRevenue}
@@ -400,7 +415,6 @@ async function AgencyDashboard({
     </div>
   );
 }
-
 
 async function AdminDashboard() {
   const [allBookings, totalUsers, totalAgencies, totalPackages] =
@@ -454,57 +468,67 @@ async function AdminDashboard() {
     ([status, count]) => ({ status: status as string, count: count as number })
   );
 
-
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-3xl font-extrabold tracking-tight text-secondary font-display">Admin Dashboard</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
           Platform-wide analytics and management.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-card">
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-secondary" />
+            <CardTitle className="text-sm font-bold text-slate-700">Total Users</CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <Users className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
+            <div className="text-2xl font-extrabold text-secondary">{totalUsers}</div>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Active Agencies
             </CardTitle>
-            <Package className="h-4 w-4 text-[var(--waypoint-teal)]" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <Package className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalAgencies}</div>
+            <div className="text-2xl font-extrabold text-secondary">{totalAgencies}</div>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Total Bookings
             </CardTitle>
-            <CalendarCheck className="h-4 w-4 text-[var(--waypoint-amber)]" />
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+              <CalendarCheck className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{allBookings.length}</div>
+            <div className="text-2xl font-extrabold text-secondary">{allBookings.length}</div>
           </CardContent>
         </Card>
-        <Card className="glass-card">
+
+        <Card className="glass-card border border-slate-200/80 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-bold text-slate-700">
               Platform Revenue
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-secondary" />
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <DollarSign className="h-4 w-4" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-extrabold text-secondary">
               {formatCurrency(totalRevenue, "INR")}
             </div>
           </CardContent>
@@ -512,9 +536,9 @@ async function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="glass-card md:col-span-1">
+        <Card className="glass-card md:col-span-1 border border-slate-200/80">
           <CardHeader>
-            <CardTitle className="text-lg">Recent Platform Bookings</CardTitle>
+            <CardTitle className="text-lg font-bold text-secondary">Recent Platform Bookings</CardTitle>
           </CardHeader>
           <CardContent>
             {recentBookings.length > 0 ? (
@@ -522,15 +546,15 @@ async function AdminDashboard() {
                 {recentBookings.map((b) => (
                   <div
                     key={b.id}
-                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
+                    className="flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-200/80"
                   >
                     <div>
-                      <p className="text-sm font-medium">{b.user.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-bold text-slate-800">{b.user.name}</p>
+                      <p className="text-xs text-slate-500">
                         {b.package?.title || "Custom Trip"}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold">
+                    <span className="text-sm font-extrabold text-primary">
                       {formatCurrency(Number(b.totalAmount), b.currency)}
                     </span>
                   </div>
@@ -543,6 +567,7 @@ async function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+
         <div className="md:col-span-2">
           <AnalyticsCharts
             monthlyRevenue={monthlyRevenue}
@@ -636,10 +661,10 @@ async function StaffDashboard({
     <div className="space-y-8">
       {/* Dashboard Greeting Header */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-secondary font-display">
           Welcome back, {userName}! 👋
         </h1>
-        <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-1.5 font-medium">
+        <p className="text-sm text-slate-500 mt-1.5 flex items-center gap-1.5 font-medium">
           <span className="h-2 w-2 rounded-full bg-secondary" />
           {staff.role} &bull; {staff.agency.name} Operations Control
         </p>
@@ -647,11 +672,11 @@ async function StaffDashboard({
 
       {/* Grid of Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Tasks</p>
-              <h3 className="text-3xl font-extrabold tracking-tight">{totalTasks}</h3>
+              <h3 className="text-3xl font-extrabold tracking-tight text-secondary">{totalTasks}</h3>
             </div>
             <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
               <ListTodo className="h-6 w-6" />
@@ -659,7 +684,7 @@ async function StaffDashboard({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Work</p>
@@ -671,7 +696,7 @@ async function StaffDashboard({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Completed Tasks</p>
@@ -683,11 +708,11 @@ async function StaffDashboard({
           </CardContent>
         </Card>
 
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
           <CardContent className="p-6 flex items-center justify-between">
             <div className="space-y-1">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Agency Bookings</p>
-              <h3 className="text-3xl font-extrabold tracking-tight">{agencyBookingsCount}</h3>
+              <h3 className="text-3xl font-extrabold tracking-tight text-secondary">{agencyBookingsCount}</h3>
             </div>
             <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
               <CalendarCheck className="h-6 w-6" />
@@ -699,10 +724,10 @@ async function StaffDashboard({
       {/* Main split dashboard view */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Left: Active Tasks */}
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm flex flex-col justify-between">
           <CardHeader className="border-b border-slate-100 pb-4 flex flex-row items-center justify-between">
             <div className="space-y-0.5">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <CardTitle className="text-lg font-bold flex items-center gap-2 text-secondary">
                 <ListTodo className="h-5 w-5 text-secondary" /> Your Active Tasks
               </CardTitle>
               <CardDescription className="text-xs">Operational tasks assigned to you.</CardDescription>
@@ -744,10 +769,10 @@ async function StaffDashboard({
         </Card>
 
         {/* Right: Recent Agency Bookings */}
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
+        <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm flex flex-col justify-between">
           <CardHeader className="border-b border-slate-100 pb-4 flex flex-row items-center justify-between">
             <div className="space-y-0.5">
-              <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <CardTitle className="text-lg font-bold flex items-center gap-2 text-secondary">
                 <CalendarCheck className="h-5 w-5 text-secondary" /> Recent Bookings
               </CardTitle>
               <CardDescription className="text-xs">Latest customer bookings in your agency.</CardDescription>
@@ -765,10 +790,10 @@ async function StaffDashboard({
                 {recentBookings.map((b) => (
                   <div key={b.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between gap-4">
                     <div className="min-w-0 space-y-0.5">
-                      <span className="font-bold text-sm text-slate-800 truncate block">
+                      <span className="font-bold text-sm text-slate-800 block">
                         {b.user.name}
                       </span>
-                      <span className="text-xs text-muted-foreground truncate block">
+                      <span className="text-xs text-muted-foreground block">
                         {b.package?.title || "Custom Trip"}
                       </span>
                       <span className="text-[10px] text-slate-400 block font-medium">
@@ -795,4 +820,3 @@ async function StaffDashboard({
     </div>
   );
 }
-
