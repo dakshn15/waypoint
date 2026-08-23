@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Compass, AlertTriangle, RefreshCw, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Error({
   error,
@@ -12,29 +13,31 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
+    console.error("Application error:", error);
   }, [error]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF9] font-sans">
       {/* Nav */}
-      <div className="p-6">
-        <Link href="/" className="inline-flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <Compass className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-lg font-extrabold tracking-tight text-secondary">
-            Way<span className="text-primary">point</span>
-          </span>
-        </Link>
-      </div>
+      <header className="py-6 px-4 border-b border-slate-200/60 bg-white">
+        <div className="container mx-auto max-w-5xl flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+              <Compass className="h-4 w-4 text-white" />
+            </div>
+            <span className="font-extrabold tracking-tight text-slate-900 text-[15px]">
+              Way<span className="text-primary">point</span>
+            </span>
+          </Link>
+        </div>
+      </header>
 
-      {/* Center Content */}
-      <div className="flex-1 flex items-center justify-center px-4 -mt-16">
-        <div className="text-center max-w-lg">
-          {/* Error Icon */}
-          <div className="w-20 h-20 rounded-2xl bg-red-50 border-2 border-red-200/60 flex items-center justify-center mx-auto mb-6">
-            <AlertTriangle className="h-10 w-10 text-red-500" />
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          {/* Icon */}
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500 flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <AlertTriangle className="h-8 w-8" />
           </div>
 
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary mb-3">
@@ -50,20 +53,20 @@ export default function Error({
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button
               onClick={() => reset()}
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-white text-sm font-bold transition-all shadow-lg shadow-primary/20 cursor-pointer"
+              size="lg"
+              className="rounded-xl font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
             >
               <RefreshCw className="h-4 w-4" />
               Try Again
-            </button>
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-white border-2 border-slate-200 hover:border-primary/30 hover:shadow-md text-slate-700 text-sm font-bold transition-all"
-            >
-              Go Home
-              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Link href="/">
+              <Button size="lg" variant="outline" className="rounded-xl font-bold border-2 border-slate-200 text-slate-700">
+                Go Home
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </Link>
           </div>
         </div>

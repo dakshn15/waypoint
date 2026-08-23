@@ -6,6 +6,9 @@ import { resetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Eye, EyeOff, ArrowRight, Loader2, KeyRound, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -15,7 +18,6 @@ export default function ResetPasswordPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -88,7 +90,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-[26px] font-extrabold tracking-tight text-secondary">
+            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
               Password Reset Complete
             </h1>
             <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
@@ -96,53 +98,45 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
-          <Link
-            href="/login"
-            className="block w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20 mt-4"
-          >
-            Sign in to your account
-            <ArrowRight className="h-4 w-4" />
+          <Link href="/login" className="block w-full mt-4">
+            <Button size="lg" className="w-full font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20">
+              Sign in to your account
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </Link>
         </div>
       ) : (
         /* Form State */
         <div>
           {/* Header */}
-          <div className="mb-6">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+          <div className="md:mb-8 mb-5 text-center">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 mx-auto">
               <KeyRound className="h-6 w-6" />
             </div>
-            <h1 className="text-[28px] font-extrabold tracking-tight text-secondary">
+            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
               Set new password
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 mt-2">
               Please enter your new password below.
             </p>
           </div>
 
           <form onSubmit={handleResetPassword} className="space-y-4" noValidate>
             {/* New Password */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="new-password"
-                className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                  focusedField === "newPassword" ? "text-primary" : "text-slate-500"
-                }`}
-              >
+            <div className="space-y-2">
+              <Label htmlFor="new-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 New Password
-              </label>
+              </Label>
               <div className="relative">
-                <input
+                <Input
                   id="new-password"
                   type={showPw ? "text" : "password"}
                   required
                   minLength={8}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  onFocus={() => setFocusedField("newPassword")}
-                  onBlur={() => setFocusedField(null)}
                   placeholder="Min. 8 characters"
-                  className="w-full h-12 px-4 pr-12 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
+                  className="pr-12"
                 />
                 <button
                   type="button"
@@ -162,20 +156,18 @@ export default function ResetPasswordPage() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          i <= pwStrength ? pwColor : "bg-slate-200"
-                        }`}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= pwStrength ? pwColor : "bg-slate-200"
+                          }`}
                       />
                     ))}
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-wider ${
-                      pwStrength <= 1
+                    className={`text-[10px] font-bold uppercase tracking-wider ${pwStrength <= 1
                         ? "text-red-500"
                         : pwStrength === 2
-                        ? "text-amber-500"
-                        : "text-emerald-500"
-                    }`}
+                          ? "text-amber-500"
+                          : "text-emerald-500"
+                      }`}
                   >
                     {pwLabel}
                   </span>
@@ -184,33 +176,26 @@ export default function ResetPasswordPage() {
             </div>
 
             {/* Confirm Password */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="confirm-password"
-                className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                  focusedField === "confirmPassword" ? "text-primary" : "text-slate-500"
-                }`}
-              >
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 Confirm Password
-              </label>
-              <input
+              </Label>
+              <Input
                 id="confirm-password"
                 type="password"
                 required
                 minLength={8}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                onFocus={() => setFocusedField("confirmPassword")}
-                onBlur={() => setFocusedField(null)}
                 placeholder="Re-enter password"
-                className="w-full h-12 px-4 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
               />
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2 text-white text-sm font-bold transition-all duration-200 shadow-lg shadow-primary/20 cursor-pointer mt-2"
+              size="lg"
+              className="w-full mt-2"
             >
               {loading ? (
                 <>
@@ -223,17 +208,17 @@ export default function ResetPasswordPage() {
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
-            </button>
+            </Button>
           </form>
 
           {/* Switch to Login */}
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm text-slate-500 lg:mt-8 mt-5">
             Remembered your password?{" "}
             <Link
               href="/login"
               className="font-bold text-primary hover:underline underline-offset-2"
             >
-              Sign in →
+              Sign in
             </Link>
           </p>
         </div>

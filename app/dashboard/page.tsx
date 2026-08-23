@@ -664,7 +664,7 @@ async function StaffDashboard({
         <h1 className="text-3xl font-extrabold tracking-tight text-secondary font-display">
           Welcome back, {userName}! 👋
         </h1>
-        <p className="text-sm text-slate-500 mt-1.5 flex items-center gap-1.5 font-medium">
+        <p className="text-sm text-slate-500 mt-2.5 flex items-center gap-1.5 font-medium">
           <span className="h-2 w-2 rounded-full bg-secondary" />
           {staff.role} &bull; {staff.agency.name} Operations Control
         </p>

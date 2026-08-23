@@ -6,6 +6,9 @@ import { signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Eye, EyeOff, ArrowRight, Loader2, User, Building2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,7 +18,6 @@ export default function RegisterPage() {
   const [showPw, setShowPw] = useState(false);
   const [role, setRole] = useState<"TRAVELER" | "AGENCY">("TRAVELER");
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   // Password strength score (0 to 4)
   const pwStrength = (() => {
@@ -87,11 +89,11 @@ export default function RegisterPage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="mb-5">
-        <h1 className="text-[26px] font-extrabold tracking-tight text-secondary">
+      <div className="md:mb-8 mb-5 text-center">
+        <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tighty">
           Create your account
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-500 mt-2">
           Join Waypoint to plan, book, and manage unforgettable trips.
         </p>
       </div>
@@ -102,11 +104,10 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => setRole("TRAVELER")}
-          className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-            role === "TRAVELER"
+          className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${role === "TRAVELER"
               ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
               : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
-          }`}
+            }`}
         >
           {role === "TRAVELER" && (
             <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
@@ -114,11 +115,10 @@ export default function RegisterPage() {
             </div>
           )}
           <div
-            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-              role === "TRAVELER"
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${role === "TRAVELER"
                 ? "bg-primary text-white"
                 : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
-            }`}
+              }`}
           >
             <User className="h-4 w-4" />
           </div>
@@ -134,11 +134,10 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => setRole("AGENCY")}
-          className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-            role === "AGENCY"
+          className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${role === "AGENCY"
               ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
               : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
-          }`}
+            }`}
         >
           {role === "AGENCY" && (
             <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
@@ -146,11 +145,10 @@ export default function RegisterPage() {
             </div>
           )}
           <div
-            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-              role === "AGENCY"
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${role === "AGENCY"
                 ? "bg-primary text-white"
                 : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
-            }`}
+              }`}
           >
             <Building2 className="h-4 w-4" />
           </div>
@@ -164,67 +162,46 @@ export default function RegisterPage() {
       </div>
 
       {/* Registration Form */}
-      <form onSubmit={handleRegister} className="space-y-3" noValidate>
+      <form onSubmit={handleRegister} className="space-y-4" noValidate>
         {/* Name */}
-        <div className="space-y-1">
-          <label
-            htmlFor="reg-name"
-            className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-              focusedField === "name" ? "text-primary" : "text-slate-500"
-            }`}
-          >
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-name" className="text-xs font-bold uppercase tracking-wider text-slate-500">
             {role === "TRAVELER" ? "Full Name" : "Agency Name"}
-          </label>
-          <input
+          </Label>
+          <Input
             id="reg-name"
             type="text"
             required
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onFocus={() => setFocusedField("name")}
-            onBlur={() => setFocusedField(null)}
             placeholder={role === "TRAVELER" ? "John Doe" : "Wanderlust Travels"}
-            className="w-full h-11 px-4 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
           />
         </div>
 
         {/* Email */}
-        <div className="space-y-1">
-          <label
-            htmlFor="reg-email"
-            className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-              focusedField === "email" ? "text-primary" : "text-slate-500"
-            }`}
-          >
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Email Address
-          </label>
-          <input
+          </Label>
+          <Input
             id="reg-email"
             type="email"
             required
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => setFocusedField("email")}
-            onBlur={() => setFocusedField(null)}
             placeholder="you@example.com"
-            className="w-full h-11 px-4 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
           />
         </div>
 
         {/* Password */}
-        <div className="space-y-1">
-          <label
-            htmlFor="reg-password"
-            className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-              focusedField === "password" ? "text-primary" : "text-slate-500"
-            }`}
-          >
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Password
-          </label>
+          </Label>
           <div className="relative">
-            <input
+            <Input
               id="reg-password"
               type={showPw ? "text" : "password"}
               required
@@ -232,10 +209,8 @@ export default function RegisterPage() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setFocusedField("password")}
-              onBlur={() => setFocusedField(null)}
               placeholder="Min. 8 characters"
-              className="w-full h-11 px-4 pr-12 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
+              className="pr-12"
             />
             <button
               type="button"
@@ -255,20 +230,18 @@ export default function RegisterPage() {
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                      i <= pwStrength ? pwColor : "bg-slate-200"
-                    }`}
+                    className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= pwStrength ? pwColor : "bg-slate-200"
+                      }`}
                   />
                 ))}
               </div>
               <span
-                className={`text-[10px] font-bold uppercase tracking-wider ${
-                  pwStrength <= 1
+                className={`text-[10px] font-bold uppercase tracking-wider ${pwStrength <= 1
                     ? "text-red-500"
                     : pwStrength === 2
-                    ? "text-amber-500"
-                    : "text-emerald-500"
-                }`}
+                      ? "text-amber-500"
+                      : "text-emerald-500"
+                  }`}
               >
                 {pwLabel}
               </span>
@@ -277,10 +250,11 @@ export default function RegisterPage() {
         </div>
 
         {/* Submit */}
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2 text-white text-sm font-bold transition-all duration-200 shadow-lg shadow-primary/20 cursor-pointer mt-1"
+          size="lg"
+          className="w-full mt-1"
         >
           {loading ? (
             <>
@@ -293,21 +267,8 @@ export default function RegisterPage() {
               <ArrowRight className="h-4 w-4" />
             </>
           )}
-        </button>
+        </Button>
       </form>
-
-      {/* Terms Note */}
-      <p className="text-center text-[11px] text-slate-400 mt-4 leading-relaxed">
-        By creating an account, you agree to our{" "}
-        <Link href="/terms" className="underline hover:text-secondary">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="underline hover:text-secondary">
-          Privacy Policy
-        </Link>
-        .
-      </p>
 
       {/* Switch to Login */}
       <p className="text-center text-sm text-slate-500 mt-4">

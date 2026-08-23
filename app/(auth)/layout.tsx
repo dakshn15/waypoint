@@ -10,7 +10,7 @@ export default function AuthLayout({
     <div className="lg:h-screen lg:overflow-hidden flex font-sans">
 
       {/* ═══ LEFT PANEL: IMMERSIVE VISUAL ═══ */}
-      <div className="hidden lg:flex lg:w-[55%] bg-secondary relative overflow-hidden flex-col justify-between p-10">
+      <div className="hidden lg:flex lg:w-[50%] gap-5 bg-secondary relative overflow-hidden flex-col justify-between p-8 xl:p-10">
         {/* Background Image Layer */}
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -35,18 +35,18 @@ export default function AuthLayout({
 
         {/* Center Headline */}
         <div className="relative z-10 space-y-5 max-w-lg">
-          <h2 className="text-4xl xl:text-5xl font-extrabold tracking-tight leading-[1.1] text-white">
+          <h2 className="text-3xl xl:text-5xl font-extrabold tracking-tight leading-[1.1] text-white">
             Your next adventure{" "}
             <span className="bg-gradient-to-r from-primary via-primary/80 to-wp-primary-light bg-clip-text text-transparent">
               starts here.
             </span>
           </h2>
-          <p className="text-base text-white/60 leading-relaxed max-w-md">
+          <p className="text-sm xl:text-base text-white/60 leading-relaxed max-w-md">
             Join thousands of travelers who plan, book, and experience their dream trips through Waypoint&apos;s AI-powered platform.
           </p>
 
           {/* Trust Indicators — brand colors only */}
-          <div className="flex items-center gap-6 pt-1">
+          <div className="flex items-center gap-4 xl:gap-6 pt-1 flex-wrap">
             <div className="flex items-center gap-2 text-white/50 text-xs font-medium">
               <Shield className="h-4 w-4 text-accent" />
               <span>SSL Secured</span>
@@ -63,8 +63,8 @@ export default function AuthLayout({
         </div>
 
         {/* Bottom Testimonial */}
-        <div className="relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 max-w-md">
-          <p className="text-sm text-white/80 leading-relaxed italic">
+        <div className="relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 xl:p-5 max-w-md">
+          <p className="text-xs xl:text-sm text-white/80 leading-relaxed italic">
             &ldquo;Waypoint planned our entire Rajasthan trip in under 30 seconds. 
             The AI itinerary was so detailed we didn&apos;t miss a single experience.&rdquo;
           </p>
@@ -85,7 +85,7 @@ export default function AuthLayout({
       <div className="flex-1 flex flex-col lg:h-screen lg:overflow-y-auto bg-[#FAFAF9]">
 
         {/* Mobile Logo (shows only below lg) */}
-        <div className="lg:hidden flex items-center justify-center pt-10 pb-2">
+        <div className="lg:hidden flex items-center justify-center pt-10">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
               <Compass className="h-4.5 w-4.5 text-white" />
@@ -97,8 +97,8 @@ export default function AuthLayout({
         </div>
 
         {/* Form Container — Vertically Centered */}
-        <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-6 lg:py-4">
-          <div className="w-full max-w-[420px]">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-6 lg:py-4">
+          <div className="w-full max-w-[420px] bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 sm:p-7 shadow-lg">
             {children}
           </div>
         </div>

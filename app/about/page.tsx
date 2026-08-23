@@ -11,10 +11,12 @@ import {
   ArrowRight,
   Compass,
   CheckCircle2,
+  Star,
 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const pillars = [
@@ -95,7 +97,7 @@ export default function AboutPage() {
       `}</style>
       <section
         ref={heroRef}
-        className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#FAFAF9] via-[#F6F3F0] to-[#FAFAF9]"
+        className="hero-sec relative min-h-[75vh] md:pt-36 sm:pt-32 pt-28 pb-16 flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#FAFAF9] via-[#F6F3F0] to-[#FAFAF9]"
         style={
           {
             "--mx": "50%",
@@ -221,40 +223,39 @@ export default function AboutPage() {
           }}
         />
 
-        <div className="relative z-10 text-center max-w-3xl px-4">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           {/* Overline badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-sm text-xs font-bold text-slate-500 uppercase tracking-widest mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-sm text-xs font-bold text-slate-500 uppercase tracking-widest md:mb-6 mb-4">
             <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
               <Compass className="h-3 w-3 text-white" />
             </div>
             About Waypoint
           </div>
 
-          <h1 className="text-[2.5rem] md:text-[4.5rem] font-extrabold tracking-tight text-secondary leading-[1.05] mb-6">
-            Travel planning,
-            <br />
-            <span className="text-primary">reimagined.</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
+            Travel planning,{" "}
+            <span className="bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent">
+              reimagined.
+            </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-xl mx-auto mb-10 font-medium">
+          <p className="md:text-base text-sm text-slate-500 leading-relaxed max-w-2xl mx-auto md:mb-8 mb-6">
             AI meets local expertise. Waypoint turns the chaos of trip research
             into a single, intelligent experience.
           </p>
 
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/trip-builder"
-              className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-bold transition-all shadow-xl shadow-primary/20 active:scale-[0.97]"
-            >
-              <Sparkles className="h-4 w-4" />
-              Try AI Trip Builder
+          <div className="flex flex-wrap gap-3 justify-center items-center">
+            <Link href="/trip-builder">
+              <Button size="lg" className="rounded-full font-bold bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20">
+                <Sparkles className="h-4 w-4" />
+                Try AI Trip Builder
+              </Button>
             </Link>
-            <Link
-              href="/packages"
-              className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white border border-slate-200 text-slate-700 text-sm font-bold transition-all shadow-sm"
-            >
-              Browse Packages
-              <ArrowRight className="h-4 w-4" />
+            <Link href="/packages">
+              <Button size="lg" variant="outline" className="rounded-full font-bold bg-white/90 backdrop-blur-sm border-slate-200 text-slate-700 shadow-sm">
+                Browse Packages
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </Link>
           </div>
         </div>
@@ -284,7 +285,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ OUR STORY — BIG QUOTE + NARRATIVE ═══ */}
-      <section className="py-24 md:py-32">
+      <section className="lg:py-20 py-12">
         <div className="container mx-auto max-w-4xl px-4">
           {/* Big pull quote */}
           <div className="mb-16 md:mb-20">
@@ -341,7 +342,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ CORE PILLARS — CLEAN GRID ═══ */}
-      <section className="py-20 bg-white border-y border-slate-200/60">
+      <section className="lg:py-20 py-12 bg-white border-y border-slate-200/60">
         <div className="container mx-auto max-w-5xl px-4">
           <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
@@ -383,7 +384,7 @@ export default function AboutPage() {
       </section>
 
       {/* ═══ CAPABILITIES — DARK ═══ */}
-      <section className="py-24 bg-secondary relative overflow-hidden">
+      <section className="lg:py-20 py-12 bg-secondary relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(228,111,68,0.1),transparent_55%)]" />
         <div
           className="absolute inset-0 opacity-[0.025]"
@@ -425,26 +426,24 @@ export default function AboutPage() {
             ))}
           </div>
 
-          <div className="mt-12 flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-full bg-primary hover:bg-primary/90 text-white text-sm font-bold transition-all shadow-lg shadow-primary/25"
-            >
-              Get Started Free
-              <ArrowRight className="h-4 w-4" />
+          <div className="lg:mt-10 mt-6 flex flex-wrap gap-3 justify-center items-center">
+            <Link href="/register">
+              <Button size="lg" className="rounded-full font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
+                Get Started Free
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-full bg-white/8 hover:bg-white/15 border border-white/15 text-white text-sm font-bold transition-all"
-            >
-              Contact Us
+            <Link href="/contact">
+              <Button size="lg" variant="outline" className="rounded-full font-bold bg-white/8 hover:bg-white/15 border-white/15 text-white">
+                Contact Us
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section className="py-24">
+      <section className="lg:py-20 py-12">
         <div className="container mx-auto max-w-2xl px-4 text-center">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-white flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/20">
             <Compass className="h-7 w-7" />
@@ -457,12 +456,11 @@ export default function AboutPage() {
           <p className="text-base text-slate-400 mb-8 max-w-sm mx-auto">
             Join thousands of travelers planning smarter with AI.
           </p>
-          <Link
-            href="/trip-builder"
-            className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-secondary hover:bg-secondary/90 text-white text-sm font-bold transition-all shadow-xl shadow-secondary/15 active:scale-[0.97]"
-          >
-            <Sparkles className="h-4 w-4" />
-            Start Planning
+          <Link href="/trip-builder">
+            <Button size="lg" variant="secondary" className="rounded-full font-bold text-white shadow-xl shadow-secondary/15">
+              <Sparkles className="h-4 w-4" />
+              Start Planning
+            </Button>
           </Link>
         </div>
       </section>

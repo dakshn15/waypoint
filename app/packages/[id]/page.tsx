@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Button } from "@/components/ui/button";
 
 /* ═══════════════════════════════════════════════════════
    DESTINATION IMAGES
@@ -637,12 +638,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
               <span className="text-[11px] text-slate-400">{pkg.duration}D</span>
             </div>
           </div>
-          <a
-            href="#booking"
-            className="inline-flex items-center justify-center gap-1.5 py-2.5 sm:px-6 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-md shadow-md shadow-primary/20 transition-all active:scale-[0.97] shrink-0"
-          >
-            Book Now
-            <ArrowRight className="h-3.5 w-3.5" />
+          <a href="#booking">
+            <Button size="sm" className="font-bold text-xs sm:text-sm bg-primary hover:bg-primary/90 text-white rounded-xl shadow-md shadow-primary/20 shrink-0">
+              Book Now
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
           </a>
         </div>
       </div>

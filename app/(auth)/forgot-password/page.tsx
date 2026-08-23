@@ -5,12 +5,14 @@ import Link from "next/link";
 import { requestPasswordReset } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { ArrowRight, Loader2, ArrowLeft, MailCheck, KeyRound } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const validateForm = () => {
     const trimmedEmail = email.trim();
@@ -55,14 +57,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Back to sign in link */}
-      <Link
-        href="/login"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-primary transition-colors mb-6 group"
-      >
-        <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-1 transition-transform" />
-        Back to sign in
-      </Link>
 
       {submitted ? (
         /* Success State */
@@ -72,7 +66,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-[26px] font-extrabold tracking-tight text-secondary">
+            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
               Check your inbox
             </h1>
             <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
@@ -80,21 +74,22 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <div className="pt-2 space-y-3">
-            <button
+          <div className="pt-2 space-y-4">
+            <Button
               type="button"
               onClick={() => setSubmitted(false)}
-              className="w-full h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-all cursor-pointer"
+              variant="secondary"
+              size="lg"
+              className="w-full rounded-xl font-bold cursor-pointer"
             >
               Didn&apos;t receive email? Try again
-            </button>
+            </Button>
 
-            <Link
-              href="/login"
-              className="block w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
-            >
-              Return to Sign in
-              <ArrowRight className="h-4 w-4" />
+            <Link href="/login" className="block w-full">
+              <Button size="lg" className="w-full font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20">
+                Return to Sign in
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </Link>
           </div>
         </div>
@@ -102,46 +97,39 @@ export default function ForgotPasswordPage() {
         /* Form State */
         <div>
           {/* Header */}
-          <div className="mb-6">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+          <div className="md:mb-8 mb-5 text-center">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 mx-auto">
               <KeyRound className="h-6 w-6" />
             </div>
-            <h1 className="text-[28px] font-extrabold tracking-tight text-secondary">
+            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
               Forgot password?
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 mt-2">
               No worries! Enter your email address and we&apos;ll send you instructions to reset your password.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="space-y-1.5">
-              <label
-                htmlFor="forgot-email"
-                className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                  focusedField === "email" ? "text-primary" : "text-slate-500"
-                }`}
-              >
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 Email Address
-              </label>
-              <input
+              </Label>
+              <Input
                 id="forgot-email"
                 type="email"
                 required
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setFocusedField("email")}
-                onBlur={() => setFocusedField(null)}
                 placeholder="you@example.com"
-                className="w-full h-12 px-4 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
               />
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2 text-white text-sm font-bold transition-all duration-200 shadow-lg shadow-primary/20 cursor-pointer mt-2"
+              size="lg"
+              className="w-full mt-2"
             >
               {loading ? (
                 <>
@@ -154,17 +142,17 @@ export default function ForgotPasswordPage() {
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
-            </button>
+            </Button>
           </form>
 
           {/* Remembered password */}
-          <p className="text-center text-sm text-slate-500 mt-8">
+          <p className="text-center text-sm text-slate-500 md:mt-8 mt-5">
             Remembered your password?{" "}
             <Link
               href="/login"
               className="font-bold text-primary hover:underline underline-offset-2"
             >
-              Sign in →
+              Sign in
             </Link>
           </p>
         </div>

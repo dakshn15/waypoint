@@ -6,6 +6,9 @@ import { signIn } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,7 +16,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -83,11 +85,11 @@ export default function LoginPage() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-[28px] font-extrabold tracking-tight text-secondary">
+      <div className="md:mb-8 mb-5 text-center">
+        <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
           Welcome back
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-500 mt-2">
           Sign in to continue planning your dream trips.
         </p>
       </div>
@@ -95,36 +97,27 @@ export default function LoginPage() {
       {/* Email / Password Form */}
       <form onSubmit={handleLogin} className="space-y-4" noValidate>
         {/* Email */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="login-email"
-            className={`text-xs font-bold uppercase tracking-wider transition-colors ${focusedField === "email" ? "text-primary" : "text-slate-500"}`}
-          >
+        <div className="space-y-2">
+          <Label htmlFor="login-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Email Address
-          </label>
-          <input
+          </Label>
+          <Input
             id="login-email"
             type="email"
             required
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => setFocusedField("email")}
-            onBlur={() => setFocusedField(null)}
             placeholder="you@example.com"
-            className="w-full h-12 px-4 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
           />
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label
-              htmlFor="login-password"
-              className={`text-xs font-bold uppercase tracking-wider transition-colors ${focusedField === "password" ? "text-primary" : "text-slate-500"}`}
-            >
+            <Label htmlFor="login-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Password
-            </label>
+            </Label>
             <Link
               href="/forgot-password"
               className="text-xs font-semibold text-primary/80 hover:text-primary transition-colors"
@@ -133,17 +126,15 @@ export default function LoginPage() {
             </Link>
           </div>
           <div className="relative">
-            <input
+            <Input
               id="login-password"
               type={showPw ? "text" : "password"}
               required
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => setFocusedField("password")}
-              onBlur={() => setFocusedField(null)}
               placeholder="••••••••"
-              className="w-full h-12 px-4 pr-12 rounded-xl bg-white border-2 border-slate-200/80 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-all"
+              className="pr-12"
             />
             <button
               type="button"
@@ -158,10 +149,11 @@ export default function LoginPage() {
         </div>
 
         {/* Submit */}
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2 text-white text-sm font-bold transition-all duration-200 shadow-lg shadow-primary/20 cursor-pointer"
+          size="lg"
+          className="w-full"
         >
           {loading ? (
             <>
@@ -174,7 +166,7 @@ export default function LoginPage() {
               <ArrowRight className="h-4 w-4" />
             </>
           )}
-        </button>
+        </Button>
       </form>
 
       {/* Divider */}
@@ -187,10 +179,12 @@ export default function LoginPage() {
       </div>
 
       {/* Google SSO Button */}
-      <button
+      <Button
         type="button"
         onClick={handleGoogleLogin}
-        className="w-full flex items-center justify-center gap-3 h-12 rounded-xl border-2 border-slate-200/80 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 text-sm font-semibold text-slate-700 cursor-pointer shadow-sm hover:shadow-md"
+        variant="outline"
+        size="lg"
+        className="w-full font-semibold text-slate-700 rounded-xl border-2 border-slate-200/80 bg-white hover:bg-slate-50 shadow-sm hover:shadow-md cursor-pointer"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
@@ -211,16 +205,16 @@ export default function LoginPage() {
           />
         </svg>
         Continue with Google
-      </button>
+      </Button>
 
       {/* Switch to Register */}
-      <p className="text-center text-sm text-slate-500 mt-6">
+      <p className="text-center text-sm text-slate-500 md:mt-8 mt-5">
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
           className="font-bold text-primary hover:underline underline-offset-2"
         >
-          Create one →
+          Create one
         </Link>
       </p>
     </div>
