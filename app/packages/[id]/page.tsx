@@ -14,32 +14,43 @@ import { Button } from "@/components/ui/button";
    DESTINATION IMAGES
    ═══════════════════════════════════════════════════════ */
 const DESTINATION_IMAGES: Record<string, string> = {
-  delhi: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=1200&auto=format&fit=crop",
-  agra: "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1200&auto=format&fit=crop",
-  jaipur: "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=1200&auto=format&fit=crop",
-  kochi: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=1200&auto=format&fit=crop",
-  munnar: "https://images.unsplash.com/photo-1516815231560-d1bbd6c13a5c?q=80&w=1200&auto=format&fit=crop",
-  alleppey: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?q=80&w=1200&auto=format&fit=crop",
-  manali: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=1200&auto=format&fit=crop",
-  leh: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
-  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
-  udaipur: "https://images.unsplash.com/photo-1568495248636-6432b97bd949?q=80&w=1200&auto=format&fit=crop",
-  jodhpur: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=1200&auto=format&fit=crop",
-  jaisalmer: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=1200&auto=format&fit=crop",
-  shillong: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?q=80&w=1200&auto=format&fit=crop",
-  kaziranga: "https://images.unsplash.com/photo-1534008897995-27a23e859048?q=80&w=1200&auto=format&fit=crop",
-  "north goa": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
-  "south goa": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1200&auto=format&fit=crop",
-  "nubra valley": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
-  cherrapunji: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?q=80&w=1200&auto=format&fit=crop",
+  srinagar: "/images/packages/kashmir-valley.jpg",
+  gulmarg: "/images/packages/kashmir-valley.jpg",
+  pahalgam: "/images/packages/kashmir-valley.jpg",
+  kashmir: "/images/packages/kashmir-valley.jpg",
+  delhi: "/images/packages/golden-triangle.jpg",
+  agra: "/images/packages/golden-triangle.jpg",
+  jaipur: "/images/packages/golden-triangle.jpg",
+  kochi: "/images/packages/kerala-backwaters.jpg",
+  munnar: "/images/packages/kerala-backwaters.jpg",
+  alleppey: "/images/packages/kerala-backwaters.jpg",
+  manali: "/images/packages/himalayan-adventure.jpg",
+  leh: "/images/packages/himalayan-adventure.jpg",
+  goa: "/images/packages/goa-beach.jpg",
+  udaipur: "/images/packages/rajasthan-heritage.jpg",
+  jodhpur: "/images/packages/rajasthan-heritage.jpg",
+  jaisalmer: "/images/packages/rajasthan-heritage.jpg",
+  shillong: "/images/packages/northeast-explorer.jpg",
+  kaziranga: "/images/packages/northeast-explorer.jpg",
+  "north goa": "/images/packages/goa-beach.jpg",
+  "south goa": "/images/packages/goa-beach.jpg",
+  "nubra valley": "/images/packages/himalayan-adventure.jpg",
+  cherrapunji: "/images/packages/northeast-explorer.jpg",
+  varanasi: "/images/packages/varanasi-ganges.jpg",
+  sarnath: "/images/packages/varanasi-ganges.jpg",
+  prayagraj: "/images/packages/varanasi-ganges.jpg",
 };
+
 const FALLBACK_HERO = [
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1200&auto=format&fit=crop",
+  "/images/packages/kashmir-valley.jpg",
+  "/images/packages/golden-triangle.jpg",
+  "/images/packages/kerala-backwaters.jpg",
+  "/images/packages/rajasthan-heritage.jpg",
+  "/images/packages/default-package.jpg",
 ];
 
-function getHeroImage(destinations: string[]): string {
+function getHeroImage(destinations: string[], explicitImage?: string | null): string {
+  if (explicitImage && explicitImage.trim()) return explicitImage.trim();
   for (const dest of destinations) {
     const key = dest.toLowerCase().trim();
     if (DESTINATION_IMAGES[key]) return DESTINATION_IMAGES[key];
@@ -48,60 +59,6 @@ function getHeroImage(destinations: string[]): string {
   }
   return FALLBACK_HERO[0];
 }
-
-/* ═══════════════════════════════════════════════════════
-   DEMO PACKAGES
-   ═══════════════════════════════════════════════════════ */
-const DEMO_PACKAGES = [
-  {
-    id: "1", title: "Golden Triangle Tour",
-    description: "Explore Delhi, Agra, and Jaipur — India's most iconic destinations. Walk through centuries of Mughal grandeur, vibrant bazaars, and pink-walled palaces on this classic heritage trail.",
-    highlights: ["Visit the Taj Mahal at sunrise", "Explore Jaipur's Amber Fort", "Shop in historic Delhi markets", "Heritage walk through Old Delhi"],
-    inclusions: ["4-star hotel stays", "Daily breakfast", "Private AC car and driver", "Local tour guides"],
-    exclusions: ["Monument entry fees", "Lunch & dinner", "Flights/trains to Delhi", "Personal expenses"],
-    destinations: ["Delhi", "Agra", "Jaipur"], duration: 7, basePrice: 24999, currency: "INR", rating: 4.8, reviews: 124, difficulty: "EASY",
-  },
-  {
-    id: "2", title: "Kerala Backwaters Bliss",
-    description: "Cruise through serene backwaters, explore tea gardens, and relax on pristine beaches. Experience the lush green paradise of God's own country.",
-    highlights: ["Overnight stay in a private luxury houseboat", "Explore Munnar's sprawling tea estates", "Relax on Kovalam's sandy shores", "Traditional Kathakali performance"],
-    inclusions: ["3-star resort stays & houseboat", "Houseboat meals included", "AC sedan transportation", "Spice plantation tour"],
-    exclusions: ["Airfare/train fare", "Sightseeing entry charges", "Any activities like boat ride/jeep safari", "Tips"],
-    destinations: ["Kochi", "Munnar", "Alleppey"], duration: 5, basePrice: 18999, currency: "INR", rating: 4.9, reviews: 89, difficulty: "EASY",
-  },
-  {
-    id: "3", title: "Himalayan Adventure",
-    description: "Trek through breathtaking mountain trails and experience Himalayan culture. Conquer the world's highest motorable passes and camp under star-filled skies.",
-    highlights: ["Drive through high-altitude Khardung La pass", "Camp under the stars in Nubra Valley", "Visit Pangong Lake on the Indo-China border", "White-water rafting in Zanskar"],
-    inclusions: ["Camp & hotel accommodations", "Breakfast & Dinner", "Inner Line Permits", "Oxygen cylinders in vehicle"],
-    exclusions: ["Flights to/from Leh", "Lunch", "Adventure activities like rafting", "Travel insurance"],
-    destinations: ["Manali", "Leh", "Nubra Valley"], duration: 10, basePrice: 35999, currency: "INR", rating: 4.7, reviews: 67, difficulty: "CHALLENGING",
-  },
-  {
-    id: "4", title: "Goa Beach Paradise",
-    description: "Sun, sand, and seafood — the ultimate Goa beach vacation experience. From thrilling water sports to peaceful sunset cruises along the Arabian Sea.",
-    highlights: ["Enjoy water sports on Baga Beach", "Explore historic Portuguese churches", "Watch sunset from Chapora Fort", "Cruise along the Mandovi river"],
-    inclusions: ["Beach resort stay", "Airport transfers", "Scuba diving and water sports package", "South Goa sightseeing"],
-    exclusions: ["Meals other than breakfast", "Sightseeing entry fees", "Flight bookings", "Personal expenses"],
-    destinations: ["North Goa", "South Goa"], duration: 4, basePrice: 12999, currency: "INR", rating: 4.6, reviews: 210, difficulty: "EASY",
-  },
-  {
-    id: "5", title: "Rajasthan Royal Heritage",
-    description: "Step back in time to explore majestic forts, palaces, and desert landscapes. Live like royalty in heritage havelis and witness the golden sands of the Thar.",
-    highlights: ["Boat ride on Udaipur's Lake Pichola", "Desert camel safari & camp in Jaisalmer", "Visit Mehrangarh Fort in Jodhpur", "Traditional Rajasthani folk dinner"],
-    inclusions: ["Heritage hotel stays & desert camp", "Breakfast included", "AC SUV transport", "Desert cultural show with dinner"],
-    exclusions: ["Flights/trains", "Monument entry tickets", "Guides fee", "Camera charges"],
-    destinations: ["Udaipur", "Jodhpur", "Jaisalmer"], duration: 8, basePrice: 29999, currency: "INR", rating: 4.8, reviews: 93, difficulty: "MODERATE",
-  },
-  {
-    id: "6", title: "Northeast Explorer",
-    description: "Discover the untouched beauty of India's northeast — lush valleys and tribal culture. Home to living root bridges, rolling hills, and exotic wildlife.",
-    highlights: ["Visit clean village Mawlynnong", "Trek to Double Decker Living Root Bridges", "Spot one-horned rhinos in Kaziranga", "Explore Shillong's Scottish highlands"],
-    inclusions: ["Hotel stays", "Daily breakfast", "AC vehicle transport", "Kaziranga Elephant Safari"],
-    exclusions: ["Airfare/train fare", "Lunches/dinners", "National park entry and camera fee", "Personal laundry"],
-    destinations: ["Shillong", "Cherrapunji", "Kaziranga"], duration: 6, basePrice: 22999, currency: "INR", rating: 4.9, reviews: 42, difficulty: "MODERATE",
-  },
-];
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -242,42 +199,78 @@ export default async function PackageDetailPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const isFavorited = session
-    ? !!(await prisma.favorite.findUnique({ where: { userId_packageId: { userId: session.user.id, packageId: id } } }))
-    : false;
-
-  let pkg: any = null;
+  let targetPkg: any = null;
 
   try {
-    const dbPkg = await prisma.package.findUnique({
-      where: { id },
-      include: { agency: true, reviews: true, itineraries: { include: { activities: true, hotel: true, transport: true }, orderBy: { dayNumber: "asc" } } },
+    targetPkg = await prisma.package.findFirst({
+      where: {
+        OR: [
+          { id },
+          { slug: id },
+        ],
+      },
+      include: {
+        agency: true,
+        reviews: true,
+        itineraries: {
+          include: { activities: true, hotel: true, transport: true },
+          orderBy: { dayNumber: "asc" },
+        },
+      },
     });
-    if (dbPkg) {
-      const dArr = Array.isArray(dbPkg.destinations) ? (dbPkg.destinations as any[]).map((d) => d.name || d) : [];
-      const avg = dbPkg.reviews.length > 0 ? dbPkg.reviews.reduce((s, r) => s + r.rating, 0) / dbPkg.reviews.length : 4.8;
-      pkg = {
-        id: dbPkg.id, isDb: true, title: dbPkg.title, description: dbPkg.description, highlights: dbPkg.highlights,
-        inclusions: dbPkg.inclusions, exclusions: dbPkg.exclusions, destinations: dArr, duration: dbPkg.duration,
-        basePrice: Number(dbPkg.basePrice), currency: dbPkg.currency, difficulty: dbPkg.difficulty || "EASY",
-        rating: parseFloat(avg.toFixed(1)), reviews: dbPkg.reviews.length, agencyName: dbPkg.agency.name,
-        itineraries: dbPkg.itineraries?.length ? dbPkg.itineraries : getDemoItineraries(dbPkg.id, dbPkg.duration, dArr),
-        departureDates: dbPkg.departureDates?.length ? dbPkg.departureDates : [new Date(Date.now() + 864e5 * 10), new Date(Date.now() + 864e5 * 20), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)],
-      };
-    }
-  } catch (e) { console.error("DB Query failed:", e); }
 
-  if (!pkg) {
-    const demo = DEMO_PACKAGES.find((d) => d.id === id);
-    if (demo) {
-      pkg = { ...demo, isDb: false, agencyName: "Waypoint Verified Partner", itineraries: getDemoItineraries(demo.id, demo.duration, demo.destinations), departureDates: [new Date(Date.now() + 864e5 * 15), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)] };
+    if (!targetPkg && !isNaN(Number(id))) {
+      const allDbPkgs = await prisma.package.findMany({
+        where: { status: "PUBLISHED" },
+        include: { agency: true, reviews: true, itineraries: { include: { activities: true } } },
+        orderBy: { createdAt: "asc" },
+      });
+      targetPkg = allDbPkgs[Number(id) - 1] || allDbPkgs[0] || null;
+    }
+  } catch (e) {
+    console.error("DB Query failed in PackageDetailPage:", e);
+  }
+
+  if (!targetPkg) notFound();
+
+  let isFavorited = false;
+  if (session?.user?.id) {
+    try {
+      const fav = await prisma.favorite.findUnique({
+        where: { userId_packageId: { userId: session.user.id, packageId: targetPkg.id } },
+      });
+      isFavorited = !!fav;
+    } catch (e) {
+      isFavorited = false;
     }
   }
 
-  if (!pkg) notFound();
-  pkg.isFavorited = isFavorited;
+  const dArr = Array.isArray(targetPkg.destinations) ? (targetPkg.destinations as any[]).map((d) => d.name || d) : [];
+  const avg = targetPkg.reviews?.length > 0 ? targetPkg.reviews.reduce((s: number, r: any) => s + r.rating, 0) / targetPkg.reviews.length : 4.8;
 
-  const heroImage = getHeroImage(pkg.destinations);
+  const pkg = {
+    id: targetPkg.id,
+    isDb: true,
+    title: targetPkg.title,
+    description: targetPkg.description,
+    highlights: targetPkg.highlights || [],
+    inclusions: targetPkg.inclusions || [],
+    exclusions: targetPkg.exclusions || [],
+    destinations: dArr,
+    duration: targetPkg.duration,
+    basePrice: Number(targetPkg.basePrice),
+    currency: targetPkg.currency || "INR",
+    difficulty: targetPkg.difficulty || "EASY",
+    rating: parseFloat(avg.toFixed(1)),
+    reviews: targetPkg.reviews?.length || 15,
+    agencyName: targetPkg.agency?.name || "Waypoint Verified Agency",
+    image: targetPkg.images?.[0] || null,
+    itineraries: targetPkg.itineraries?.length ? targetPkg.itineraries : getDemoItineraries(targetPkg.id, targetPkg.duration, dArr),
+    departureDates: targetPkg.departureDates?.length ? targetPkg.departureDates : [new Date(Date.now() + 864e5 * 10), new Date(Date.now() + 864e5 * 20), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)],
+    isFavorited,
+  };
+
+  const heroImage = getHeroImage(pkg.destinations, pkg.image);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAF9] text-slate-900 font-sans">
@@ -296,7 +289,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
           />
 
           {/* Gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#09111b]/85 via-[#09111b]/40 to-[#09111b]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09111b]/70 via-[#09111b]/40 to-[#09111b]" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#09111b]/60 via-transparent to-transparent" />
 
           {/* Hero Content */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Sparkles,
   ArrowRight,
@@ -40,6 +41,8 @@ import {
   Clock,
   ChevronRight,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   INTERESTS,
@@ -73,12 +76,12 @@ const STEP_CONTEXT = [
 
 /* ─── Popular Destinations with Images & Details ─── */
 const POPULAR_DESTINATIONS = [
-  { name: "Goa", subtitle: "Beaches & Nightlife", image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&auto=format&fit=crop&q=80", tag: "Coastal" },
-  { name: "Kerala Backwaters", subtitle: "Houseboats & Tea Hills", image: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=600&auto=format&fit=crop&q=80", tag: "Nature" },
-  { name: "Rajasthan", subtitle: "Palaces & Forts", image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&auto=format&fit=crop&q=80", tag: "Heritage" },
-  { name: "Manali", subtitle: "Snow Peaks & Valleys", image: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600&auto=format&fit=crop&q=80", tag: "Mountains" },
-  { name: "Ladakh", subtitle: "Monasteries & Passes", image: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=600&auto=format&fit=crop&q=80", tag: "Adventure" },
-  { name: "Bali", subtitle: "Temples & Tropical Coast", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&auto=format&fit=crop&q=80", tag: "Island" },
+  { name: "Goa", subtitle: "Beaches & Nightlife", image: "/images/packages/goa-beach.jpg", tag: "Coastal" },
+  { name: "Kerala Backwaters", subtitle: "Houseboats & Tea Hills", image: "/images/packages/kerala-backwaters.jpg", tag: "Nature" },
+  { name: "Rajasthan", subtitle: "Palaces & Forts", image: "/images/packages/rajasthan-heritage.jpg", tag: "Heritage" },
+  { name: "Manali", subtitle: "Snow Peaks & Valleys", image: "/images/packages/himalayan-adventure.jpg", tag: "Mountains" },
+  { name: "Kashmir Valley", subtitle: "Shikaras & Snow Slopes", image: "/images/packages/kashmir-valley.jpg", tag: "Paradise" },
+  { name: "Varanasi Ganges", subtitle: "Ghats & Spiritual Aarti", image: "/images/packages/varanasi-ganges.jpg", tag: "Spiritual" },
 ];
 
 /* ─── Icon maps ─── */
@@ -148,6 +151,7 @@ export default function TripBuilderPage() {
   const [generating, setGenerating] = useState(false);
   const [genStage, setGenStage] = useState(0);
   const [error, setError] = useState("");
+  const [passportOpenMobile, setPassportOpenMobile] = useState(false);
   const [formData, setFormData] = useState({
     destination: "", startDate: "", endDate: "", travelers: "2",
     budget: "", travelStyle: "STANDARD", interests: [] as string[],
@@ -166,7 +170,6 @@ export default function TripBuilderPage() {
   const isUnderfundedForStyle = userBudgetNum > 0 && userBudgetNum < suggestedTotalBudget * 0.6;
   const isSeverelyUnderfunded = userBudgetNum > 0 && userBudgetNum < absoluteMinBudget;
 
-  // Real-time AI Generation progress steps animation
   useEffect(() => {
     let interval: any;
     if (generating) {
@@ -219,8 +222,8 @@ export default function TripBuilderPage() {
           toast.error("Trip duration cannot exceed 30 days");
           return false;
         }
-        if (travelerCount < 1 || travelerCount > 20) {
-          toast.error("Number of travelers must be between 1 and 20");
+        if (travelerCount < 1) {
+          toast.error("Number of travelers must be at least 1");
           return false;
         }
         return true;
@@ -282,28 +285,44 @@ export default function TripBuilderPage() {
     <div className="flex flex-col min-h-screen bg-[#F6F6F4] text-slate-900 font-sans">
       <SiteHeader />
 
-      {/* ═══════════════ APP STUDIO WORKSPACE BAR ═══════════════ */}
-      <section className="md:pt-28 pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-          
-          {/* Left Title Status */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
-              <SlidersHorizontal className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <h1 className="text-base font-extrabold font-display text-slate-900 tracking-tight">AI Trip Studio</h1>
-                <span className="text-slate-300">•</span>
-                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Gemini 2.0 Engine</span>
+      {/* ═══════════════ APP STUDIO WORKSPACE BAR (RESPONSIVE) ═══════════════ */}
+      <section className="pt-24 sm:pt-28 pb-4 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Left Title Status */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                <SlidersHorizontal className="h-5 w-5" />
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <h1 className="text-base sm:text-lg font-extrabold font-display text-slate-900 mb-1 tracking-tight">AI Trip Studio</h1>
+                  <span className="text-slate-300 hidden sm:inline">•</span>
+                  <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Gemini 2.0 Engine</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
+              </div>
+            </div>
+
+            {/* Step Counter Badge */}
+            <div className="flex items-center justify-between sm:justify-end gap-2 text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200/70 px-3 py-1.5 rounded-xl">
+              <span>{Math.round(((step + 1) / 6) * 100)}% Complete</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-primary font-extrabold">{step + 1}/6 Steps</span>
             </div>
           </div>
 
-          {/* Interactive Step Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
+          {/* Dynamic Progress Bar Line */}
+          <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-orange-500 transition-all duration-500 ease-out rounded-full" 
+              style={{ width: `${((step + 1) / 6) * 100}%` }}
+            />
+          </div>
+
+          {/* Interactive Step Pills (Scrollable on small screens) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none -mx-1 px-1">
             {STEPS.map((s, i) => {
               const isCompleted = i < step;
               const isActive = i === step;
@@ -313,12 +332,12 @@ export default function TripBuilderPage() {
                   key={s.label}
                   type="button"
                   onClick={() => { if (i < step) setStep(i); }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
-                      ? "bg-slate-900 text-white shadow-xs scale-[1.02]"
+                      ? "bg-slate-900 text-white shadow-sm scale-[1.02]"
                       : isCompleted
-                      ? "bg-primary/10 text-primary hover:bg-primary/15 cursor-pointer"
-                      : "bg-slate-100 text-slate-400 cursor-default"
+                      ? "bg-primary/10 text-primary hover:bg-primary/15"
+                      : "bg-slate-100/90 text-slate-500 hover:text-slate-800"
                   }`}
                 >
                   {isCompleted ? <Check className="h-3.5 w-3.5 text-primary" /> : <span className="text-[10px] opacity-70">0{i + 1}</span>}
@@ -327,10 +346,8 @@ export default function TripBuilderPage() {
               );
             })}
           </div>
-
         </div>
       </section>
-
 
       {/* ═══════════════ STUDIO WORKSPACE LAYOUT ═══════════════ */}
       <section className="flex-1 pb-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
@@ -341,38 +358,49 @@ export default function TripBuilderPage() {
             
             {/* Digital Travel Passport Ticket Card */}
             <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden relative">
-              {/* Ticket Top Strip Accent */}
-              <div className="h-2.5 bg-gradient-to-r from-primary via-orange-400 to-secondary" />
 
-              <div className="p-5 space-y-4">
+              {/* Mobile Accordion Toggle for Passport */}
+              <button
+                type="button"
+                onClick={() => setPassportOpenMobile(!passportOpenMobile)}
+                className="w-full lg:hidden p-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/80 font-bold text-xs text-slate-800 cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Ticket className="h-4 w-4 text-primary" />
+                  <span>Live Trip Summary ({formData.destination || "Not set"})</span>
+                </div>
+                {passportOpenMobile ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />}
+              </button>
+
+              <div className={`p-5 space-y-4 ${passportOpenMobile ? "block" : "hidden lg:block"}`}>
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2">
                     <Ticket className="h-4 w-4 text-primary" />
                     <span className="text-xs font-extrabold uppercase tracking-widest text-slate-800">Trip Passport</span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
                     Spec #{step + 1}
                   </span>
                 </div>
 
                 {/* Destination Badge */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Destination</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Destination</p>
                   <p className="text-base font-extrabold font-display text-slate-900">
-                    {formData.destination || <span className="text-slate-400 italic font-normal">Select Destination...</span>}
+                    {formData.destination || <span className="text-slate-500 italic font-normal">Select Destination...</span>}
                   </p>
                 </div>
 
                 {/* Dates & Travelers */}
                 <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Window</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Window</p>
                     <p className="text-xs font-bold text-slate-800">
-                      {formData.startDate && formData.endDate ? `${tripDays} Days` : <span className="text-slate-400 italic font-normal">Pending...</span>}
+                      {formData.startDate && formData.endDate ? `${tripDays} Days` : <span className="text-slate-500 italic font-normal">Pending...</span>}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Guests</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Guests</p>
                     <p className="text-xs font-bold text-slate-800">{travelerCount} Person(s)</p>
                   </div>
                 </div>
@@ -380,13 +408,13 @@ export default function TripBuilderPage() {
                 {/* Budget & Style */}
                 <div className="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Total Budget</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Total Budget</p>
                     <p className="text-xs font-bold text-emerald-700">
-                      {userBudgetNum > 0 ? `₹${userBudgetNum.toLocaleString("en-IN")}` : <span className="text-slate-400 italic font-normal">Pending...</span>}
+                      {userBudgetNum > 0 ? `₹${userBudgetNum.toLocaleString("en-IN")}` : <span className="text-slate-500 italic font-normal">Pending...</span>}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Style</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Style</p>
                     <p className="text-xs font-bold text-slate-800">{formData.travelStyle}</p>
                   </div>
                 </div>
@@ -400,14 +428,15 @@ export default function TripBuilderPage() {
                     </div>
                     <div className="h-2 w-full rounded-full bg-slate-100 flex overflow-hidden">
                       <div className="bg-primary h-full" style={{ width: "35%" }} title="Stay ~35%" />
-                      <div className="bg-sky-500 h-full" style={{ width: "25%" }} title="Transport ~25%" />
-                      <div className="bg-emerald-500 h-full" style={{ width: "20%" }} title="Sightseeing ~20%" />
+                      <div className="bg-sky-500 h-full" style={{ width: "25%" }} title="Transit ~25%" />
+                      <div className="bg-emerald-500 h-full" style={{ width: "20%" }} title="Activities ~20%" />
                       <div className="bg-amber-500 h-full" style={{ width: "20%" }} title="Dining & Misc ~20%" />
                     </div>
-                    <div className="flex justify-between text-[9px] text-slate-400 font-medium pt-0.5">
-                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary" /> Stay 35%</span>
-                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-sky-500" /> Transit 25%</span>
-                      <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Activities 40%</span>
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] text-slate-500 font-medium pt-0.5">
+                      <span className="flex items-center gap-1 truncate"><span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" /> Stay 35%</span>
+                      <span className="flex items-center gap-1 truncate"><span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" /> Transit 25%</span>
+                      <span className="flex items-center gap-1 truncate"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" /> Activities 20%</span>
+                      <span className="flex items-center gap-1 truncate"><span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" /> Dining 20%</span>
                     </div>
                   </div>
                 )}
@@ -415,7 +444,7 @@ export default function TripBuilderPage() {
                 {/* Selected Interests Tags */}
                 {formData.interests.length > 0 && (
                   <div className="pt-2 border-t border-slate-100">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Interests ({formData.interests.length})</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Interests ({formData.interests.length})</p>
                     <div className="flex flex-wrap gap-1.5">
                       {formData.interests.map((int) => (
                         <span key={int} className="px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold text-[10px]">
@@ -438,7 +467,7 @@ export default function TripBuilderPage() {
             </div>
 
             {/* Context Tip Card */}
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm">
+            <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-sm">
               <p className="text-xs text-slate-600 leading-relaxed">
                 💡 <strong>Tip:</strong> {ctx.tip}
               </p>
@@ -446,10 +475,9 @@ export default function TripBuilderPage() {
 
           </div>
 
-
           {/* ═══ RIGHT PANE: FORM STUDIO WORKSPACE ═══ */}
           <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
-            <div className="sm:p-8 p-5 space-y-6">
+            <div className="lg:p-7 sm:p-5 p-4 space-y-6">
 
               {/* ── Step 0: Destination ── */}
               {step === 0 && (
@@ -459,23 +487,28 @@ export default function TripBuilderPage() {
                       <MapPin className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900">Where do you want to go?</h2>
+                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Where do you want to go?</h2>
                       <p className="text-xs text-slate-500">Enter a city, region, island, or national landmark</p>
                     </div>
                   </div>
 
-                  <Input
-                    placeholder="e.g. Goa, Kerala Backwaters, Manali, Rajasthan, Bali, Paris..."
-                    className="h-14 text-base bg-[#FAFAF9] border-slate-200 rounded-xl px-4 focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:border-primary/40 font-medium"
-                    value={formData.destination}
-                    onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="destination-field" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Destination Name
+                    </Label>
+                    <Input
+                      id="destination-field"
+                      placeholder="e.g. Goa, Kerala Backwaters, Manali, Rajasthan, Kashmir, Bali..."
+                      value={formData.destination}
+                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+                    />
+                  </div>
 
                   {/* Visual Destination Cards */}
                   <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Or Pick a Featured Destination</p>
-                      <span className="text-[11px] text-slate-400">Click to select</span>
+                      <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Or Pick a Featured Destination</Label>
+                      <span className="text-[11px] text-slate-500">Click to select</span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -496,7 +529,7 @@ export default function TripBuilderPage() {
                             {dest.tag}
                           </span>
                           <div className="absolute bottom-2.5 left-2.5 right-2.5">
-                            <p className="text-xs font-bold text-white">{dest.name}</p>
+                            <p className="text-xs font-semibold text-white">{dest.name}</p>
                             <p className="text-[10px] text-white/70">{dest.subtitle}</p>
                           </div>
                         </button>
@@ -509,50 +542,60 @@ export default function TripBuilderPage() {
               {/* ── Step 1: Dates & Guests ── */}
               {step === 1 && (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3 border-b pb-4">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                       <CalendarDays className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900">Travel Window & Guests</h2>
+                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Travel Window & Guests</h2>
                       <p className="text-xs text-slate-500">Select departure date, return date, and traveler count</p>
                     </div>
                   </div>
 
                   {/* Quick Duration Preset Pills */}
                   <div className="space-y-2">
-                    <label className="text-[13px] font-bold text-slate-800">Quick Duration Presets</label>
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Quick Duration Presets</Label>
                     <div className="flex flex-wrap gap-2">
                       {[
                         { label: "Weekend Getaway (3 Days)", days: 3 },
                         { label: "1 Week Explorer (7 Days)", days: 7 },
                         { label: "Grand Tour (10 Days)", days: 10 },
                       ].map((p) => (
-                        <button
+                        <Button
                           key={p.label}
                           type="button"
+                          variant="outline"
+                          size="sm"
                           onClick={() => setQuickDuration(p.days)}
-                          className="px-3 py-1.5 rounded-xl border border-slate-200 bg-[#FAFAF9] hover:border-primary hover:text-primary text-xs font-semibold transition-all cursor-pointer"
+                          className="rounded-xl border-slate-200 bg-[#FAFAF9] hover:border-primary hover:text-primary font-semibold text-xs cursor-pointer"
                         >
-                          <Clock className="h-3 w-3 inline mr-1 text-slate-400" />
+                          <Clock className="h-3 w-3 mr-1 text-slate-500" />
                           {p.label}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <label className="text-[13px] font-bold text-slate-800">Departure Date</label>
-                      <Input type="date" min={new Date().toISOString().split("T")[0]} value={formData.startDate}
+                      <Label htmlFor="start-date" className="text-xs font-semibold uppercase tracking-wider text-slate-500">Departure Date</Label>
+                      <Input
+                        id="start-date"
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                        value={formData.startDate}
                         onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                        className="h-12 bg-[#FAFAF9] border-slate-200 rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/15" />
+                      />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[13px] font-bold text-slate-800">Return Date</label>
-                      <Input type="date" min={formData.startDate || new Date().toISOString().split("T")[0]} value={formData.endDate}
+                      <Label htmlFor="end-date" className="text-xs font-semibold uppercase tracking-wider text-slate-500">Return Date</Label>
+                      <Input
+                        id="end-date"
+                        type="date"
+                        min={formData.startDate || new Date().toISOString().split("T")[0]}
+                        value={formData.endDate}
                         onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                        className="h-12 bg-[#FAFAF9] border-slate-200 rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-primary/15" />
+                      />
                     </div>
                   </div>
 
@@ -564,14 +607,19 @@ export default function TripBuilderPage() {
                   )}
 
                   <div className="space-y-2 pt-2">
-                    <label className="text-[13px] font-bold text-slate-800">Number of Travelers</label>
+                    <Label htmlFor="travelers-count" className="text-xs font-semibold uppercase tracking-wider text-slate-500">Number of Travelers</Label>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-md bg-secondary/10 flex items-center justify-center shrink-0">
                         <Users className="h-4.5 w-4.5 text-secondary" />
                       </div>
-                      <Input type="number" min={1} max={20} value={formData.travelers}
+                      <Input
+                        id="travelers-count"
+                        type="number"
+                        min={1}
+                        value={formData.travelers}
                         onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
-                        className="w-24 h-12 text-center bg-[#FAFAF9] border-slate-200 rounded-xl text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary/15 [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]" />
+                        className="w-20 text-center bg-[#FAFAF9] border-slate-200 [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                      />
                       <span className="text-sm text-slate-500 font-medium">person(s)</span>
                     </div>
                   </div>
@@ -586,14 +634,14 @@ export default function TripBuilderPage() {
                       <Wallet className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900">Budget & Travel Style</h2>
+                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Budget & Travel Style</h2>
                       <p className="text-xs text-slate-500">Define your total budget for all travelers combined</p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-[13px] font-bold text-slate-800">Total Budget (INR)</label>
+                      <Label htmlFor="budget-input" className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Budget (INR)</Label>
                       {userBudgetNum > 0 && (
                         <span className="text-xs text-slate-500 font-medium">
                           ~₹{actualPerPersonPerDay.toLocaleString("en-IN")}/person/day
@@ -601,43 +649,52 @@ export default function TripBuilderPage() {
                       )}
                     </div>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-slate-400">₹</span>
-                      <Input type="number" placeholder="e.g., 40000" value={formData.budget}
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-500">₹</span>
+                      <Input
+                        id="budget-input"
+                        type="number"
+                        placeholder="e.g., 40000"
+                        value={formData.budget}
                         onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                        className="h-14 text-lg pl-9 bg-[#FAFAF9] border-slate-200 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/15 [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]" />
+                        className="pl-9 [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                      />
                     </div>
 
                     {/* Quick Budget Presets */}
                     <div className="flex flex-wrap gap-2 pt-1">
-                      <span className="text-xs font-semibold text-slate-400 self-center">Quick Presets:</span>
+                      <span className="text-xs font-semibold text-slate-500 self-center">Quick Presets:</span>
                       {[25000, 50000, 100000, 200000].map((amt) => (
-                        <button
+                        <Button
                           key={amt}
                           type="button"
+                          variant={userBudgetNum === amt ? "default" : "outline"}
+                          size="sm"
                           onClick={() => setFormData({ ...formData, budget: amt.toString() })}
-                          className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                            userBudgetNum === amt ? "bg-primary text-white border-primary" : "bg-[#FAFAF9] border-slate-200 text-slate-700 hover:border-slate-300"
-                          }`}
+                          className="rounded-lg text-xs font-bold cursor-pointer"
                         >
                           ₹{amt.toLocaleString("en-IN")}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[13px] font-bold text-slate-800">Travel Style</label>
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Travel Style</Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {TRAVEL_STYLES.map((style) => (
-                        <button key={style.value} type="button" onClick={() => setFormData({ ...formData, travelStyle: style.value })}
+                        <button
+                          key={style.value}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, travelStyle: style.value })}
                           className={`relative p-4 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.travelStyle === style.value ? "border-primary bg-primary/5" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}>
+                            formData.travelStyle === style.value ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                          }`}
+                        >
                           <div className={`w-8 h-8 rounded-lg mx-auto mb-2 flex items-center justify-center ${
-                            formData.travelStyle === style.value ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"
+                            formData.travelStyle === style.value ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
                           }`}>{STYLE_ICONS[style.value]}</div>
                           <span className={`text-sm font-bold block ${formData.travelStyle === style.value ? "text-slate-900" : "text-slate-600"}`}>{style.label}</span>
-                          <span className="text-[10px] text-slate-400 block mt-0.5">~₹{getRecommendedBudgetPerDay(style.value).toLocaleString("en-IN")}/day</span>
+                          <span className="text-[10px] text-slate-500 block mt-0.5">~₹{getRecommendedBudgetPerDay(style.value).toLocaleString("en-IN")}/day</span>
                         </button>
                       ))}
                     </div>
@@ -657,7 +714,7 @@ export default function TripBuilderPage() {
                         type="button"
                         size="sm"
                         onClick={() => setFormData({ ...formData, budget: absoluteMinBudget.toString() })}
-                        className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs h-8 rounded-lg"
+                        className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg cursor-pointer"
                       >
                         <Zap className="h-3 w-3 mr-1" /> Adjust to Minimum (₹{absoluteMinBudget.toLocaleString("en-IN")})
                       </Button>
@@ -678,7 +735,7 @@ export default function TripBuilderPage() {
                           type="button"
                           size="sm"
                           onClick={() => setFormData({ ...formData, budget: suggestedTotalBudget.toString() })}
-                          className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs h-8 rounded-lg"
+                          className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg cursor-pointer"
                         >
                           Set Budget to ₹{suggestedTotalBudget.toLocaleString("en-IN")}
                         </Button>
@@ -687,7 +744,7 @@ export default function TripBuilderPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setFormData({ ...formData, travelStyle: "BUDGET" })}
-                          className="border-amber-300 text-amber-900 hover:bg-amber-100 font-bold text-xs h-8 rounded-lg"
+                          className="border-amber-300 text-amber-900 hover:bg-amber-100 font-bold text-xs rounded-lg cursor-pointer"
                         >
                           Switch Style to Budget
                         </Button>
@@ -705,24 +762,28 @@ export default function TripBuilderPage() {
                       <Compass className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900">What are your interests?</h2>
+                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">What are your interests?</h2>
                       <p className="text-xs text-slate-500">Pick theme preferences to customize your daily activities</p>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2.5">
                     {INTERESTS.map((interest) => (
-                      <button key={interest} type="button" onClick={() => toggleInterest(interest)}
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleInterest(interest)}
                         className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
                           formData.interests.includes(interest) ? "border-primary bg-primary/5 text-primary shadow-xs" : "border-slate-200 bg-[#FAFAF9] text-slate-700 hover:border-slate-300"
-                        }`}>
+                        }`}
+                      >
                         {INTEREST_ICONS[interest] || <Compass className="h-3.5 w-3.5" />}
                         {interest}
                       </button>
                     ))}
                   </div>
                   {formData.interests.length > 0 && (
-                    <p className="text-xs text-slate-400">{formData.interests.length} interest{formData.interests.length !== 1 ? "s" : ""} selected</p>
+                    <p className="text-xs text-slate-500 font-medium">{formData.interests.length} interest{formData.interests.length !== 1 ? "s" : ""} selected</p>
                   )}
                 </div>
               )}
@@ -742,15 +803,19 @@ export default function TripBuilderPage() {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {STAY_PREFERENCES.map((pref) => (
-                        <button key={pref} type="button" onClick={() => setFormData({ ...formData, stayPreference: pref })}
+                        <button
+                          key={pref}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, stayPreference: pref })}
                           className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.stayPreference === pref ? "border-primary bg-primary/5" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}>
+                            formData.stayPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                          }`}
+                        >
                           <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${
-                            formData.stayPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"
+                            formData.stayPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
                           }`}>{STAY_ICONS[pref] || <Hotel className="h-4 w-4" />}</div>
                           <span className={`text-xs font-bold block ${formData.stayPreference === pref ? "text-slate-900" : "text-slate-600"}`}>{pref}</span>
-                          <span className="text-[9px] text-slate-400 block mt-1 leading-tight">{STAY_PERKS[pref]}</span>
+                          <span className="text-[9px] text-slate-500 block mt-1 leading-tight">{STAY_PERKS[pref]}</span>
                         </button>
                       ))}
                     </div>
@@ -768,15 +833,19 @@ export default function TripBuilderPage() {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {TRANSPORT_PREFERENCES.map((pref) => (
-                        <button key={pref} type="button" onClick={() => setFormData({ ...formData, transportPreference: pref })}
+                        <button
+                          key={pref}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, transportPreference: pref })}
                           className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.transportPreference === pref ? "border-primary bg-primary/5" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}>
+                            formData.transportPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                          }`}
+                        >
                           <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${
-                            formData.transportPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"
+                            formData.transportPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
                           }`}>{TRANSPORT_ICONS[pref] || <Car className="h-4 w-4" />}</div>
                           <span className={`text-xs font-bold block ${formData.transportPreference === pref ? "text-slate-900" : "text-slate-600"}`}>{pref}</span>
-                          <span className="text-[9px] text-slate-400 block mt-1 leading-tight">{TRANSPORT_PERKS[pref]}</span>
+                          <span className="text-[9px] text-slate-500 block mt-1 leading-tight">{TRANSPORT_PERKS[pref]}</span>
                         </button>
                       ))}
                     </div>
@@ -822,7 +891,7 @@ export default function TripBuilderPage() {
                             ) : (
                               <div className="w-4 h-4 rounded-full border border-slate-200 shrink-0" />
                             )}
-                            <span className={idx === genStage ? "font-bold text-slate-900" : idx < genStage ? "text-slate-600 line-through opacity-70" : "text-slate-400"}>
+                            <span className={idx === genStage ? "font-bold text-slate-900" : idx < genStage ? "text-slate-600 line-through opacity-70" : "text-slate-500"}>
                               {stg}
                             </span>
                           </div>
@@ -832,14 +901,16 @@ export default function TripBuilderPage() {
                   )}
 
                   {error && (
-                    <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-4 text-sm text-left max-w-md mx-auto">
+                    <div className="flex items-center gap-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-md px-4 py-2.5 text-sm text-left max-w-md mx-auto">
                       <AlertCircle className="h-4 w-4 shrink-0" /><span>{error}</span>
                     </div>
                   )}
 
                   {!generating && (
-                    <Button onClick={handleGenerate}
-                      className="px-8 h-13 text-base font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all gap-2 cursor-pointer">
+                    <Button
+                      onClick={handleGenerate}
+                      size="lg"
+                    >
                       <Sparkles className="h-4.5 w-4.5" /> Generate Itinerary Now <ChevronRight className="h-4 w-4" />
                     </Button>
                   )}
@@ -848,21 +919,32 @@ export default function TripBuilderPage() {
 
               {/* ── Navigation Buttons ── */}
               {step < 5 && (
-                <div className="flex justify-between pt-6 border-t border-slate-100">
-                  <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}
-                    className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 font-bold gap-2 cursor-pointer h-11">
+                <div className="flex justify-between items-center pt-6 border-t border-slate-100 gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={step === 0}
+                    onClick={() => setStep(step - 1)}
+                    className="border-slate-200 text-slate-600 hover:bg-slate-50"
+                  >
                     <ArrowLeft className="h-4 w-4" /> Back
                   </Button>
-                  <Button onClick={handleNext}
-                    className="rounded-xl bg-primary hover:bg-primary/90 text-white font-bold gap-2 cursor-pointer h-11 shadow-sm">
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                  >
                     Next <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
               )}
               {step === 5 && !generating && (
-                <div className="flex justify-start pt-6 border-t border-slate-100">
-                  <Button variant="outline" onClick={() => setStep(step - 1)}
-                    className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 font-bold gap-2 cursor-pointer h-11">
+                <div className="flex justify-start items-center pt-6 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(step - 1)}
+                    className="border-slate-200 text-slate-600 hover:bg-slate-50"
+                  >
                     <ArrowLeft className="h-4 w-4" /> Back
                   </Button>
                 </div>

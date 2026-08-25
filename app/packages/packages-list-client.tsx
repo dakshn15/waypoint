@@ -79,10 +79,15 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
 
   // Fallback images for packages without images
   const FALLBACK_IMAGES = [
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=800&auto=format&fit=crop",
+    "/images/packages/kashmir-valley.jpg",
+    "/images/packages/golden-triangle.jpg",
+    "/images/packages/kerala-backwaters.jpg",
+    "/images/packages/goa-beach.jpg",
+    "/images/packages/rajasthan-heritage.jpg",
+    "/images/packages/northeast-explorer.jpg",
+    "/images/packages/varanasi-ganges.jpg",
+    "/images/packages/himalayan-adventure.jpg",
+    "/images/packages/default-package.jpg",
   ];
   const getFallbackImage = (idx: number) => FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length];
 
@@ -130,7 +135,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
 
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <section className="relative md:pt-32 sm:pt-28 pt-24 pb-8 overflow-hidden bg-gradient-to-b from-[#F5F0ED] via-[#FAF8F6] to-[#FAFAF9]">
+      <section className="relative md:pt-32 sm:pt-28 pt-24 pb-12 overflow-hidden bg-gradient-to-b from-[#F5F0ED] via-[#FAF8F6] to-[#FAFAF9]">
         {/* Ambient glow */}
         <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute top-40 right-1/4 w-[400px] h-[400px] bg-secondary/8 rounded-full blur-[160px] pointer-events-none" />

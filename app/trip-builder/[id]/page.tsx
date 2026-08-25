@@ -2,14 +2,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   MapPin,
   Clock,
   Sparkles,
-  IndianRupee,
   ArrowLeft,
   Hotel,
   Plane,
@@ -20,7 +18,7 @@ import {
   Footprints,
   Camera,
   Mountain,
-  Utensils,
+  UtensilsCrossed,
   ShoppingBag,
   Palmtree,
   Landmark,
@@ -30,21 +28,24 @@ import {
   CalendarDays,
   Users,
   Wallet,
+  Ticket,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import type { GeneratedTrip } from "@/lib/ai";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
-  SIGHTSEEING: <Camera className="h-4 w-4" />,
-  ADVENTURE: <Mountain className="h-4 w-4" />,
-  DINING: <Utensils className="h-4 w-4" />,
-  SHOPPING: <ShoppingBag className="h-4 w-4" />,
-  RELAXATION: <Palmtree className="h-4 w-4" />,
-  CULTURAL: <Landmark className="h-4 w-4" />,
-  TRANSPORTATION: <CarFront className="h-4 w-4" />,
-  CHECK_IN: <Hotel className="h-4 w-4" />,
-  CHECK_OUT: <Hotel className="h-4 w-4" />,
+  SIGHTSEEING: <Camera className="h-3.5 w-3.5" />,
+  ADVENTURE: <Mountain className="h-3.5 w-3.5" />,
+  DINING: <UtensilsCrossed className="h-3.5 w-3.5" />,
+  SHOPPING: <ShoppingBag className="h-3.5 w-3.5" />,
+  RELAXATION: <Palmtree className="h-3.5 w-3.5" />,
+  CULTURAL: <Landmark className="h-3.5 w-3.5" />,
+  TRANSPORTATION: <CarFront className="h-3.5 w-3.5" />,
+  CHECK_IN: <Hotel className="h-3.5 w-3.5" />,
+  CHECK_OUT: <Hotel className="h-3.5 w-3.5" />,
 };
 
 const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
@@ -57,16 +58,61 @@ const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
 };
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  SIGHTSEEING: "bg-secondary/10 text-secondary border-secondary/20",
-  ADVENTURE: "bg-primary/10 text-primary border-primary/20",
-  DINING: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-  SHOPPING: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
-  RELAXATION: "bg-secondary/15 text-secondary border-secondary/30",
-  CULTURAL: "bg-primary/15 text-primary border-primary/25",
-  TRANSPORTATION: "bg-secondary/10 text-secondary border-secondary/20",
-  CHECK_IN: "bg-secondary/10 text-secondary border-secondary/20",
-  CHECK_OUT: "bg-red-500/10 text-red-600 border-red-500/20",
+  SIGHTSEEING: "bg-primary/10 text-primary border-primary/20",
+  ADVENTURE: "bg-amber-50 text-amber-600 border-amber-200",
+  DINING: "bg-emerald-50 text-emerald-600 border-emerald-200",
+  SHOPPING: "bg-pink-50 text-pink-600 border-pink-200",
+  RELAXATION: "bg-purple-50 text-purple-600 border-purple-200",
+  CULTURAL: "bg-violet-50 text-violet-600 border-violet-200",
+  TRANSPORTATION: "bg-sky-50 text-sky-600 border-sky-200",
+  CHECK_IN: "bg-slate-100 text-slate-600 border-slate-200",
+  CHECK_OUT: "bg-slate-100 text-slate-600 border-slate-200",
 };
+
+/* ─── Local High-Res Image Mapping ─── */
+const DESTINATION_LOCAL_MAP: Record<string, string> = {
+  goa: "/images/packages/goa-beach.jpg",
+  kerala: "/images/packages/kerala-backwaters.jpg",
+  munnar: "/images/packages/kerala-backwaters.jpg",
+  alleppey: "/images/packages/kerala-backwaters.jpg",
+  kochi: "/images/packages/kerala-backwaters.jpg",
+  rajasthan: "/images/packages/rajasthan-heritage.jpg",
+  udaipur: "/images/packages/rajasthan-heritage.jpg",
+  jodhpur: "/images/packages/rajasthan-heritage.jpg",
+  jaisalmer: "/images/packages/rajasthan-heritage.jpg",
+  manali: "/images/packages/himalayan-adventure.jpg",
+  leh: "/images/packages/himalayan-adventure.jpg",
+  ladakh: "/images/packages/himalayan-adventure.jpg",
+  himalaya: "/images/packages/himalayan-adventure.jpg",
+  kashmir: "/images/packages/kashmir-valley.jpg",
+  srinagar: "/images/packages/kashmir-valley.jpg",
+  gulmarg: "/images/packages/kashmir-valley.jpg",
+  pahalgam: "/images/packages/kashmir-valley.jpg",
+  varanasi: "/images/packages/varanasi-ganges.jpg",
+  ganges: "/images/packages/varanasi-ganges.jpg",
+  delhi: "/images/packages/golden-triangle.jpg",
+  agra: "/images/packages/golden-triangle.jpg",
+  jaipur: "/images/packages/golden-triangle.jpg",
+  northeast: "/images/packages/northeast-explorer.jpg",
+  shillong: "/images/packages/northeast-explorer.jpg",
+};
+
+/* ─── Dynamic Unsplash Image Resolver for Global Custom Places ─── */
+function getHeroImage(destStr: string): string {
+  const lower = destStr.toLowerCase().trim();
+
+  // 1. Check local Ultra-HD image library
+  for (const [key, path] of Object.entries(DESTINATION_LOCAL_MAP)) {
+    if (lower.includes(key)) return path;
+  }
+
+  // 2. Dynamic Unsplash image generator for any custom destination globally
+  const primaryWord = destStr.split(",")[0].trim();
+  const sanitizedQuery = encodeURIComponent(primaryWord || "landscape");
+  
+  // Return high-resolution Unsplash photo URL matched to user's destination query
+  return `https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2560&q=80&q=${sanitizedQuery}`;
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -100,7 +146,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
   const aiData = trip.aiResponse as unknown as GeneratedTrip | null;
   const costBreakdown = (trip.costBreakdown as any) || {};
   const destinations = (trip.destinations as any[]) || [];
-  const destStr = destinations.map((d) => d.name || d).join(", ");
+  const destStr = destinations.map((d) => (typeof d === "string" ? d : d.name || d)).join(", ") || trip.title;
 
   const days = Math.max(
     1,
@@ -117,360 +163,331 @@ export default async function GeneratedTripPage({ params }: PageProps) {
       0
     );
 
+  const heroImage = getHeroImage(destStr);
+
   return (
-    <div className="min-h-screen bg-slate-50/50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link
-            href="/dashboard/trips"
-            className="flex items-center gap-2 text-sm font-medium hover:text-[var(--waypoint-teal)] transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" /> My Trips
-          </Link>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-gradient-to-r from-[var(--waypoint-teal)] to-sky-400 text-white border-0">
-              <Sparkles className="h-3 w-3 mr-1" /> AI Generated
-            </Badge>
-          </div>
-        </div>
-      </header>
+    <div className="flex flex-col min-h-screen bg-[#F6F6F4] text-slate-900 font-sans">
+      <SiteHeader userSession={session} activeRoute="/trip-builder" />
 
-      {/* Hero */}
-      <div className="bg-gradient-to-br from-[var(--waypoint-navy)] via-zinc-900 to-zinc-950 text-white py-16 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <Badge
-              variant="outline"
-              className="text-zinc-300 border-zinc-700 px-3 py-1"
-            >
-              <CalendarDays className="h-3.5 w-3.5 mr-1 text-[var(--waypoint-teal)]" />
-              {days} Days
-            </Badge>
-            <Badge
-              variant="outline"
-              className="text-zinc-300 border-zinc-700 px-3 py-1"
-            >
-              <Users className="h-3.5 w-3.5 mr-1 text-[var(--waypoint-teal)]" />
-              {trip.travelers} Travelers
-            </Badge>
-            <Badge
-              variant="outline"
-              className="text-zinc-300 border-zinc-700 px-3 py-1"
-            >
-              <Wallet className="h-3.5 w-3.5 mr-1 text-[var(--waypoint-teal)]" />
-              {trip.travelStyle}
-            </Badge>
-          </div>
+      {/* ═══════════════ CINEMATIC HERO ═══════════════ */}
+      <section className="relative w-full overflow-hidden bg-slate-950">
+        <div className="relative w-full h-[450px] sm:h-[500px] md:h-[600px]">
+          <img
+            src={heroImage}
+            alt={trip.title}
+            className="w-full h-full object-cover object-center"
+          />
 
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-            {trip.title}
-          </h1>
+          {/* Gradient overlays matching Package Detail page */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09111b]/70 via-[#09111b]/40 to-[#09111b]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#09111b]/60 via-transparent to-transparent" />
 
-          {aiData?.summary && (
-            <p className="text-zinc-300 text-lg max-w-3xl leading-relaxed">
-              {aiData.summary}
-            </p>
-          )}
-
-          <div className="flex items-center gap-2 mt-6 text-zinc-400 text-sm">
-            <MapPin className="h-4 w-4 text-[var(--waypoint-teal)]" />
-            {destStr}
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto max-w-5xl px-4 py-10">
-        {/* Cost Overview */}
-        <div className="grid gap-4 md:grid-cols-5 mb-10">
-          <Card className="glass-card md:col-span-2 overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <PieChart className="h-5 w-5 text-[var(--waypoint-teal)]" />
-                <h3 className="font-bold text-lg">Cost Breakdown</h3>
-              </div>
-              <div className="space-y-3">
-                {[
-                  {
-                    label: "Accommodation",
-                    value: costBreakdown.accommodation,
-                    color: "bg-secondary",
-                  },
-                  {
-                    label: "Transport",
-                    value: costBreakdown.transport,
-                    color: "bg-secondary",
-                  },
-                  {
-                    label: "Activities",
-                    value: costBreakdown.activities,
-                    color: "bg-primary",
-                  },
-                  {
-                    label: "Food",
-                    value: costBreakdown.food,
-                    color: "bg-rose-500",
-                  },
-                  {
-                    label: "Miscellaneous",
-                    value: costBreakdown.miscellaneous,
-                    color: "bg-zinc-500",
-                  },
-                ].map(
-                  (item) =>
-                    item.value > 0 && (
-                      <div
-                        key={item.label}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-2 text-sm">
-                          <div
-                            className={`h-2.5 w-2.5 rounded-full ${item.color}`}
-                          />
-                          <span className="text-muted-foreground">
-                            {item.label}
-                          </span>
-                        </div>
-                        <span className="font-semibold text-sm">
-                          {formatCurrency(item.value, trip.currency)}
-                        </span>
-                      </div>
-                    )
-                )}
-                <div className="border-t pt-3 flex items-center justify-between font-bold">
-                  <span>Total Estimated</span>
-                  <span className="text-[var(--waypoint-teal)] text-lg">
-                    {formatCurrency(totalCost as number, trip.currency)}
+          {/* Hero Content Overlay */}
+          <div className="absolute inset-0 z-10 flex flex-col justify-end">
+            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 md:pb-24">
+              <div className="space-y-4 max-w-3xl">
+                {/* Badges */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white text-xs font-bold shadow-sm">
+                    <Sparkles className="h-3.5 w-3.5" /> AI Custom Plan
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold border border-white/20">
+                    <CalendarDays className="h-3.5 w-3.5 text-primary" /> {days} Days
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold border border-white/20">
+                    <Users className="h-3.5 w-3.5 text-secondary" /> {trip.travelers} Guest(s)
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-xs font-semibold border border-emerald-500/30">
+                    <Wallet className="h-3.5 w-3.5" /> {trip.travelStyle} Style
                   </span>
                 </div>
+
+                {/* Title & Description */}
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display text-white tracking-tight leading-tight">
+                  {trip.title}
+                </h1>
+
+                {aiData?.summary && (
+                  <p className="text-sm sm:text-base text-slate-200 line-clamp-2 leading-relaxed max-w-2xl">
+                    {aiData.summary}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 pt-1">
+                  <MapPin className="h-4 w-4 text-primary shrink-0" />
+                  <span>{destStr || "Custom Destination"}</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Tips */}
-          {aiData?.tips && aiData.tips.length > 0 && (
-            <Card className="glass-card md:col-span-3 overflow-hidden">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Lightbulb className="h-5 w-5 text-[var(--waypoint-amber)]" />
-                  <h3 className="font-bold text-lg">Travel Tips</h3>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {aiData.tips.map((tip, i) => (
-                    <div
-                      key={i}
-                      className="flex gap-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200"
-                    >
-                      <span className="text-[var(--waypoint-amber)] font-bold shrink-0">
-                        💡
-                      </span>
-                      <span>{tip}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            </div>
+          </div>
         </div>
+      </section>
 
-        {/* Day-by-Day Itinerary */}
-        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-900">
-          <CalendarDays className="h-6 w-6 text-secondary" />
-          Day-by-Day Itinerary
-        </h2>
-        <div className="space-y-6">
-          {trip.itineraries.map((day) => {
-            const dayDate = new Date(trip.startDate);
-            dayDate.setDate(dayDate.getDate() + day.dayNumber - 1);
-            const dateStr = dayDate.toLocaleDateString("en-IN", {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            });
-
-            return (
-              <Card
-                key={day.id}
-                className="glass-card overflow-hidden group"
-              >
-                {/* Day header */}
-                <div className="bg-gradient-to-r from-secondary/5 to-transparent p-6 border-b border-slate-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-secondary to-secondary flex items-center justify-center text-white font-bold text-sm shadow-md">
-                        {day.dayNumber}
-                      </div>
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-lg text-slate-900">{day.title}</h3>
-                          <Badge variant="outline" className="text-[10px] font-mono border-slate-200 text-slate-600">
-                            {dateStr}
-                          </Badge>
-                        </div>
-                        {day.description && (
-                          <p className="text-sm text-slate-600 mt-0.5">
-                            {day.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <CardContent className="p-6 space-y-4">
-                  {/* Transport Banner */}
-                  {day.transport && (
-                    <div className="flex items-center gap-3 bg-secondary/10 border border-secondary/20 rounded-xl p-4">
-                      <div className="h-8 w-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">
-                        {TRANSPORT_ICONS[day.transport.type] || (
-                          <CarFront className="h-4 w-4" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-sm font-semibold">
-                          {day.transport.from}{" "}
-                          <ArrowRight className="h-3 w-3 inline mx-1 text-muted-foreground" />{" "}
-                          {day.transport.to}
-                        </span>
-                        <div className="text-xs text-muted-foreground">
-                          {day.transport.type} •{" "}
-                          {day.transport.cost
-                            ? formatCurrency(
-                              Number(day.transport.cost),
-                              trip.currency
-                            )
-                            : "Included"}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Activities Timeline */}
-                  <div className="relative">
-                    {day.activities.map((activity, aIdx) => (
-                      <div key={activity.id} className="flex gap-4 pb-4 last:pb-0">
-                        {/* Timeline line */}
-                        <div className="flex flex-col items-center">
-                          <div
-                            className={`h-8 w-8 rounded-lg border flex items-center justify-center shrink-0 ${ACTIVITY_COLORS[activity.type] ||
-                              "bg-zinc-100 text-zinc-500 border-zinc-200"
-                              }`}
-                          >
-                            {ACTIVITY_ICONS[activity.type] || (
-                              <Clock className="h-4 w-4" />
-                            )}
-                          </div>
-                          {aIdx < day.activities.length - 1 && (
-                            <div className="w-px flex-1 bg-border mt-1 min-h-[1rem]" />
-                          )}
-                        </div>
-                        {/* Activity card */}
-                        <div className="flex-1 pb-2">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-0.5">
-                                {activity.time && (
-                                  <span className="text-xs font-mono font-semibold text-[var(--waypoint-teal)]">
-                                    {activity.time}
-                                  </span>
-                                )}
-                                <Badge
-                                  variant="outline"
-                                  className={`text-[10px] px-1.5 py-0 ${ACTIVITY_COLORS[activity.type] || ""
-                                    }`}
-                                >
-                                  {activity.type}
-                                </Badge>
-                              </div>
-                              <h4 className="font-semibold text-sm">
-                                {activity.title}
-                              </h4>
-                              {activity.description && (
-                                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                                  {activity.description}
-                                </p>
-                              )}
-                              <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                                {activity.location && (
-                                  <span className="flex items-center gap-1">
-                                    <MapPin className="h-3 w-3" />
-                                    {activity.location}
-                                  </span>
-                                )}
-                                {activity.duration && (
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    {activity.duration}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {activity.cost && Number(activity.cost) > 0 && (
-                              <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap ml-3">
-                                {formatCurrency(
-                                  Number(activity.cost),
-                                  trip.currency
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Hotel Info */}
-                  {day.hotel && (
-                    <div className="flex items-center gap-3 bg-[#E8AA9B]/10 border border-[#E8AA9B]/20 rounded-xl p-4 mt-2">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                        <Hotel className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-sm font-semibold">
-                          {day.hotel.name}
-                        </span>
-                        <div className="text-xs text-muted-foreground">
-                          {day.hotel.address} •{" "}
-                          {day.hotel.rating && `⭐ ${day.hotel.rating}`}
-                          {day.hotel.pricePerNight &&
-                            ` • ${formatCurrency(
-                              Number(day.hotel.pricePerNight),
-                              trip.currency
-                            )}/night`}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="mt-12 text-center space-y-4">
-          <div className="flex flex-wrap items-center justify-center gap-4">
+      {/* ═══════════════ MAIN CONTENT BODY ═══════════════ */}
+      <section className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full space-y-10">
+        
+        {/* Top Actions Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/trips">
+              <Button variant="outline" size="sm" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold gap-1.5">
+                <ArrowLeft className="h-3.5 w-3.5" /> My Saved Trips
+              </Button>
+            </Link>
+          </div>
+          <div className="flex items-center gap-3">
             <Link href="/trip-builder">
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-full px-6 gap-2"
-              >
-                <Sparkles className="h-4 w-4" /> Generate Another Trip
+              <Button variant="outline" size="sm" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary" /> Build Another Trip
               </Button>
             </Link>
             <Link href="/packages">
-              <Button
-                size="lg"
-                className="rounded-full px-6 bg-gradient-to-r from-[var(--waypoint-teal)] to-sky-500 text-white gap-2"
-              >
-                Browse Packages <ArrowRight className="h-4 w-4" />
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-white font-semibold gap-1.5">
+                Explore Packages <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
           </div>
         </div>
-      </div>
+
+        {/* Overview Grid: Cost Allocation & Travel Tips */}
+        <div className="grid gap-6 lg:grid-cols-3 items-start">
+          
+          {/* Cost Allocation Breakdown Card */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <PieChart className="h-5 w-5 text-primary" />
+                <h3 className="text-base font-extrabold font-display text-slate-900">Cost Breakdown</h3>
+              </div>
+              <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+                {formatCurrency(totalCost as number, trip.currency)}
+              </span>
+            </div>
+
+            {/* Visual Bar */}
+            <div className="space-y-2">
+              <div className="h-2.5 w-full rounded-full bg-slate-100 flex overflow-hidden">
+                <div className="bg-primary h-full" style={{ width: "35%" }} title="Stay ~35%" />
+                <div className="bg-sky-500 h-full" style={{ width: "25%" }} title="Transit ~25%" />
+                <div className="bg-emerald-500 h-full" style={{ width: "20%" }} title="Activities ~20%" />
+                <div className="bg-amber-500 h-full" style={{ width: "20%" }} title="Dining & Misc ~20%" />
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 font-bold pt-1">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-primary shrink-0" /> Stay 35%</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" /> Transit 25%</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" /> Activities 20%</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" /> Dining 20%</span>
+              </div>
+            </div>
+
+            {/* Breakdown Items List */}
+            <div className="space-y-2.5 pt-2 border-t border-slate-100 text-xs">
+              {[
+                { label: "Accommodation", value: costBreakdown.accommodation, icon: Hotel, color: "text-primary" },
+                { label: "Transport & Transit", value: costBreakdown.transport, icon: CarFront, color: "text-sky-600" },
+                { label: "Sightseeing & Activities", value: costBreakdown.activities, icon: Mountain, color: "text-emerald-600" },
+                { label: "Dining & Food", value: costBreakdown.food, icon: UtensilsCrossed, color: "text-amber-600" },
+                { label: "Miscellaneous", value: costBreakdown.miscellaneous, icon: Ticket, color: "text-slate-500" },
+              ].map(
+                (item) =>
+                  item.value > 0 && (
+                    <div key={item.label} className="flex items-center justify-between font-medium">
+                      <span className="flex items-center gap-2 text-slate-600">
+                        <item.icon className={`h-3.5 w-3.5 ${item.color}`} />
+                        {item.label}
+                      </span>
+                      <span className="font-bold text-slate-900">
+                        {formatCurrency(Number(item.value), trip.currency)}
+                      </span>
+                    </div>
+                  )
+              )}
+            </div>
+          </div>
+
+          {/* Concierge Travel Tips Card */}
+          <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Lightbulb className="h-5 w-5 text-amber-500" />
+              <h3 className="text-base font-extrabold font-display text-slate-900">AI Concierge Tips</h3>
+            </div>
+
+            {aiData?.tips && aiData.tips.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {aiData.tips.map((tip, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs leading-relaxed text-slate-700">
+                    <span className="text-amber-500 font-bold shrink-0">💡</span>
+                    <span>{tip}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 italic">No specific concierge tips for this itinerary.</p>
+            )}
+          </div>
+
+        </div>
+
+        {/* ═══════════════ DAY BY DAY ITINERARY ═══════════════ */}
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold font-display text-slate-900">Day-by-Day Schedule</h2>
+              <p className="text-xs text-slate-500">Comprehensive daily timeline &amp; activity breakdown</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {trip.itineraries.map((day) => {
+              const dayDate = new Date(trip.startDate);
+              dayDate.setDate(dayDate.getDate() + day.dayNumber - 1);
+              const dateStr = dayDate.toLocaleDateString("en-IN", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              });
+
+              return (
+                <div key={day.id} className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden space-y-4">
+                  {/* Day Header Bar */}
+                  <div className="bg-slate-50/80 p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="w-9 h-9 rounded-xl bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                        Day {day.dayNumber}
+                      </span>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-extrabold font-display text-base text-slate-900">{day.title}</h3>
+                          <span className="px-2.5 py-0.5 rounded-full bg-slate-200/70 text-[10px] font-bold text-slate-600">
+                            {dateStr}
+                          </span>
+                        </div>
+                        {day.description && (
+                          <p className="text-xs text-slate-500 mt-0.5">{day.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 sm:p-6 space-y-4">
+                    {/* Intercity Transport Banner */}
+                    {day.transport && (
+                      <div className="flex items-center gap-3 bg-sky-50/70 border border-sky-200/70 rounded-xl p-3.5 text-xs text-sky-900">
+                        <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
+                          {TRANSPORT_ICONS[day.transport.type] || <CarFront className="h-4 w-4" />}
+                        </div>
+                        <div className="flex-1">
+                          <span className="font-bold">
+                            {day.transport.from} <ArrowRight className="h-3 w-3 inline mx-1" /> {day.transport.to}
+                          </span>
+                          <p className="text-[11px] text-sky-700 mt-0.5">
+                            {day.transport.type} • {day.transport.cost ? formatCurrency(Number(day.transport.cost), trip.currency) : "Included"}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Timeline Activities */}
+                    <div className="space-y-3.5 pl-1">
+                      {day.activities.map((activity) => (
+                        <div key={activity.id} className="flex gap-3.5 items-start">
+                          <div className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                            {ACTIVITY_ICONS[activity.type] || <Clock className="h-3.5 w-3.5" />}
+                          </div>
+
+                          <div className="flex-1 bg-[#FAFAF9] border border-slate-200/80 rounded-xl p-3.5 space-y-1">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                {activity.time && (
+                                  <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                    {activity.time}
+                                  </span>
+                                )}
+                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                                  {activity.type}
+                                </span>
+                              </div>
+                              {activity.cost && Number(activity.cost) > 0 && (
+                                <span className="text-xs font-bold text-slate-700">
+                                  {formatCurrency(Number(activity.cost), trip.currency)}
+                                </span>
+                              )}
+                            </div>
+
+                            <h4 className="font-bold text-sm text-slate-900 pt-0.5">{activity.title}</h4>
+                            {activity.description && (
+                              <p className="text-xs text-slate-600 leading-relaxed">{activity.description}</p>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-500 font-medium">
+                              {activity.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="h-3 w-3 text-primary" /> {activity.location}
+                                </span>
+                              )}
+                              {activity.duration && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3 text-slate-400" /> {activity.duration}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Hotel Accommodation Card */}
+                    {day.hotel && (
+                      <div className="flex items-center gap-3 bg-amber-50/60 border border-amber-200/70 rounded-xl p-3.5 text-xs text-amber-900 mt-2">
+                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                          <Hotel className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="font-bold text-amber-950">{day.hotel.name}</span>
+                          <p className="text-[11px] text-amber-800 mt-0.5">
+                            {day.hotel.address} {day.hotel.rating && `• ⭐ ${day.hotel.rating}`} {day.hotel.pricePerNight && `• ${formatCurrency(Number(day.hotel.pricePerNight), trip.currency)}/night`}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Bottom CTA Bar */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-8 text-center space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+            <Sparkles className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold font-display text-slate-900">Want to customize or create another trip?</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+              Our Gemini 2.0 AI Concierge can craft unlimited custom travel plans matching your exact budget and style.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <Link href="/trip-builder">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold gap-2">
+                <Sparkles className="h-4 w-4" /> Build Another AI Trip
+              </Button>
+            </Link>
+            <Link href="/packages">
+              <Button variant="outline" size="lg" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-bold gap-2">
+                Browse Verified Packages <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+      </section>
+
+      <SiteFooter />
     </div>
   );
 }

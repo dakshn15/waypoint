@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Compass,
   Sparkles,
-  ArrowRight,
   Menu,
   X,
 } from "lucide-react";
@@ -22,6 +22,11 @@ interface SiteHeaderProps {
 export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  // Client-side fallback session if userSession prop is omitted
+  const { data: clientSession } = useSession();
+  const effectiveSession = userSession ?? clientSession;
+  const isAuthenticated = !!(effectiveSession?.user || effectiveSession?.session);
 
   const navLinks = [
     { label: "Home", href: "/" },
@@ -63,10 +68,10 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
 
           {/* Desktop CTA Buttons & Mobile Menu Toggle */}
           <div className="flex items-center gap-2 shrink-0">
-            {userSession ? (
+            {isAuthenticated ? (
               <Link href="/dashboard" className="hidden lg:block">
                 <Button className="rounded-full font-semibold text-sm bg-primary hover:bg-primary/90 text-white">
-                  Dashboard <ArrowRight className="h-3.5 w-3.5" />
+                  Dashboard
                 </Button>
               </Link>
             ) : (
@@ -118,14 +123,14 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
 
               {/* Mobile CTAs */}
               <div className="pt-3 mt-1 border-t border-slate-100 flex flex-col gap-2">
-                {userSession ? (
+                {isAuthenticated ? (
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full"
                   >
-                    <Button className="w-full justify-between">
-                      Dashboard <ArrowRight className="h-4 w-4" />
+                    <Button className="w-full font-semibold rounded-xl bg-primary hover:bg-primary/90 text-white justify-center">
+                      Dashboard
                     </Button>
                   </Link>
                 ) : (
