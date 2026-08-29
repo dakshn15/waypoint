@@ -478,8 +478,8 @@ export default async function PackageDetailPage({ params }: PageProps) {
                       <CalendarDays className="h-4.5 w-4.5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg sm:text-xl font-extrabold font-display text-slate-900">Day-by-Day Itinerary</h2>
-                      <p className="text-xs text-slate-500 mt-0.5">Detailed daily plan with activities, dining, and accommodations</p>
+                      <h2 className="text-lg sm:text-xl font-extrabold font-display text-slate-900 mb-2">Day-by-Day Itinerary</h2>
+                      <p className="text-xs text-slate-500">Detailed daily plan with activities, dining, and accommodations</p>
                     </div>
                   </div>
 
@@ -506,7 +506,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <h3 className="text-sm font-extrabold text-slate-900 font-display truncate">{day.title}</h3>
-                                <p className="text-xs text-slate-500 mt-0.5 truncate">{day.description}</p>
+                                <p className="text-xs text-slate-500 mt-2 truncate">{day.description}</p>
                               </div>
                               <span className={`hidden sm:inline-flex text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide shrink-0 ${difficultyColor(pkg.difficulty)}`}>
                                 Day {day.dayNumber}
@@ -540,7 +540,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                                       <span className="text-[10px] text-slate-400 font-medium">{act.duration}</span>
                                     </div>
                                     <h4 className="text-sm font-bold text-slate-900 leading-snug">{act.title}</h4>
-                                    {act.description && <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{act.description}</p>}
+                                    {act.description && <p className="text-sm text-slate-500 mt-2 leading-relaxed">{act.description}</p>}
                                     <div className="flex items-center gap-1 mt-1 text-[11px] text-slate-400">
                                       <MapPin className="h-3 w-3 shrink-0" />
                                       <span className="truncate">{act.location}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -36,6 +36,9 @@ import {
   Lightbulb,
   Check,
   Zap,
+  X,
+  Plus,
+  Route,
   Ticket,
   SlidersHorizontal,
   Clock,
@@ -56,7 +59,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
 const STEPS = [
-  { label: "Destination", icon: MapPin },
+  { label: "Destinations", icon: Route },
   { label: "Dates & Guests", icon: CalendarDays },
   { label: "Budget & Style", icon: Wallet },
   { label: "Interests", icon: Compass },
@@ -66,7 +69,7 @@ const STEPS = [
 
 /* ─── Contextual tips per step ─── */
 const STEP_CONTEXT = [
-  { title: "Target Destination", tip: "Be specific — 'North Goa' or 'Munnar' yields richer itineraries than broad region names.", emoji: "🗺️" },
+  { title: "Target Destinations", tip: "Add multiple stops for a multi-city tour — e.g. Manali → Shimla → Chandigarh. AI will plan intercity transfers automatically.", emoji: "🗺️" },
   { title: "Travel Window & Group", tip: "3 to 10 days work best for AI density. Set accurate guest count so transport & stay budgets scale correctly.", emoji: "📅" },
   { title: "Budget Feasibility", tip: "Total budget covers accommodations, dining, transfers, and entry tickets. We verify market feasibility in real-time.", emoji: "💰" },
   { title: "Tailored Themes", tip: "Select your favorite interests! AI will blend sightseeing, food, adventure, and relaxation into a seamless itinerary.", emoji: "🎯" },
@@ -152,11 +155,54 @@ export default function TripBuilderPage() {
   const [genStage, setGenStage] = useState(0);
   const [error, setError] = useState("");
   const [passportOpenMobile, setPassportOpenMobile] = useState(false);
+  const [destInput, setDestInput] = useState("");
+  const destInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
-    destination: "", startDate: "", endDate: "", travelers: "2",
+    destinations: [] as string[], startDate: "", endDate: "", travelers: "2",
     budget: "", travelStyle: "STANDARD", interests: [] as string[],
     stayPreference: "Hotel", transportPreference: "Flight",
   });
+
+  /* Helper to produce a display string for destinations */
+  const destinationLabel = formData.destinations.length > 0
+    ? formData.destinations.join(" → ")
+    : "";
+
+  /* ── Multi-destination chip management ── */
+  const addDestination = useCallback((name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed.length < 2) return;
+    // Capitalize first letter of each word
+    const formatted = trimmed.replace(/\b\w/g, (c) => c.toUpperCase());
+    if (formData.destinations.some((d) => d.toLowerCase() === formatted.toLowerCase())) {
+      toast.error(`"${formatted}" is already added`);
+      return;
+    }
+    setFormData((prev) => ({ ...prev, destinations: [...prev.destinations, formatted] }));
+    setDestInput("");
+  }, [formData.destinations]);
+
+  const removeDestination = (name: string) => {
+    setFormData((prev) => ({ ...prev, destinations: prev.destinations.filter((d) => d !== name) }));
+  };
+
+  const toggleFeaturedDestination = (name: string) => {
+    if (formData.destinations.includes(name)) {
+      removeDestination(name);
+    } else {
+      addDestination(name);
+    }
+  };
+
+  const handleDestKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addDestination(destInput);
+    }
+    if (e.key === "Backspace" && destInput === "" && formData.destinations.length > 0) {
+      removeDestination(formData.destinations[formData.destinations.length - 1]);
+    }
+  };
 
   const tripDays = calculateDays(formData.startDate, formData.endDate);
   const travelerCount = Math.max(1, parseInt(formData.travelers) || 1);
@@ -204,8 +250,8 @@ export default function TripBuilderPage() {
   const validateStep = (): boolean => {
     switch (step) {
       case 0:
-        if (!formData.destination.trim() || formData.destination.trim().length < 2) {
-          toast.error("Please enter a valid destination (at least 2 characters)");
+        if (formData.destinations.length === 0) {
+          toast.error("Please add at least one destination");
           return false;
         }
         return true;
@@ -255,7 +301,7 @@ export default function TripBuilderPage() {
       const res = await fetch("/api/trips/generate", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          destination: formData.destination, startDate: formData.startDate, endDate: formData.endDate,
+          destination: formData.destinations.join(", "), destinations: formData.destinations, startDate: formData.startDate, endDate: formData.endDate,
           travelers: formData.travelers, budget: formData.budget, currency: "INR",
           travelStyle: formData.travelStyle, interests: formData.interests,
           stayPreference: formData.stayPreference, transportPreference: formData.transportPreference,
@@ -273,8 +319,16 @@ export default function TripBuilderPage() {
 
   const ctx = STEP_CONTEXT[step];
 
-  const aiStages = [
-    `Analyzing ${formData.destination || "destination"} seasonality & weather...`,
+  const isMultiCity = formData.destinations.length > 1;
+
+  const aiStages = isMultiCity ? [
+    `Analyzing ${formData.destinations.length}-city route: ${destinationLabel}...`,
+    `Mapping intercity ${formData.transportPreference} transfers between stops...`,
+    `Curating ${formData.stayPreference} stays in each destination city...`,
+    `Blending ${formData.interests.slice(0, 3).join(", ") || "sightseeing"} activities across all stops...`,
+    `Finalizing multi-city itinerary & ₹${userBudgetNum.toLocaleString("en-IN")} cost breakdown...`,
+  ] : [
+    `Analyzing ${destinationLabel || "destination"} seasonality & weather...`,
     `Curating handpicked ${formData.stayPreference} stays matching ₹${userBudgetNum.toLocaleString("en-IN")}...`,
     `Optimizing ${formData.transportPreference} transfers & daily routes...`,
     `Blending ${formData.interests.slice(0, 3).join(", ") || "sightseeing"} activities into daily schedule...`,
@@ -291,17 +345,17 @@ export default function TripBuilderPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             {/* Left Title Status */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+              <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
                 <SlidersHorizontal className="h-5 w-5" />
               </div>
               <div>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                  <h1 className="text-base sm:text-lg font-extrabold font-display text-slate-900 mb-1 tracking-tight">AI Trip Studio</h1>
+                  <h1 className="text-base sm:text-lg font-bold font-display text-slate-900 mb-1 tracking-tight">AI Trip Studio {formData.destinations.length > 1 && <span className="text-primary">• Multi-City</span>}</h1>
                   <span className="text-slate-300 hidden sm:inline">•</span>
                   <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Gemini 2.0 Engine</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
+                <p className="text-sm text-slate-500 mt-1">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
               </div>
             </div>
 
@@ -309,7 +363,7 @@ export default function TripBuilderPage() {
             <div className="flex items-center justify-between sm:justify-end gap-2 text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200/70 px-3 py-1.5 rounded-xl">
               <span>{Math.round(((step + 1) / 6) * 100)}% Complete</span>
               <span className="text-slate-500">•</span>
-              <span className="text-primary font-extrabold">{step + 1}/6 Steps</span>
+              <span className="text-primary font-bold">{step + 1}/6 Steps</span>
             </div>
           </div>
 
@@ -350,11 +404,11 @@ export default function TripBuilderPage() {
       </section>
 
       {/* ═══════════════ STUDIO WORKSPACE LAYOUT ═══════════════ */}
-      <section className="flex-1 pb-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
-        <div className="grid gap-6 lg:grid-cols-[340px_1fr] items-start">
+      <section className="flex-1 lg:pb-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+        <div className="grid gap-6 lg:grid-cols-[340px_1fr] md:grid-cols-[250px_1fr] items-start">
 
           {/* ═══ LEFT PANE: LIVE TRIP PASSPORT / SPEC BOARD ═══ */}
-          <div className="space-y-4 lg:sticky lg:top-28">
+          <div className="space-y-4 md:sticky md:top-28">
             
             {/* Digital Travel Passport Ticket Card */}
             <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden relative">
@@ -367,28 +421,43 @@ export default function TripBuilderPage() {
               >
                 <div className="flex items-center gap-2">
                   <Ticket className="h-4 w-4 text-primary" />
-                  <span>Live Trip Summary ({formData.destination || "Not set"})</span>
+                  <span>Live Trip Summary ({destinationLabel || "Not set"})</span>
                 </div>
                 {passportOpenMobile ? <ChevronUp className="h-4 w-4 text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-500" />}
               </button>
 
-              <div className={`p-5 space-y-4 ${passportOpenMobile ? "block" : "hidden lg:block"}`}>
+              <div className={`sm:p-5 p-4 space-y-4 ${passportOpenMobile ? "block" : "hidden lg:block"}`}>
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2">
                     <Ticket className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-slate-800">Trip Passport</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-800">Trip Passport</span>
                   </div>
                   <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
                     Spec #{step + 1}
                   </span>
                 </div>
 
-                {/* Destination Badge */}
+                {/* Destination Chips */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Destination</p>
-                  <p className="text-base font-extrabold font-display text-slate-900">
-                    {formData.destination || <span className="text-slate-500 italic font-normal">Select Destination...</span>}
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                    {formData.destinations.length > 1 ? `Route (${formData.destinations.length} stops)` : "Destination"}
                   </p>
+                  {formData.destinations.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {formData.destinations.map((d, i) => (
+                        <span key={d} className="inline-flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold text-[10px]">
+                            {d}
+                          </span>
+                          {i < formData.destinations.length - 1 && (
+                            <span className="text-[9px] text-slate-400">→</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500 italic font-normal">Select Destinations...</p>
+                  )}
                 </div>
 
                 {/* Dates & Travelers */}
@@ -479,61 +548,132 @@ export default function TripBuilderPage() {
           <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
             <div className="lg:p-7 sm:p-5 p-4 space-y-6">
 
-              {/* ── Step 0: Destination ── */}
+              {/* ── Step 0: Destinations (Multi-City Chip Input) ── */}
               {step === 0 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <MapPin className="h-5 w-5 text-primary" />
+                      <Route className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Where do you want to go?</h2>
-                      <p className="text-xs text-slate-500">Enter a city, region, island, or national landmark</p>
+                      <h2 className="text-lg font-bold font-display text-slate-900 mb-1">Where do you want to go?</h2>
+                      <p className="text-xs text-slate-500">Add one or more cities for a multi-destination trip — AI plans intercity transfers automatically</p>
                     </div>
                   </div>
 
+                  {/* ── Chip Input Field ── */}
                   <div className="space-y-2">
                     <Label htmlFor="destination-field" className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Destination Name
+                      Add Destinations
                     </Label>
-                    <Input
-                      id="destination-field"
-                      placeholder="e.g. Goa, Kerala Backwaters, Manali, Rajasthan, Kashmir, Bali..."
-                      value={formData.destination}
-                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                    />
+                    <div
+                      className="flex flex-wrap items-center gap-2 min-h-[48px] p-3 rounded-xl border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all cursor-text"
+                      onClick={() => destInputRef.current?.focus()}
+                    >
+                      {/* Rendered Chips */}
+                      {formData.destinations.map((d, i) => (
+                        <span key={d} className="inline-flex items-center gap-1">
+                          <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold animate-in fade-in-0 slide-in-from-left-2 duration-200">
+                            <MapPin className="h-3 w-3 shrink-0 opacity-70" />
+                            {d}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); removeDestination(d); }}
+                              className="ml-0.5 p-0.5 rounded-md hover:bg-primary/20 text-primary/60 hover:text-primary transition-colors cursor-pointer"
+                              aria-label={`Remove ${d}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                          {i < formData.destinations.length - 1 && (
+                            <span className="text-xs font-bold text-slate-400">→</span>
+                          )}
+                        </span>
+                      ))}
+                      {/* Inline Text Input */}
+                      <input
+                        ref={destInputRef}
+                        id="destination-field"
+                        type="text"
+                        className="flex-1 min-w-[140px] outline-none text-sm text-slate-900 placeholder:text-slate-400 bg-transparent"
+                        placeholder={formData.destinations.length === 0 ? "Type a city and press Enter..." : "Add another stop..."}
+                        value={destInput}
+                        onChange={(e) => setDestInput(e.target.value)}
+                        onKeyDown={handleDestKeyDown}
+                        onBlur={() => { if (destInput.trim().length >= 2) addDestination(destInput); }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-mono font-bold">Enter</span>
+                      to add a destination •
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-mono font-bold">⌫</span>
+                      to remove last
+                    </p>
                   </div>
+
+                  {/* ── Route Preview (shown when 2+ destinations) ── */}
+                  {formData.destinations.length >= 2 && (
+                    <div className="bg-gradient-to-r from-primary/5 to-orange-50 border border-primary/10 rounded-xl p-4 space-y-2">
+                      <div className="flex items-center gap-2 text-xs font-bold text-primary">
+                        <Route className="h-3.5 w-3.5" />
+                        <span>Multi-City Route Preview ({formData.destinations.length} stops)</span>
+                      </div>
+                      <div className="flex items-center flex-wrap gap-1.5">
+                        {formData.destinations.map((d, i) => (
+                          <span key={d} className="inline-flex items-center gap-1.5">
+                            <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 shadow-sm text-xs font-bold text-slate-800">
+                              <span className="w-4 h-4 rounded-full bg-primary/15 text-primary text-[9px] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                              {d}
+                            </span>
+                            {i < formData.destinations.length - 1 && (
+                              <span className="text-primary/60 text-sm">→</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-slate-500">AI will plan intercity transfers, optimal stay durations & route logistics automatically</p>
+                    </div>
+                  )}
 
                   {/* Visual Destination Cards */}
                   <div className="space-y-3 pt-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Or Pick a Featured Destination</Label>
-                      <span className="text-[11px] text-slate-500">Click to select</span>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <Label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Or Pick Featured Destinations</Label>
+                      <span className="text-[11px] text-slate-500">Click to add/remove</span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {POPULAR_DESTINATIONS.map((dest) => (
-                        <button
-                          key={dest.name}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, destination: dest.name })}
-                          className={`group relative rounded-xl overflow-hidden border-2 text-left transition-all cursor-pointer h-28 ${
-                            formData.destination === dest.name
-                              ? "border-primary ring-2 ring-primary/20 shadow-md scale-[1.02]"
-                              : "border-transparent hover:border-slate-300"
-                          }`}
-                        >
-                          <img src={dest.image} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-[9px] font-bold text-white uppercase tracking-wider">
-                            {dest.tag}
-                          </span>
-                          <div className="absolute bottom-2.5 left-2.5 right-2.5">
-                            <p className="text-xs font-semibold text-white">{dest.name}</p>
-                            <p className="text-[10px] text-white/70">{dest.subtitle}</p>
-                          </div>
-                        </button>
-                      ))}
+                      {POPULAR_DESTINATIONS.map((dest) => {
+                        const isSelected = formData.destinations.includes(dest.name);
+                        return (
+                          <button
+                            key={dest.name}
+                            type="button"
+                            onClick={() => toggleFeaturedDestination(dest.name)}
+                            className={`group relative rounded-xl overflow-hidden border-2 text-left transition-all cursor-pointer h-28 ${
+                              isSelected
+                                ? "border-primary ring-2 ring-primary/20 shadow-md scale-[1.02]"
+                                : "border-transparent hover:border-slate-300"
+                            }`}
+                          >
+                            <img src={dest.image} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            <div className={`absolute inset-0 transition-colors ${isSelected ? "bg-gradient-to-t from-primary/80 via-primary/30 to-primary/10" : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"}`} />
+                            {/* Selection Checkmark */}
+                            {isSelected && (
+                              <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                                <Check className="h-3.5 w-3.5 text-white" />
+                              </span>
+                            )}
+                            <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-[9px] font-bold text-white uppercase tracking-wider">
+                              {dest.tag}
+                            </span>
+                            <div className="absolute bottom-2.5 left-2.5 right-2.5">
+                              <p className="text-xs font-semibold text-white">{dest.name}</p>
+                              <p className="text-[10px] text-white/70">{dest.subtitle}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -547,7 +687,7 @@ export default function TripBuilderPage() {
                       <CalendarDays className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Travel Window & Guests</h2>
+                      <h2 className="text-lg font-bold font-display text-slate-900 mb-1">Travel Window & Guests</h2>
                       <p className="text-xs text-slate-500">Select departure date, return date, and traveler count</p>
                     </div>
                   </div>
@@ -602,7 +742,7 @@ export default function TripBuilderPage() {
                   {formData.startDate && formData.endDate && (
                     <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs text-slate-700">
                       <span className="font-medium">Calculated Duration:</span>
-                      <span className="font-extrabold text-slate-900">{tripDays} Days / {Math.max(1, tripDays - 1)} Nights</span>
+                      <span className="font-bold text-slate-900">{tripDays} Days / {Math.max(1, tripDays - 1)} Nights</span>
                     </div>
                   )}
 
@@ -634,7 +774,7 @@ export default function TripBuilderPage() {
                       <Wallet className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">Budget & Travel Style</h2>
+                      <h2 className="text-lg font-bold font-display text-slate-900 mb-1">Budget & Travel Style</h2>
                       <p className="text-xs text-slate-500">Define your total budget for all travelers combined</p>
                     </div>
                   </div>
@@ -762,7 +902,7 @@ export default function TripBuilderPage() {
                       <Compass className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-extrabold font-display text-slate-900 mb-1">What are your interests?</h2>
+                      <h2 className="text-lg font-bold font-display text-slate-900 mb-1">What are your interests?</h2>
                       <p className="text-xs text-slate-500">Pick theme preferences to customize your daily activities</p>
                     </div>
                   </div>
@@ -773,7 +913,7 @@ export default function TripBuilderPage() {
                         key={interest}
                         type="button"
                         onClick={() => toggleInterest(interest)}
-                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer ${
+                        className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 text-xs font-bold transition-all cursor-pointer ${
                           formData.interests.includes(interest) ? "border-primary bg-primary/5 text-primary shadow-xs" : "border-slate-200 bg-[#FAFAF9] text-slate-700 hover:border-slate-300"
                         }`}
                       >
@@ -797,7 +937,7 @@ export default function TripBuilderPage() {
                         <Hotel className="h-4.5 w-4.5 text-primary" />
                       </div>
                       <div>
-                        <h2 className="text-base font-extrabold font-display text-slate-900">Stay Preference</h2>
+                        <h2 className="text-base font-bold font-display text-slate-900">Stay Preference</h2>
                         <p className="text-xs text-slate-500">Preferred lodging category</p>
                       </div>
                     </div>
@@ -827,7 +967,7 @@ export default function TripBuilderPage() {
                         <Car className="h-4.5 w-4.5 text-secondary" />
                       </div>
                       <div>
-                        <h2 className="text-base font-extrabold font-display text-slate-900">Transport Preference</h2>
+                        <h2 className="text-base font-bold font-display text-slate-900">Transport Preference</h2>
                         <p className="text-xs text-slate-500">Primary mode of intercity transit</p>
                       </div>
                     </div>
@@ -855,22 +995,27 @@ export default function TripBuilderPage() {
 
               {/* ── Step 5: Generate ── */}
               {step === 5 && (
-                <div className="text-center py-8 space-y-6">
+                <div className="text-center sm:py-8 space-y-6">
                   <div className="relative inline-flex">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
-                      <Sparkles className={`h-9 w-9 text-white ${generating ? "animate-pulse" : ""}`} />
+                    <div className="lg:w-20 lg:h-20 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
+                      <Sparkles className={`lg:h-9 lg:w-9 w-7 h-7 text-white ${generating ? "animate-pulse" : ""}`} />
                     </div>
                     {generating && <div className="absolute -inset-2 rounded-3xl border-2 border-primary/20 animate-ping" />}
                   </div>
 
                   <div>
-                    <h2 className="text-2xl font-extrabold font-display text-slate-900 mb-2">
-                      {generating ? "Synthesizing Your Trip..." : "Ready to Generate Itinerary!"}
+                    <h2 className="text-2xl font-bold font-display text-slate-900 mb-2">
+                      {generating
+                        ? (formData.destinations.length > 1 ? "Synthesizing Multi-City Route..." : "Synthesizing Your Trip...")
+                        : (formData.destinations.length > 1 ? "Ready to Generate Multi-City Itinerary!" : "Ready to Generate Itinerary!")}
                     </h2>
                     <p className="text-sm text-slate-500">
-                      {generating ? "Gemini AI is crafting your detailed daily schedule & cost breakdown."
+                      {generating
+                        ? (formData.destinations.length > 1
+                            ? `Gemini AI is planning your ${formData.destinations.length}-city route with intercity transfers & daily schedules.`
+                            : "Gemini AI is crafting your detailed daily schedule & cost breakdown.")
                         : <span className="inline-flex flex-wrap items-center justify-center gap-2">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold"><MapPin className="h-3 w-3" /> {formData.destination}</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold"><MapPin className="h-3 w-3" /> {destinationLabel}</span>
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold"><CalendarDays className="h-3 w-3" /> {tripDays} Days</span>
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">₹{userBudgetNum.toLocaleString("en-IN")}</span>
                           </span>}
@@ -880,7 +1025,7 @@ export default function TripBuilderPage() {
                   {/* Real-time AI Generation Status Steps */}
                   {generating && (
                     <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 max-w-md mx-auto space-y-3 text-left">
-                      <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">AI Concierge Progress</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500">AI Concierge Progress</p>
                       <div className="space-y-2">
                         {aiStages.map((stg, idx) => (
                           <div key={idx} className="flex items-center gap-2.5 text-xs transition-opacity duration-300">

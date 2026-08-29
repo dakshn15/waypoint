@@ -323,7 +323,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                     </div>
                     <div>
                       <h3 className="font-bold text-md text-slate-900 leading-tight">{s.user.name}</h3>
-                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                      <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
                         <Mail className="h-3 w-3 inline" /> {s.user.email}
                       </p>
                     </div>

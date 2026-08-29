@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
 
     const {
       destination,
+      destinations,
       startDate,
       endDate,
       travelers,
@@ -32,10 +33,16 @@ export async function POST(req: NextRequest) {
       transportPreference = "Flight",
     } = body;
 
+    // Build canonical destination string from either destinations array or single string
+    const destArray: string[] = Array.isArray(destinations) && destinations.length > 0
+      ? destinations
+      : destination ? [destination.trim()] : [];
+    const destString = destArray.join(", ");
+
     // Validate required fields
-    if (!destination || !startDate || !endDate || !budget) {
+    if (destArray.length === 0 || !startDate || !endDate || !budget) {
       return NextResponse.json(
-        { error: "Missing required fields: destination, startDate, endDate, budget" },
+        { error: "Missing required fields: destination(s), startDate, endDate, budget" },
         { status: 400 }
       );
     }
@@ -72,9 +79,9 @@ export async function POST(req: NextRequest) {
     }
 
     const numTravelers = parseInt(travelers) || 1;
-    if (numTravelers < 1 || numTravelers > 20) {
+    if (numTravelers < 1) {
       return NextResponse.json(
-        { error: "Number of travelers must be between 1 and 20." },
+        { error: "Number of travelers must be at least 1." },
         { status: 400 }
       );
     }
@@ -100,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     // Build request payload for AI planner
     const tripRequest: TripRequest = {
-      destination: destination.trim(),
+      destination: destString,
       startDate,
       endDate,
       travelers: numTravelers,
@@ -121,7 +128,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         title: generatedTrip.title,
         status: "GENERATED",
-        destinations: [{ name: destination, country: "" }],
+        destinations: destArray.map((name) => ({ name, country: "" })),
         startDate: start,
         endDate: end,
         travelers: tripRequest.travelers,

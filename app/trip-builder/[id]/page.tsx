@@ -29,6 +29,7 @@ import {
   Users,
   Wallet,
   Ticket,
+  Route,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
@@ -37,15 +38,15 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
 const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
-  SIGHTSEEING: <Camera className="h-3.5 w-3.5" />,
-  ADVENTURE: <Mountain className="h-3.5 w-3.5" />,
-  DINING: <UtensilsCrossed className="h-3.5 w-3.5" />,
-  SHOPPING: <ShoppingBag className="h-3.5 w-3.5" />,
-  RELAXATION: <Palmtree className="h-3.5 w-3.5" />,
-  CULTURAL: <Landmark className="h-3.5 w-3.5" />,
-  TRANSPORTATION: <CarFront className="h-3.5 w-3.5" />,
-  CHECK_IN: <Hotel className="h-3.5 w-3.5" />,
-  CHECK_OUT: <Hotel className="h-3.5 w-3.5" />,
+  SIGHTSEEING: <Camera className="h-4 w-4" />,
+  ADVENTURE: <Mountain className="h-4 w-4" />,
+  DINING: <UtensilsCrossed className="h-4 w-4" />,
+  SHOPPING: <ShoppingBag className="h-4 w-4" />,
+  RELAXATION: <Palmtree className="h-4 w-4" />,
+  CULTURAL: <Landmark className="h-4 w-4" />,
+  TRANSPORTATION: <CarFront className="h-4 w-4" />,
+  CHECK_IN: <Hotel className="h-4 w-4" />,
+  CHECK_OUT: <Hotel className="h-4 w-4" />,
 };
 
 const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
@@ -110,7 +111,6 @@ function getHeroImage(destStr: string): string {
   const primaryWord = destStr.split(",")[0].trim();
   const sanitizedQuery = encodeURIComponent(primaryWord || "landscape");
   
-  // Return high-resolution Unsplash photo URL matched to user's destination query
   return `https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2560&q=80&q=${sanitizedQuery}`;
 }
 
@@ -145,8 +145,13 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
   const aiData = trip.aiResponse as unknown as GeneratedTrip | null;
   const costBreakdown = (trip.costBreakdown as any) || {};
-  const destinations = (trip.destinations as any[]) || [];
-  const destStr = destinations.map((d) => (typeof d === "string" ? d : d.name || d)).join(", ") || trip.title;
+  const rawDestinations = (trip.destinations as any[]) || [];
+  const destArray = rawDestinations
+    .map((d) => (typeof d === "string" ? d : d.name || d))
+    .filter(Boolean);
+
+  const isMultiCity = destArray.length > 1;
+  const destStr = destArray.join(", ");
 
   const days = Math.max(
     1,
@@ -165,6 +170,17 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
   const heroImage = getHeroImage(destStr);
 
+  const rawTitle = aiData?.title || trip.title || "";
+  const isGenericTitle = !rawTitle || rawTitle.includes("STANDARD") || rawTitle.includes("LUXURY") || rawTitle.includes("BUDGET") || rawTitle.includes("PREMIUM");
+
+  const displayTitle = !isGenericTitle
+    ? rawTitle
+    : isMultiCity
+      ? `${destArray[0]} to ${destArray[destArray.length - 1]} Grand Tour`
+      : `Enchanting ${destStr || "Destination"} Getaway`;
+
+  const displaySummary = aiData?.summary || `A curated ${days}-day itinerary tailored for ${trip.travelers} traveler(s), covering handpicked sights, local culinary stops, and comfortable stays.`;
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F6F6F4] text-slate-900 font-sans">
       <SiteHeader userSession={session} activeRoute="/trip-builder" />
@@ -174,7 +190,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
         <div className="relative w-full h-[450px] sm:h-[500px] md:h-[600px]">
           <img
             src={heroImage}
-            alt={trip.title}
+            alt={displayTitle}
             className="w-full h-full object-cover object-center"
           />
 
@@ -184,17 +200,22 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
           {/* Hero Content Overlay */}
           <div className="absolute inset-0 z-10 flex flex-col justify-end">
-            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20 md:pb-24">
-              <div className="space-y-4 max-w-3xl">
+            <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 mb:pb-20 lg:pb-24">
+              <div className="space-y-4">
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white text-xs font-bold shadow-sm">
                     <Sparkles className="h-3.5 w-3.5" /> AI Custom Plan
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold border border-white/20">
+                  {isMultiCity && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500 text-white text-xs font-bold shadow-sm">
+                      <Route className="h-3.5 w-3.5" /> Multi-City ({destArray.length} Stops)
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white backdrop-blur-md text-black text-xs font-semibold border border-white/20">
                     <CalendarDays className="h-3.5 w-3.5 text-primary" /> {days} Days
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold border border-white/20">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white backdrop-blur-md text-black text-xs font-semibold border border-white/20">
                     <Users className="h-3.5 w-3.5 text-secondary" /> {trip.travelers} Guest(s)
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-emerald-300 text-xs font-semibold border border-emerald-500/30">
@@ -203,20 +224,34 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                 </div>
 
                 {/* Title & Description */}
-                <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-display text-white tracking-tight leading-tight">
-                  {trip.title}
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold font-display text-white tracking-tight leading-tight">
+                  {displayTitle}
                 </h1>
 
-                {aiData?.summary && (
-                  <p className="text-sm sm:text-base text-slate-200 line-clamp-2 leading-relaxed max-w-2xl">
-                    {aiData.summary}
-                  </p>
-                )}
+                <p className="max-w-3xl text-sm sm:text-base text-slate-200 line-clamp-3 leading-relaxed max-w-2xl">
+                  {displaySummary}
+                </p>
 
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 pt-1">
-                  <MapPin className="h-4 w-4 text-primary shrink-0" />
-                  <span>{destStr || "Custom Destination"}</span>
-                </div>
+                {/* Location / Route Display */}
+                {isMultiCity ? (
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-300 pt-1">
+                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-white font-bold">Route:</span>
+                    {destArray.map((dest, i) => (
+                      <span key={i} className="inline-flex items-center gap-1.5">
+                        <span className="bg-white/10 backdrop-blur-md px-2.5 py-1 rounded-lg text-white font-bold border border-white/10">
+                          {dest}
+                        </span>
+                        {i < destArray.length - 1 && <span className="text-primary font-bold">→</span>}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 pt-1">
+                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <span>{destStr || "Custom Destination"}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -224,8 +259,9 @@ export default async function GeneratedTripPage({ params }: PageProps) {
       </section>
 
       {/* ═══════════════ MAIN CONTENT BODY ═══════════════ */}
-      <section className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full space-y-10">
-        
+      <section className="flex-1 lg:py-20 py-12">
+
+        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 md:space-y-10 space-y-6">
         {/* Top Actions Bar */}
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center gap-2">
@@ -235,7 +271,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
               </Button>
             </Link>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link href="/trip-builder">
               <Button variant="outline" size="sm" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-primary" /> Build Another Trip
@@ -253,13 +289,13 @@ export default async function GeneratedTripPage({ params }: PageProps) {
         <div className="grid gap-6 lg:grid-cols-3 items-start">
           
           {/* Cost Allocation Breakdown Card */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-5">
+          <div className="bg-white border border-slate-200/90 rounded-2xl sm:p-6 p-4 shadow-sm space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <PieChart className="h-5 w-5 text-primary" />
-                <h3 className="text-base font-extrabold font-display text-slate-900">Cost Breakdown</h3>
+                <h3 className="text-base font-bold font-display text-slate-900">Cost Breakdown</h3>
               </div>
-              <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
                 {formatCurrency(totalCost as number, trip.currency)}
               </span>
             </div>
@@ -306,10 +342,10 @@ export default async function GeneratedTripPage({ params }: PageProps) {
           </div>
 
           {/* Concierge Travel Tips Card */}
-          <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl sm:p-6 p-4 shadow-sm space-y-4">
             <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
               <Lightbulb className="h-5 w-5 text-amber-500" />
-              <h3 className="text-base font-extrabold font-display text-slate-900">AI Concierge Tips</h3>
+              <h3 className="text-base font-bold font-display text-slate-900">AI Concierge Tips</h3>
             </div>
 
             {aiData?.tips && aiData.tips.length > 0 ? (
@@ -331,16 +367,16 @@ export default async function GeneratedTripPage({ params }: PageProps) {
         {/* ═══════════════ DAY BY DAY ITINERARY ═══════════════ */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+            <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
               <CalendarDays className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold font-display text-slate-900">Day-by-Day Schedule</h2>
-              <p className="text-xs text-slate-500">Comprehensive daily timeline &amp; activity breakdown</p>
+              <h2 className="text-xl font-bold font-display text-slate-900 mb-1.5">Day-by-Day Schedule</h2>
+              <p className="text-sm text-slate-500">Comprehensive daily timeline &amp; activity breakdown</p>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {trip.itineraries.map((day) => {
               const dayDate = new Date(trip.startDate);
               dayDate.setDate(dayDate.getDate() + day.dayNumber - 1);
@@ -351,103 +387,112 @@ export default async function GeneratedTripPage({ params }: PageProps) {
               });
 
               return (
-                <div key={day.id} className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden space-y-4">
-                  {/* Day Header Bar */}
-                  <div className="bg-slate-50/80 p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="w-9 h-9 rounded-xl bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                <div key={day.id} className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
+                  {/* Elegant Day Header Bar */}
+                  <div className="bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex sm:flex-row flex-col sm:items-center items-start gap-3.5">
+                      {/* Non-squished Day Badge */}
+                      <div className="px-4 py-2.5 rounded-md bg-slate-900 text-white flex items-center justify-center font-bold text-sm tracking-tight shrink-0 shadow-sm">
                         Day {day.dayNumber}
-                      </span>
+                      </div>
+
                       <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-extrabold font-display text-base text-slate-900">{day.title}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full bg-slate-200/70 text-[10px] font-bold text-slate-600">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <h3 className="font-bold font-display text-base sm:text-lg text-slate-900">{day.title}</h3>
+                          <span className="px-2.5 py-1 rounded-full bg-slate-200/70 text-slate-700 text-xs font-bold">
                             {dateStr}
                           </span>
                         </div>
                         {day.description && (
-                          <p className="text-xs text-slate-500 mt-0.5">{day.description}</p>
+                          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium leading-relaxed">{day.description}</p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-4 sm:p-6 space-y-4">
+                  <div className="p-4 sm:p-7 space-y-5">
                     {/* Intercity Transport Banner */}
                     {day.transport && (
-                      <div className="flex items-center gap-3 bg-sky-50/70 border border-sky-200/70 rounded-xl p-3.5 text-xs text-sky-900">
-                        <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
-                          {TRANSPORT_ICONS[day.transport.type] || <CarFront className="h-4 w-4" />}
+                      <div className="flex sm:flex-row flex-col sm:items-center items-start gap-3.5 bg-sky-50/80 border border-sky-200/80 rounded-xl p-4 text-xs text-sky-950">
+                        <div className="w-9 h-9 rounded-md bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-xs">
+                          {TRANSPORT_ICONS[day.transport.type] || <CarFront className="h-4.5 w-4.5" />}
                         </div>
-                        <div className="flex-1">
-                          <span className="font-bold">
-                            {day.transport.from} <ArrowRight className="h-3 w-3 inline mx-1" /> {day.transport.to}
+                        <div className="flex-1 min-w-0">
+                          <span className="font-bold text-sm text-sky-950">
+                            {day.transport.from} <ArrowRight className="h-3.5 w-3.5 inline mx-1.5 text-sky-500" /> {day.transport.to}
                           </span>
-                          <p className="text-[11px] text-sky-700 mt-0.5">
-                            {day.transport.type} • {day.transport.cost ? formatCurrency(Number(day.transport.cost), trip.currency) : "Included"}
+                          <p className="text-xs text-sky-700 mt-1.5 font-medium">
+                            {day.transport.type} • {day.transport.cost ? formatCurrency(Number(day.transport.cost), trip.currency) : "Included in Package"}
                           </p>
                         </div>
                       </div>
                     )}
 
                     {/* Timeline Activities */}
-                    <div className="space-y-3.5 pl-1">
-                      {day.activities.map((activity) => (
-                        <div key={activity.id} className="flex gap-3.5 items-start">
-                          <div className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
-                            {ACTIVITY_ICONS[activity.type] || <Clock className="h-3.5 w-3.5" />}
-                          </div>
+                    <div className="relative">
+                      {/* Vertical connecting line */}
+                      <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-slate-200/80 hidden sm:block" />
 
-                          <div className="flex-1 bg-[#FAFAF9] border border-slate-200/80 rounded-xl p-3.5 space-y-1">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                {activity.time && (
-                                  <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
-                                    {activity.time}
+                      <div className="space-y-4 relative">
+                        {day.activities.map((activity) => (
+                          <div key={activity.id} className="flex gap-4 items-start relative">
+                            {/* Icon Circle on Timeline */}
+                            <div className={`sm:w-10 sm:h-10 w-8 h-8 rounded-md border flex items-center justify-center shrink-0 mt-0.5 z-10 shadow-2xs ${ACTIVITY_COLORS[activity.type] || "bg-white text-slate-600 border-slate-200"}`}>
+                              {ACTIVITY_ICONS[activity.type] || <Clock className="h-4 w-4" />}
+                            </div>
+
+                            {/* Activity Details Card */}
+                            <div className="flex-1 bg-[#FAFAF9] border border-slate-200/90 rounded-xl p-4 space-y-2 shadow-2xs hover:shadow-xs transition-shadow">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {activity.time && (
+                                    <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-md">
+                                      {activity.time}
+                                    </span>
+                                  )}
+                                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                                    {activity.type}
+                                  </span>
+                                </div>
+                                {activity.cost && Number(activity.cost) > 0 && (
+                                  <span className="text-xs font-bold text-slate-900 bg-white border border-slate-200 px-2.5 py-1 rounded-md">
+                                    {formatCurrency(Number(activity.cost), trip.currency)}
                                   </span>
                                 )}
-                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
-                                  {activity.type}
-                                </span>
                               </div>
-                              {activity.cost && Number(activity.cost) > 0 && (
-                                <span className="text-xs font-bold text-slate-700">
-                                  {formatCurrency(Number(activity.cost), trip.currency)}
-                                </span>
-                              )}
-                            </div>
 
-                            <h4 className="font-bold text-sm text-slate-900 pt-0.5">{activity.title}</h4>
-                            {activity.description && (
-                              <p className="text-xs text-slate-600 leading-relaxed">{activity.description}</p>
-                            )}
+                              <h4 className="font-bold text-sm sm:text-base text-slate-900 pt-0.5">{activity.title}</h4>
+                              {activity.description && (
+                                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">{activity.description}</p>
+                              )}
 
-                            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-500 font-medium">
-                              {activity.location && (
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3 text-primary" /> {activity.location}
-                                </span>
-                              )}
-                              {activity.duration && (
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3 text-slate-400" /> {activity.duration}
-                                </span>
-                              )}
+                              <div className="flex flex-wrap items-center gap-4 pt-1.5 text-xs text-slate-500 font-medium border-t border-slate-200/60 mt-2">
+                                {activity.location && (
+                                  <span className="flex items-center gap-1.5">
+                                    <MapPin className="h-3.5 w-3.5 text-primary shrink-0" /> {activity.location}
+                                  </span>
+                                )}
+                                {activity.duration && (
+                                  <span className="flex items-center gap-1.5">
+                                    <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" /> {activity.duration}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
 
                     {/* Hotel Accommodation Card */}
                     {day.hotel && (
-                      <div className="flex items-center gap-3 bg-amber-50/60 border border-amber-200/70 rounded-xl p-3.5 text-xs text-amber-900 mt-2">
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                          <Hotel className="h-4 w-4" />
+                      <div className="flex items-center gap-3.5 bg-amber-50/80 border border-amber-200/80 rounded-xl p-4 text-xs text-amber-950 mt-2">
+                        <div className="w-9 h-9 rounded-md bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 shadow-xs">
+                          <Hotel className="h-4.5 w-4.5" />
                         </div>
-                        <div className="flex-1">
-                          <span className="font-bold text-amber-950">{day.hotel.name}</span>
-                          <p className="text-[11px] text-amber-800 mt-0.5">
+                        <div className="flex-1 min-w-0">
+                          <span className="font-bold text-sm text-amber-950 block">{day.hotel.name}</span>
+                          <p className="text-xs text-amber-800 mt-1.5 font-medium">
                             {day.hotel.address} {day.hotel.rating && `• ⭐ ${day.hotel.rating}`} {day.hotel.pricePerNight && `• ${formatCurrency(Number(day.hotel.pricePerNight), trip.currency)}/night`}
                           </p>
                         </div>
@@ -461,13 +506,13 @@ export default async function GeneratedTripPage({ params }: PageProps) {
         </div>
 
         {/* Bottom CTA Bar */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+        <div className="bg-white border border-slate-200/90 rounded-2xl md:p-8 sm:p-6 p-4 text-center space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mx-auto">
             <Sparkles className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-xl font-extrabold font-display text-slate-900">Want to customize or create another trip?</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            <h3 className="text-xl font-bold font-display text-slate-900">Want to customize or create another trip?</h3>
+            <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">
               Our Gemini 2.0 AI Concierge can craft unlimited custom travel plans matching your exact budget and style.
             </p>
           </div>
@@ -483,6 +528,8 @@ export default async function GeneratedTripPage({ params }: PageProps) {
               </Button>
             </Link>
           </div>
+        </div>
+
         </div>
 
       </section>
