@@ -1,24 +1,18 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Building2,
-  MapPin,
-  Phone,
-  Mail,
-  Star,
-  Plus,
   Hotel,
   Car,
   Utensils,
   Camera,
   Globe,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import AddVendorDialog from "./add-vendor-dialog";
+import { serializePrisma } from "@/lib/utils";
+import VendorsClient from "./vendors-client";
 
 const CATEGORY_CONFIG: Record<
   string,
@@ -38,20 +32,17 @@ const CATEGORY_CONFIG: Record<
   },
   ACTIVITY: {
     icon: <Camera className="h-4 w-4" />,
-    color: "bg-[#E8AA9B]/20 text-[#C85A35] border-[#E8AA9B]/30",
+    color: "bg-orange-500/10 text-orange-600 border-orange-500/20",
   },
   GUIDE: {
     icon: <Globe className="h-4 w-4" />,
-    color: "bg-secondary/10 text-secondary border-secondary/20",
+    color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
   },
   OTHER: {
     icon: <Building2 className="h-4 w-4" />,
-    color: "bg-zinc-500/10 text-zinc-600 border-zinc-500/20",
+    color: "bg-slate-100 text-slate-500 border-slate-200",
   },
 };
-
-import { serializePrisma } from "@/lib/utils";
-import VendorsClient from "./vendors-client";
 
 export default async function VendorsPage() {
   const session = await auth.api.getSession({
@@ -70,8 +61,13 @@ export default async function VendorsPage() {
 
   if (role !== "AGENCY" && role !== "ADMIN") {
     return (
-      <div className="p-6 text-center text-muted-foreground">
-        Vendor management is only available for agencies.
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+          <Building2 className="h-8 w-8 text-slate-300" />
+        </div>
+        <p className="text-sm text-slate-500 font-medium">
+          Vendor management is only available for agencies.
+        </p>
       </div>
     );
   }
@@ -96,13 +92,14 @@ export default async function VendorsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+        <div className="space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
             Vendor Management
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-slate-500 font-medium">
             Manage your hotel, transport, and service partners.
           </p>
         </div>
@@ -114,17 +111,17 @@ export default async function VendorsPage() {
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <Card
             key={key}
-            className="glass-card hover:shadow-lg transition-shadow"
+            className="bg-white border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-md transition-all"
           >
             <CardContent className="p-4 flex items-center gap-3">
               <div
-                className={`h-9 w-9 rounded-lg flex items-center justify-center ${config.color}`}
+                className={`h-9 w-9 rounded-xl flex items-center justify-center ${config.color}`}
               >
                 {config.icon}
               </div>
               <div>
-                <p className="text-lg font-bold">{categoryCounts[key] || 0}</p>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wider">
+                <p className="text-lg font-bold text-slate-900">{categoryCounts[key] || 0}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                   {key}
                 </p>
               </div>
@@ -135,13 +132,14 @@ export default async function VendorsPage() {
 
       {/* Vendor List */}
       {vendors.length === 0 ? (
-        <Card className="glass-card">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No vendors yet</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
-              Add your hotel, transport, and service partners to streamline your
-              travel operations.
+        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+          <CardContent className="flex flex-col items-center justify-center py-20">
+            <div className="h-16 w-16 rounded-2xl bg-secondary/10 flex items-center justify-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">No vendors yet</h3>
+            <p className="text-sm text-slate-500 text-center max-w-sm">
+              Add your hotel, transport, and service partners to streamline your travel operations.
             </p>
           </CardContent>
         </Card>

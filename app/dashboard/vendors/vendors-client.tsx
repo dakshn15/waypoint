@@ -122,7 +122,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {vendors.map((vendor) => {
         const catConfig = CATEGORY_CONFIG[vendor.category] || CATEGORY_CONFIG.OTHER;
         const isPending = actionId === vendor.id;

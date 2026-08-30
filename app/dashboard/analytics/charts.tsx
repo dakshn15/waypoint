@@ -65,9 +65,9 @@ export default function AnalyticsCharts({
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-5 md:grid-cols-2">
       {/* Monthly Revenue Bar Chart */}
-      <Card className="glass-card">
+      <Card className="glass-card sm:py-5 py-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-[var(--waypoint-teal)]" />
@@ -128,7 +128,7 @@ export default function AnalyticsCharts({
       </Card>
 
       {/* Bookings by Status Pie Chart */}
-      <Card className="glass-card">
+      <Card className="glass-card sm:py-5 py-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <PieChartIcon className="h-5 w-5 text-[var(--waypoint-amber)]" />

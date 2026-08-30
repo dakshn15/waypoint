@@ -264,6 +264,10 @@ export default function TripBuilderPage() {
           toast.error("End date must be after start date");
           return false;
         }
+        if (formData.destinations.length >= 2 && tripDays < formData.destinations.length) {
+          toast.error(`Please select a duration of at least ${formData.destinations.length} days for a ${formData.destinations.length}-destination trip.`);
+          return false;
+        }
         if (tripDays > 30) {
           toast.error("Trip duration cannot exceed 30 days");
           return false;
@@ -691,6 +695,16 @@ export default function TripBuilderPage() {
                       <p className="text-xs text-slate-500">Select departure date, return date, and traveler count</p>
                     </div>
                   </div>
+
+                  {/* Multi-City Duration Recommendation */}
+                  {formData.destinations.length >= 2 && (
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-xl p-3.5 flex items-start gap-2.5">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="text-xs text-amber-900 leading-relaxed">
+                        <strong className="font-bold font-display text-amber-950">Multi-City Duration Alert ({formData.destinations.length} stops):</strong> You selected <strong className="text-primary font-bold">{destinationLabel}</strong>. We recommend at least <strong>{formData.destinations.length * 2} days</strong> ({formData.destinations.length * 2} days = ~2 days per city) so you can explore each destination without spending your entire trip in transit!
+                      </div>
+                    </div>
+                  )}
 
                   {/* Quick Duration Preset Pills */}
                   <div className="space-y-2">

@@ -73,7 +73,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {packages.map((pkg) => {
         const isPending = loadingId === pkg.id;
         return (

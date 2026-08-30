@@ -65,6 +65,45 @@ export interface GeneratedTrip {
   itinerary: GeneratedDay[];
 }
 
+/**
+ * Smart Day-to-City Mapper for Multi-Destination Trips
+ * Allocates days so earlier cities get minimal travel days and later cities get maximum exploration.
+ * E.g., 3 days for ["Goa", "Agra"] -> Day 1: Goa, Day 2: Agra, Day 3: Agra.
+ */
+function buildDayCityMap(days: number, destList: string[]): string[] {
+  const map: string[] = [];
+  const numCities = destList.length;
+
+  if (numCities <= 1) {
+    return Array(days).fill(destList[0] || "Destination");
+  }
+
+  if (days <= numCities) {
+    for (let i = 0; i < days; i++) {
+      map.push(destList[i]);
+    }
+    return map;
+  }
+
+  const daysPerCity = Math.floor(days / numCities);
+  const remainder = days % numCities;
+
+  const cityDayCounts = Array(numCities).fill(daysPerCity);
+  // Distribute remainder from LAST city backwards so destination cities get more time
+  for (let r = 0; r < remainder; r++) {
+    const targetIdx = numCities - 1 - r;
+    cityDayCounts[targetIdx] += 1;
+  }
+
+  for (let idx = 0; idx < numCities; idx++) {
+    for (let c = 0; c < cityDayCounts[idx]; c++) {
+      map.push(destList[idx]);
+    }
+  }
+
+  return map;
+}
+
 export function buildTripPrompt(request: TripRequest): string {
   const startDate = new Date(request.startDate);
   const endDate = new Date(request.endDate);
@@ -82,32 +121,33 @@ export function buildTripPrompt(request: TripRequest): string {
 
   let multiCityGuide = "";
   if (isMultiCity) {
-    const baseDays = Math.floor(days / destList.length);
-    const remainder = days - (baseDays * destList.length);
-    let currentDay = 1;
-    const schedule: string[] = [];
+    const dayCityMap = buildDayCityMap(days, destList);
 
-    destList.forEach((dest, i) => {
-      const extraDay = i < remainder ? 1 : 0;
-      const count = Math.max(1, baseDays + extraDay);
-      const end = currentDay + count - 1;
-      schedule.push(`- **${dest}**: Days ${currentDay} to ${end} (${count} day${count > 1 ? "s" : ""})`);
-      currentDay = end + 1;
+    // Group days per city for clear prompt instructions
+    const cityRanges: Record<string, number[]> = {};
+    dayCityMap.forEach((city, idx) => {
+      if (!cityRanges[city]) cityRanges[city] = [];
+      cityRanges[city].push(idx + 1);
     });
+
+    const scheduleStr = Object.entries(cityRanges)
+      .map(([city, dayNums]) => `- **${city}**: Day ${dayNums[0]}${dayNums.length > 1 ? ` to Day ${dayNums[dayNums.length - 1]}` : ""} (${dayNums.length} day${dayNums.length > 1 ? "s" : ""})`)
+      .join("\n");
 
     multiCityGuide = `
 ### 🚨 MANDATORY MULTI-CITY ROUTE ALLOCATION PLAN:
 This trip covers ${destList.length} DISTINCT DESTINATIONS in this exact sequential route: **${destList.join(" → ")}**.
 You MUST divide the ${days} days among these destinations as follows:
-${schedule.join("\n")}
+${scheduleStr}
 
 **STRICT MULTI-CITY RULES:**
 1. **NO CONCATENATED PLACES:** NEVER write "Arrival in ${request.destination}" or "${request.destination} Airport". Write ONLY the specific city name for that day (e.g. "Arrival in ${destList[0]}" on Day 1).
 2. **GEOGRAPHIC ISOLATION:**
-${destList.map((d) => `   - Activities for ${d} days MUST take place ONLY in ${d}. Do NOT mention any other destination on those days.`).join("\n")}
+${Object.entries(cityRanges).map(([c, nums]) => `   - Days ${nums.join(", ")} MUST take place ONLY in "${c}". Do NOT mention any other destination on those days.`).join("\n")}
 3. **INTERCITY TRANSFERS:** On the day of moving between cities, add a TRANSPORTATION activity showing the journey (e.g. "${destList[0]} to ${destList[1] || "Next Stop"} Transfer") using ${request.transportPreference}, followed by CHECK_IN at a new hotel in the new city.
-4. **CITY-SPECIFIC HOTELS:** Provide a new hotel for each destination city. Do NOT use a hotel from ${destList[0]} when the traveler is in another city.
-5. **DAY TITLES:** Include the current city name in each day's title (e.g. "Day 1: ${destList[0]} - Heritage & Highlights").
+4. **FINAL DAY MUST COMPLETE THE TRIP:** On Day ${days} (the final day), after morning/afternoon sightseeing in ${destList[destList.length - 1]}, you MUST include a final DEPARTURE TRANSPORTATION activity taking the travelers back home. NEVER end a trip abruptly.
+5. **CITY-SPECIFIC HOTELS:** Provide a new hotel for each destination city. Do NOT use a hotel from ${destList[0]} when the traveler is in another city.
+6. **DAY TITLES:** Include the current city name in each day's title (e.g. "Day 1: ${destList[0]} - Heritage & Highlights").
 `;
   }
 
@@ -142,10 +182,10 @@ ${multiCityGuide}
 
 4. **DAY 1 & FINAL DAY STRUCTURE:**
    - **Day 1:** Arrival in ${destList[0]} → Hotel Check-in → Afternoon Exploration → Dinner.
-   - **Final Day (Day ${days}):** Final morning activity → Hotel Checkout → Departure Transport.
+   - **Final Day (Day ${days}):** Final morning activity → Hotel Checkout → Departure Transport back home.
 
 5. **TITLE & SUMMARY:**
-   - **title:** Create a captivating 5-8 word title for the trip (e.g., "${isMultiCity ? `${destList[0]} to ${destList[destList.length - 1]} Grand Tour: Peaks, Valleys & Beaches` : `Enchanting ${request.destination}: Culture & Coastline`}"). NEVER include words like "STANDARD", "BUDGET", "LUXURY", or "Itinerary".
+   - **title:** Create a captivating 5-8 word title for the trip (e.g., "${isMultiCity ? `${destList[0]} to ${destList[destList.length - 1]} Grand Tour: Peaks, Valleys & Heritage` : `Enchanting ${request.destination}: Culture & Coastline`}"). NEVER include words like "STANDARD", "BUDGET", "LUXURY", or "Itinerary".
    - **summary:** Write a compelling 2-3 sentence overview describing the overall journey across ${isMultiCity ? destList.join(", ") : request.destination}.
 
 Respond ONLY with valid JSON (no markdown wrapper, no extra text). Use this exact schema:
@@ -252,6 +292,15 @@ const destinationData: Record<string, {
     shoppings: ["Anjuna Wednesday Flea Market browsing", "Mapusa local Friday Bazaar exploration", "Panjim municipal market walk", "Mackie's Night Bazaar souvenir shopping"],
     culturals: ["Fontainhas Latin Quarter walking tour", "Ancestral Goan Museum visit", "Sahakari Spice Farm spice tour", "Folk dance show at Mandovi river cruise"]
   },
+  agra: {
+    hotelPrefixes: ["Oberoi Amarvilas", "Agra Palace Hotel", "Taj View Retreat", "Heritage Mughal Inn"],
+    areas: ["Taj Ganj District", "Fatehpur Sikri Zone", "Agra Fort Heritage Belt", "Mehtab Bagh Riverside"],
+    sightseeings: ["Sunrise Taj Mahal Guided Tour", "Agra Fort Mughal Palace Exploration", "Mehtab Bagh Sunset Taj View", "Fatehpur Sikri Royal Complex Tour"],
+    adventures: ["Tonga Ride to Taj Mahal Gate", "Yamuna River Bank Sunset Photography", "Heritage Old Agra Street Walk"],
+    dinings: ["Authentic Mughlai Biryani & Korma Feast", "Petha Dessert Tasting at Panchhi Petha", "Rooftop Taj View Dinner at Bellevue", "Bedai & Jalebi Breakfast in Old Agra"],
+    shoppings: ["Parchin Kari Marble Inlay Handicrafts Shopping", "Sadur Bazaar Leather Goods Bargaining", "Agra Zardozi Embroidery Market"],
+    culturals: ["Mohabbat the Taj Cultural Live Show", "Mughal Craftsmans Masterclass", "Kinari Bazaar Heritage Walk"]
+  },
   shimla: {
     hotelPrefixes: ["Wildflower Hall Spa Resort", "The Oberoi Cecil", "Shimla Haveli Suites", "Cedar Ridge Retreat"],
     areas: ["Mall Road & Ridge District", "Kufri Alpine Slopes", "Mashobra Pine Forest", "Chail Palace Valley"],
@@ -320,6 +369,7 @@ const destinationData: Record<string, {
 function getDestinationData(city: string) {
   const lower = city.toLowerCase();
   if (lower.includes("goa")) return destinationData.goa;
+  if (lower.includes("agra")) return destinationData.agra;
   if (lower.includes("shimla")) return destinationData.shimla;
   if (lower.includes("manali")) return destinationData.manali;
   if (lower.includes("kashmir") || lower.includes("srinagar") || lower.includes("gulmarg") || lower.includes("pahalgam")) return destinationData.kashmir;
@@ -350,19 +400,8 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
   if (destList.length === 0) destList.push("Custom Destination");
   const isMultiCity = destList.length > 1;
 
-  // Build day-to-city map
-  const dayCityMap: string[] = [];
-  const baseDays = Math.floor(days / destList.length);
-  const remainder = days - (baseDays * destList.length);
-
-  destList.forEach((dest, i) => {
-    const count = baseDays + (i < remainder ? 1 : 0);
-    for (let c = 0; c < count; c++) {
-      dayCityMap.push(dest);
-    }
-  });
-  // Ensure array has exactly `days` items
-  while (dayCityMap.length < days) dayCityMap.push(destList[destList.length - 1]);
+  // Build day-to-city map using smart allocator
+  const dayCityMap = buildDayCityMap(days, destList);
 
   const pref = (request.transportPreference || "Flight").toLowerCase();
   let defaultTransportType = "FLIGHT";
@@ -458,9 +497,96 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
         type: "SIGHTSEEING",
         estimatedCost: Math.round(costBreakdown.activities / days / 2),
       });
+    } else if (isLastDay) {
+      // Check if last day ALSO happens to be a city transfer day (e.g. 2 cities in 2 days)
+      if (isCityTransferDay) {
+        dayActivities.push({
+          time: "08:30 AM",
+          title: `Intercity Transfer: ${prevCity} → ${currentCity}`,
+          description: `Check out from ${prevCity} stay and travel to ${currentCity} via scenic ${request.transportPreference} route.`,
+          location: `${prevCity} to ${currentCity} Transit`,
+          duration: "2.5 hours",
+          type: "TRANSPORTATION",
+          estimatedCost: Math.round(costBreakdown.transport / days),
+        });
+        dayActivities.push({
+          time: "11:30 AM",
+          title: `Check-in & Exploration in ${currentCity}`,
+          description: `Arrive in ${currentCity}, check in at ${currentHotel.name}, and start exploring.`,
+          location: `${currentHotel.area}, ${currentCity}`,
+          duration: "1 hour",
+          type: "CHECK_IN",
+          estimatedCost: 0,
+        });
+        dayActivities.push({
+          time: "01:00 PM",
+          title: destObj.dinings[dineIndex1],
+          description: `Savor iconic local delicacies for lunch in ${currentCity}.`,
+          location: destObj.areas[0],
+          duration: "1.5 hours",
+          type: "DINING",
+          estimatedCost: Math.round(costBreakdown.food / days / 2),
+        });
+        dayActivities.push({
+          time: "03:00 PM",
+          title: destObj.sightseeings[sightIndex1],
+          description: `Explore the top iconic landmark of ${currentCity}.`,
+          location: destObj.areas[0],
+          duration: "2 hours",
+          type: "SIGHTSEEING",
+          estimatedCost: Math.round(costBreakdown.activities / days / 2),
+        });
+        dayActivities.push({
+          time: "05:30 PM",
+          title: `Departure Transfer from ${currentCity}`,
+          description: `Cab transfer to the terminal for your journey back home.`,
+          location: `${currentCity} Departure Terminal`,
+          duration: "1.5 hours",
+          type: "TRANSPORTATION",
+          estimatedCost: Math.round(costBreakdown.transport / days / 2),
+        });
+      } else {
+        // Standard last day in current city
+        dayActivities.push({
+          time: "09:00 AM",
+          title: `Farewell Checkout from ${currentHotel.name}`,
+          description: `Enjoy breakfast and complete checkout formalities at ${currentHotel.name}.`,
+          location: `${currentHotel.area}, ${currentCity}`,
+          duration: "1.5 hours",
+          type: "CHECK_OUT",
+          estimatedCost: 0,
+        });
+        dayActivities.push({
+          time: "11:00 AM",
+          title: destObj.shoppings[0],
+          description: `Do final shopping for souvenirs, spices, and gifts in ${currentCity}.`,
+          location: destObj.areas[1 % destObj.areas.length],
+          duration: "2 hours",
+          type: "SHOPPING",
+          estimatedCost: Math.round(costBreakdown.activities / days / 2),
+        });
+        dayActivities.push({
+          time: "01:30 PM",
+          title: destObj.dinings[dineIndex2],
+          description: `Indulge in a final delicious lunch before departure.`,
+          location: destObj.areas[1 % destObj.areas.length],
+          duration: "1.5 hours",
+          type: "DINING",
+          estimatedCost: Math.round(costBreakdown.food / days / 2),
+        });
+        dayActivities.push({
+          time: "04:00 PM",
+          title: `Departure Transfer from ${currentCity}`,
+          description: `Cab transfer to the terminal for your journey back home.`,
+          location: `${currentCity} Departure Terminal`,
+          duration: "1.5 hours",
+          type: "TRANSPORTATION",
+          estimatedCost: Math.round(costBreakdown.transport / days / 2),
+        });
+      }
     } else if (isCityTransferDay) {
       dayActivities.push({
-        time: "09:00 AM",
+        time: "08:30 AM",
         title: `Intercity Transfer: ${prevCity} → ${currentCity}`,
         description: `Check out from ${prevCity} stay and travel to ${currentCity} via scenic ${request.transportPreference} route.`,
         location: `${prevCity} to ${currentCity} Transit`,
@@ -469,7 +595,7 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
         estimatedCost: Math.round(costBreakdown.transport / days),
       });
       dayActivities.push({
-        time: "01:00 PM",
+        time: "12:00 PM",
         title: `Hotel Check-in in ${currentCity}`,
         description: `Check in at ${currentHotel.name} in ${currentCity} and unpack.`,
         location: `${currentHotel.area}, ${currentCity}`,
@@ -478,7 +604,7 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
         estimatedCost: 0,
       });
       dayActivities.push({
-        time: "02:30 PM",
+        time: "01:30 PM",
         title: destObj.dinings[dineIndex1],
         description: `Enjoy authentic ${currentCity} local delicacies for lunch.`,
         location: destObj.areas[0],
@@ -487,50 +613,22 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
         estimatedCost: Math.round(costBreakdown.food / days / 2),
       });
       dayActivities.push({
-        time: "05:00 PM",
+        time: "03:30 PM",
         title: destObj.sightseeings[sightIndex1],
         description: `Explore local attractions in ${currentCity}.`,
         location: destObj.areas[0],
-        duration: "2 hours",
+        duration: "2.5 hours",
         type: "SIGHTSEEING",
         estimatedCost: Math.round(costBreakdown.activities / days / 2),
       });
-    } else if (isLastDay) {
       dayActivities.push({
-        time: "09:00 AM",
-        title: `Farewell Checkout from ${currentHotel.name}`,
-        description: `Enjoy breakfast and complete checkout formalities at ${currentHotel.name}.`,
-        location: `${currentHotel.area}, ${currentCity}`,
-        duration: "1.5 hours",
-        type: "CHECK_OUT",
-        estimatedCost: 0,
-      });
-      dayActivities.push({
-        time: "11:00 AM",
-        title: destObj.shoppings[0],
-        description: `Do final shopping for souvenirs, spices, and gifts in ${currentCity}.`,
-        location: destObj.areas[1 % destObj.areas.length],
+        time: "07:00 PM",
+        title: `Evening Sunset Walk & Dinner in ${currentCity}`,
+        description: `Watch the sunset in ${currentCity}, followed by a warm dinner.`,
+        location: destObj.areas[0],
         duration: "2 hours",
-        type: "SHOPPING",
-        estimatedCost: Math.round(costBreakdown.activities / days / 2),
-      });
-      dayActivities.push({
-        time: "01:30 PM",
-        title: destObj.dinings[dineIndex2],
-        description: `Indulge in a final delicious lunch before departure.`,
-        location: destObj.areas[1 % destObj.areas.length],
-        duration: "1.5 hours",
         type: "DINING",
         estimatedCost: Math.round(costBreakdown.food / days / 2),
-      });
-      dayActivities.push({
-        time: "04:00 PM",
-        title: `Departure Transfer from ${currentCity}`,
-        description: `Cab transfer to the terminal for your journey back home.`,
-        location: `${currentCity} Departure Terminal`,
-        duration: "1.5 hours",
-        type: "TRANSPORTATION",
-        estimatedCost: Math.round(costBreakdown.transport / days / 2),
       });
     } else {
       // Middle days within same city
@@ -614,7 +712,7 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
     const dayTitle = isFirstDay
       ? `Day 1: ${currentCity} - Arrival & Orientation`
       : isCityTransferDay
-      ? `Day ${i}: ${prevCity} → ${currentCity} Journey`
+      ? `Day ${i}: ${prevCity} → ${currentCity} Journey & Sights`
       : isLastDay
       ? `Day ${i}: ${currentCity} - Souvenir Hunting & Departure`
       : `Day ${i}: ${currentCity} - Sights & Flavors`;
@@ -642,6 +740,12 @@ export function generateMockTrip(request: TripRequest): GeneratedTrip {
         to: currentCity,
         cost: Math.round(costBreakdown.transport / days),
         duration: "3 hours",
+      } : isLastDay ? {
+        type: defaultTransportType,
+        from: `${currentCity} Center`,
+        to: "Home Terminal",
+        cost: Math.round(costBreakdown.transport / days / 2),
+        duration: "1.5 hours",
       } : null,
     });
   }

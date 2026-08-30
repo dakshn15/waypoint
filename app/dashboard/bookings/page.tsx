@@ -71,22 +71,27 @@ export default async function BookingsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Bookings</h1>
-        <p className="text-muted-foreground mt-1">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Bookings</h1>
+        <p className="text-sm text-slate-500 font-medium">
           {role === "AGENCY" || role === "STAFF"
             ? "Manage travel packages bookings received from clients."
-            : "Manage your bookings and travel reservations."}
+            : role === "ADMIN"
+              ? "View and manage all platform bookings."
+              : "Manage your bookings and travel reservations."}
         </p>
       </div>
 
       {bookings.length === 0 ? (
-        <Card className="glass-card">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <CalendarCheck className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No bookings yet</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-sm">
+        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+          <CardContent className="flex flex-col items-center justify-center py-20">
+            <div className="h-16 w-16 rounded-2xl bg-secondary/10 flex items-center justify-center mb-4">
+              <CalendarCheck className="h-8 w-8 text-secondary" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">No bookings yet</h3>
+            <p className="text-sm text-slate-500 text-center max-w-sm">
               {role === "AGENCY" || role === "STAFF"
                 ? "You will see booking requests here once travelers start purchasing your packages."
                 : "Your bookings will appear here once you book a package or confirm an AI-generated trip."}

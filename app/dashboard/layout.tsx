@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { NAV_ITEMS } from "@/constants/navigation";
-import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 
 export default async function DashboardLayout({
   children,
@@ -23,20 +22,14 @@ export default async function DashboardLayout({
   const navItems = NAV_ITEMS[userRole as keyof typeof NAV_ITEMS] || NAV_ITEMS.TRAVELER;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
-      <DashboardSidebar
-        navItems={[...navItems]}
-        userName={session.user.name || "User"}
-        userEmail={session.user.email || ""}
-        userRole={userRole}
-        userImage={session.user.image || null}
-      />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
-      </div>
-    </div>
+    <DashboardShell
+      navItems={[...navItems]}
+      userName={session.user.name || "User"}
+      userEmail={session.user.email || ""}
+      userRole={userRole}
+      userImage={session.user.image || null}
+    >
+      {children}
+    </DashboardShell>
   );
 }

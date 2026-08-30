@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Search, CalendarCheck, DollarSign, Map, Sparkles, Info, Check, X } from "lucide-react";
+import { Bell, Search, CalendarCheck, DollarSign, Map, Sparkles, Info, Check, X, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,12 @@ interface Notification {
   createdAt: string;
 }
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onToggleSidebar?: () => void;
+  collapsed?: boolean;
+}
+
+export function DashboardHeader({ onToggleSidebar, collapsed }: DashboardHeaderProps = {}) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -137,74 +142,89 @@ export function DashboardHeader() {
       case "BOOKING":
         return <CalendarCheck className="h-4 w-4 text-secondary" />;
       case "PAYMENT":
-        return <DollarSign className="h-4 w-4 text-secondary" />;
+        return <DollarSign className="h-4 w-4 text-emerald-500" />;
       case "TRIP":
         return <Map className="h-4 w-4 text-secondary" />;
       case "PROMOTION":
         return <Sparkles className="h-4 w-4 text-primary" />;
       default:
-        return <Info className="h-4 w-4 text-slate-500" />;
+        return <Info className="h-4 w-4 text-slate-400" />;
     }
   }
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between px-6">
-      {/* Search */}
-      <form onSubmit={handleSearchSubmit} className="flex items-center gap-4 flex-1 max-w-md">
-        <div className="relative w-full">
+    <header className="py-3.5 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between px-4 md:px-6">
+      {/* Search & Sidebar Toggle */}
+      <div className="flex items-center gap-3 flex-1 max-w-md">
+        {onToggleSidebar && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onToggleSidebar}
+            className="lg:hidden text-slate-500 hover:text-slate-900 cursor-pointer shrink-0"
+            title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            <PanelLeft className="h-5 w-5 text-slate-600" />
+          </Button>
+        )}
+
+        <form onSubmit={handleSearchSubmit} className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search packages..."
-            className="pl-9 pr-20 bg-slate-100/70 border-0 focus-visible:ring-secondary text-sm rounded-lg text-slate-900 placeholder:text-slate-500"
+            className="pl-9 pr-20"
           />
           <Button
             type="submit"
             size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-secondary hover:bg-secondary/90 text-white rounded-md text-xs px-3 cursor-pointer"
+            variant="secondary"
+            className="absolute right-1 top-1/2 -translate-y-1/2"
           >
             Search
           </Button>
-        </div>
-      </form>
+        </form>
+      </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Notifications Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="h-9 w-9 relative flex items-center justify-center rounded-full hover:bg-slate-100 border border-slate-200 focus:outline-none transition-colors cursor-pointer">
-            <Bell className="h-4 w-4 text-slate-600" />
+          <DropdownMenuTrigger className="h-9 w-9 relative flex items-center justify-center rounded-xl hover:bg-slate-50 border border-slate-200/60 focus:outline-none transition-all cursor-pointer">
+            <Bell className="h-4 w-4 text-slate-500" />
             {unreadCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px] font-bold bg-primary border-white border-2 text-white">
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] p-0 flex items-center justify-center text-[9px] font-bold bg-primary border-white border-2 text-white rounded-full">
                 {unreadCount}
               </Badge>
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 p-2 bg-white border border-slate-200 shadow-xl rounded-xl">
+          <DropdownMenuContent align="end" className="w-80 p-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-slate-200/50 rounded-2xl">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-xs font-semibold text-slate-900">Notifications</span>
+              <span className="text-xs font-bold text-slate-900 tracking-tight">Notifications</span>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="text-[10px] text-secondary hover:underline flex items-center gap-1 font-medium bg-transparent border-0 cursor-pointer"
+                  className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1 font-semibold bg-transparent border-0 cursor-pointer transition-colors"
                 >
                   <Check className="h-3 w-3" /> Mark all as read
                 </button>
               )}
             </div>
-            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuSeparator className="my-1 bg-slate-100" />
             {notifications.length === 0 ? (
-              <div className="py-6 text-center text-xs text-slate-500">
-                No notifications yet.
+              <div className="py-8 text-center">
+                <Bell className="h-8 w-8 text-slate-200 mx-auto mb-2" />
+                <p className="text-xs text-slate-400 font-medium">No notifications yet</p>
               </div>
             ) : (
-              <div className="max-h-64 overflow-y-auto space-y-1">
+              <div className="max-h-72 overflow-y-auto space-y-1 scrollbar-thin">
                 {notifications.map((notif) => (
                   <DropdownMenuItem
                     key={notif.id}
                     onClick={() => !notif.read && markAsRead(notif.id)}
-                    className={`flex items-start gap-2.5 p-2 rounded-lg transition-colors cursor-pointer text-left ${notif.read ? "opacity-75" : "bg-slate-50"
+                    className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-all cursor-pointer text-left ${notif.read ? "opacity-60" : "bg-primary/5"
                       }`}
                   >
                     <div className="mt-0.5 rounded-lg bg-slate-100 p-1.5 shrink-0">
@@ -212,13 +232,13 @@ export function DashboardHeader() {
                     </div>
                     <div className="flex-1 space-y-0.5 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <p className={`text-xs font-medium truncate ${notif.read ? "text-slate-600" : "text-slate-900"
+                        <p className={`text-xs font-medium truncate ${notif.read ? "text-slate-500" : "text-slate-900"
                           }`}>
                           {notif.title}
                         </p>
                         <div className="flex items-center gap-1 shrink-0">
                           {!notif.read && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                           )}
                           <button
                             onClick={(e) => deleteNotification(notif.id, e)}

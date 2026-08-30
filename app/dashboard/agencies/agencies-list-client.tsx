@@ -309,7 +309,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
       </Card>
 
       {/* Grid List */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2">
         {filteredAgencies.length === 0 ? (
           <div className="col-span-full py-16 text-center text-muted-foreground">
             No agencies found matching your filters.

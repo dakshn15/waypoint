@@ -1,30 +1,69 @@
 "use client";
 
 import { useState } from "react";
-import { useSession, authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { updateTravelerProfile } from "@/app/actions/profile";
-import { User, Shield, Compass, Lock } from "lucide-react";
+import { updateUserSettings } from "@/app/actions/settings";
+import {
+  User,
+  Compass,
+  Lock,
+  Camera,
+  Mail,
+  Globe,
+  Calendar,
+  CreditCard,
+  Phone,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Save,
+  Loader2,
+  PhoneCall,
+  UserCheck,
+} from "lucide-react";
 
 interface ProfileTabsClientProps {
   user: any;
   initialProfile: any;
+  tripsCount?: number;
+  bookingsCount?: number;
 }
 
-export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsClientProps) {
+/* ── Section heading helper ── */
+function SectionHeading({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
+  return (
+    <div className="flex items-start gap-3 mb-5">
+      <div className="mt-0.5 h-9 w-9 rounded-md bg-gradient-to-br from-[var(--waypoint-navy)] to-[var(--waypoint-teal)] flex items-center justify-center shrink-0 shadow-sm">
+        <Icon className="h-4.5 w-4.5 text-white" />
+      </div>
+      <div>
+        <h3 className="text-base font-bold tracking-tight text-slate-900 font-display">{title}</h3>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function ProfileTabsClient({
+  user,
+  initialProfile,
+}: ProfileTabsClientProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   // Account settings state
-  const [name, setName] = useState(user.name || "");
-  const [imageUrl, setImageUrl] = useState(user.image || "");
-  const [updatingAccount, setUpdatingAccount] = useState(false);
+  const [profileName, setProfileName] = useState(user.name || "");
+  const [profilePhone, setProfilePhone] = useState(user.phone || "");
+  const [profileImage, setProfileImage] = useState(user.image || "");
 
   // Traveler details state
   const [dob, setDob] = useState(
@@ -36,382 +75,507 @@ export default function ProfileTabsClient({ user, initialProfile }: ProfileTabsC
   const [passport, setPassport] = useState(initialProfile?.passportNumber || "");
   const [emergencyContact, setEmergencyContact] = useState(initialProfile?.emergencyContact || "");
   const [emergencyPhone, setEmergencyPhone] = useState(initialProfile?.emergencyPhone || "");
-  const [updatingTraveler, setUpdatingTraveler] = useState(false);
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [updatingPassword, setUpdatingPassword] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
 
-  // Handle file selection and conversion to Base64
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Avatar Image Selection
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       toast.error("Please select a valid image file (PNG, JPG, JPEG, GIF)");
       return;
     }
-
     if (file.size > 2 * 1024 * 1024) {
       toast.error("File size must be under 2MB to keep database storage size lightweight");
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
-        setImageUrl(reader.result);
-        toast.success("Image preview updated! Click 'Save Details' to save permanently.");
+        setProfileImage(reader.result);
+        toast.success("Avatar preview updated — click Save Changes to persist.");
       }
-    };
-    reader.onerror = () => {
-      toast.error("Error reading image file.");
     };
     reader.readAsDataURL(file);
   };
 
   // Handle Account Update
-  async function handleAccountUpdate(e: React.FormEvent) {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      toast.error("Full name is required");
+    if (!profileName.trim()) {
+      toast.error("Display name is required");
       return;
     }
-    setUpdatingAccount(true);
-    try {
-      const { data, error } = await authClient.updateUser({
-        name,
-        image: imageUrl || undefined,
-      });
 
-      if (error) {
-        toast.error(error.message || "Failed to update profile details");
-      } else {
-        toast.success("Profile details updated successfully!");
-        router.refresh();
-      }
-    } catch (err: any) {
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setUpdatingAccount(false);
+    if (profilePhone.trim() && !/^[+\d\s-]{7,20}$/.test(profilePhone.trim())) {
+      toast.error("Please enter a valid phone number.");
+      return;
     }
-  }
+
+    setLoading(true);
+    try {
+      const res = await updateUserSettings({
+        name: profileName.trim(),
+        phone: profilePhone.trim() || null,
+        image: profileImage || null,
+      });
+      if (res.error) throw new Error(res.error);
+      await authClient.updateUser({
+        name: profileName.trim(),
+        image: profileImage || undefined,
+      });
+      toast.success("Profile updated successfully!");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle Traveler Profile Update
-  async function handleTravelerUpdate(e: React.FormEvent) {
+  const handleTravelerUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setUpdatingTraveler(true);
+
+    // 1. Date of Birth Validation
+    if (dob) {
+      const selectedDob = new Date(dob);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      if (selectedDob > today) {
+        toast.error("Date of birth cannot be in the future.");
+        return;
+      }
+
+      const minDob = new Date();
+      minDob.setFullYear(today.getFullYear() - 120);
+      if (selectedDob < minDob) {
+        toast.error("Please enter a valid date of birth.");
+        return;
+      }
+    }
+
+    // 2. Passport Validation
+    const cleanPassport = passport.trim().toUpperCase();
+    if (cleanPassport && !/^[A-Z0-9]{5,15}$/.test(cleanPassport)) {
+      toast.error("Please enter a valid passport number (5–15 alphanumeric characters).");
+      return;
+    }
+
+    // 3. Emergency Phone Validation
+    const cleanEmergencyPhone = emergencyPhone.trim();
+    if (cleanEmergencyPhone && !/^[+\d\s-]{7,20}$/.test(cleanEmergencyPhone)) {
+      toast.error("Please enter a valid emergency contact phone number.");
+      return;
+    }
+
+    setLoading(true);
     try {
       await updateTravelerProfile({
         dateOfBirth: dob ? new Date(dob) : null,
-        nationality: nationality || null,
-        passportNumber: passport || null,
-        emergencyContact: emergencyContact || null,
-        emergencyPhone: emergencyPhone || null,
+        nationality: nationality.trim() || null,
+        passportNumber: cleanPassport || null,
+        emergencyContact: emergencyContact.trim() || null,
+        emergencyPhone: cleanEmergencyPhone || null,
       });
-      toast.success("Traveler profile and preferences saved!");
+      toast.success("Traveler profile & preferences saved!");
       router.refresh();
     } catch (err: any) {
       toast.error(err.message || "Failed to update traveler preferences.");
     } finally {
-      setUpdatingTraveler(false);
+      setLoading(false);
     }
-  }
+  };
 
   // Handle Password Update
-  async function handlePasswordUpdate(e: React.FormEvent) {
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("All password fields are required");
+      toast.error("All password fields are required.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("New password and confirmation do not match");
+      toast.error("New passwords do not match.");
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters long");
+      toast.error("New password must be at least 6 characters.");
       return;
     }
-    setUpdatingPassword(true);
+    if (newPassword === currentPassword) {
+      toast.error("New password must be different from current password.");
+      return;
+    }
+    setLoading(true);
     try {
-      const { data, error } = await authClient.changePassword({
+      const { error } = await authClient.changePassword({
         currentPassword,
         newPassword,
         revokeOtherSessions: true,
       });
-
-
-      if (error) {
-        toast.error(error.message || "Failed to change password. Double check current password.");
-      } else {
-        toast.success("Password changed successfully!");
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      }
+      if (error) throw new Error(error.message);
+      toast.success("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (err: any) {
-      toast.error("Failed to update password.");
+      toast.error(err.message || "Failed to change password.");
     } finally {
-      setUpdatingPassword(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <Tabs defaultValue="account" className="w-full space-y-6">
-      <TabsList className="grid w-full max-w-md grid-cols-3">
-        <TabsTrigger value="account" className="flex items-center gap-1.5 py-2">
-          <User className="h-3.5 w-3.5" />
-          Account
-        </TabsTrigger>
-        <TabsTrigger value="traveler" className="flex items-center gap-1.5 py-2">
-          <Compass className="h-3.5 w-3.5" />
-          Traveler
-        </TabsTrigger>
-        <TabsTrigger value="security" className="flex items-center gap-1.5 py-2">
-          <Lock className="h-3.5 w-3.5" />
-          Security
-        </TabsTrigger>
-      </TabsList>
+      <Tabs defaultValue="profile" className="flex md:!flex-row items-start gap-6">
+        {/* ── Left Sidebar Tabs Navigation ── */}
+        <TabsList className="flex flex-col h-auto w-full xl:w-64 md:w-60 bg-slate-100/80 p-3 border border-slate-200/80 rounded-lg gap-1 shrink-0">
+          <TabsTrigger
+            value="profile"
+            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+          >
+            <User className="h-4 w-4" />
+            <span>Account Profile</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="traveler"
+            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+          >
+            <Compass className="h-4 w-4" />
+            <span>Traveler Details</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="security"
+            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+          >
+            <Lock className="h-4 w-4" />
+            <span>Security</span>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Tab 1: Account Details */}
-      <TabsContent value="account">
-        <Card className="glass-card border border-slate-200">
-          <CardHeader>
-            <CardTitle>Account Details</CardTitle>
-            <CardDescription>
-              Update your profile picture, display name, and key credentials.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAccountUpdate} className="space-y-6">
-              <div className="flex items-center gap-6">
-                <Avatar className="h-20 w-20 border-2 border-border shadow-sm">
-                  {imageUrl ? (
-                    <AvatarImage src={imageUrl} alt={name} />
-                  ) : null}
-                  <AvatarFallback className="bg-secondary text-white text-2xl font-semibold">
-                    {name.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-2">
-                  <h3 className="text-md font-semibold">{name || "User Profile"}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-8 border-slate-200"
-                      onClick={() => document.getElementById("avatar-upload")?.click()}
-                    >
-                      Upload New Photo
-                    </Button>
-                    {imageUrl && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-red-500 hover:text-red-600 hover:bg-red-50 h-8"
-                        onClick={() => setImageUrl("")}
+        {/* ── Right Content Area ── */}
+        <div className="flex-1 w-full space-y-6">
+
+          {/* ═══════════ ACCOUNT PROFILE ═══════════ */}
+          <TabsContent value="profile" className="outline-none space-y-6 mt-0">
+            <form onSubmit={handleUpdateProfile} className="space-y-6">
+              {/* Avatar Header Card */}
+              <Card className="glass-card overflow-hidden">
+                <CardContent className="sm:px-6 px-4 sm:py-2">
+                  <SectionHeading
+                    icon={User}
+                    title="Profile Information"
+                    desc="Your personal details and public avatar shown across the platform."
+                  />
+
+                  <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
+                    <div className="relative group">
+                      <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
+                        {profileImage ? <AvatarImage src={profileImage} className="object-cover" /> : null}
+                        <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary text-white text-3xl font-bold font-display">
+                          {profileName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Label
+                        htmlFor="avatar-file"
+                        className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-secondary hover:bg-secondary text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
                       >
-                        Remove Photo
-                      </Button>
-                    )}
+                        <Camera className="h-3.5 w-3.5" />
+                      </Label>
+                      <input id="avatar-file" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                    </div>
+
+                    <div className="text-center sm:text-left space-y-1">
+                      <h4 className="text-lg font-bold text-slate-900 font-display">{profileName}</h4>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary">
+                        {user.role || "TRAVELER"}
+                      </span>
+                    </div>
                   </div>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    JPG, PNG or GIF. Max 2MB.
-                  </p>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              <Separator />
+              {/* Details Form Card */}
+              <Card className="glass-card">
+                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-name" className="text-sm font-medium">
+                        Full Name
+                      </Label>
+                      <Input
+                        id="profile-name"
+                        required
+                        value={profileName}
+                        onChange={(e) => setProfileName(e.target.value)}
+                        placeholder="Your display name"
+                      />
+                    </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="Enter full name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    value={user.email}
-                    disabled
-                    className="bg-slate-100 text-muted-foreground border-slate-200"
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-phone" className="text-sm font-medium">
+                        Phone Number
+                      </Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="profile-phone"
+                          value={profilePhone}
+                          onChange={(e) => setProfilePhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="profile-email" className="text-sm font-medium">
+                      Email Address
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="profile-email"
+                        disabled
+                        value={user.email}
+                        className="pl-10 cursor-not-allowed opacity-60"
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">Email cannot be changed for security reasons.</p>
+                  </div>
 
-              <Button
-                type="submit"
-                disabled={updatingAccount}
-                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
-              >
-                {updatingAccount ? "Saving Changes..." : "Save Details"}
-              </Button>
+                  <div className="flex justify-end pt-4 border-t border-slate-100">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                      Save Changes
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </form>
-          </CardContent>
-        </Card>
-      </TabsContent>
+          </TabsContent>
 
-      {/* Tab 2: Traveler details */}
-      <TabsContent value="traveler">
-        <Card className="glass-card border border-slate-200">
-          <CardHeader>
-            <CardTitle>Traveler Profile & Preferences</CardTitle>
-            <CardDescription>
-              Provide passport credentials and emergency contact info to streamline bookings.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          {/* ═══════════ TRAVELER PREFERENCES ═══════════ */}
+          <TabsContent value="traveler" className="outline-none space-y-6 mt-0">
             <form onSubmit={handleTravelerUpdate} className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="dob">Date of Birth</Label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                    className="bg-white border-slate-200"
+              <Card className="glass-card">
+                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
+                  <SectionHeading
+                    icon={Compass}
+                    title="Traveler Credentials"
+                    desc="Provide date of birth, nationality, and passport details for trip reservations."
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nationality">Nationality</Label>
-                  <Input
-                    id="nationality"
-                    value={nationality}
-                    onChange={(e) => setNationality(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="Indian, German, etc."
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="passport">Passport Number</Label>
-                  <Input
-                    id="passport"
-                    value={passport}
-                    onChange={(e) => setPassport(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="Enter passport number"
-                  />
-                </div>
-              </div>
 
-              <Separator />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="dob" className="text-sm font-medium">
+                        Date of Birth
+                      </Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
+                        <Input
+                          id="dob"
+                          type="date"
+                          max={new Date().toISOString().split("T")[0]}
+                          value={dob}
+                          onChange={(e) => setDob(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
 
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Emergency Contact Details</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="emergencyContact">Contact Name</Label>
-                    <Input
-                      id="emergencyContact"
-                      value={emergencyContact}
-                      onChange={(e) => setEmergencyContact(e.target.value)}
-                      className="bg-white border-slate-200"
-                      placeholder="Emergency contact full name"
-                    />
+                    <div className="space-y-2">
+                      <Label htmlFor="nationality" className="text-sm font-medium">
+                        Nationality
+                      </Label>
+                      <div className="relative">
+                        <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="nationality"
+                          value={nationality}
+                          onChange={(e) => setNationality(e.target.value)}
+                          placeholder="e.g. Indian, German"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="emergencyPhone">Contact Phone Number</Label>
-                    <Input
-                      id="emergencyPhone"
-                      value={emergencyPhone}
-                      onChange={(e) => setEmergencyPhone(e.target.value)}
-                      className="bg-white border-slate-200"
-                      placeholder="+91 XXXXX XXXXX"
-                    />
+                    <Label htmlFor="passport" className="text-sm font-medium">
+                      Passport Number
+                    </Label>
+                    <div className="relative">
+                      <CreditCard className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="passport"
+                        value={passport}
+                        onChange={(e) => setPassport(e.target.value)}
+                        placeholder="Enter passport number for international travels"
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              <Button
-                type="submit"
-                disabled={updatingTraveler}
-                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
-              >
-                {updatingTraveler ? "Saving Preferences..." : "Save Preferences"}
-              </Button>
+              <Card className="glass-card">
+                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
+                  <SectionHeading
+                    icon={PhoneCall}
+                    title="Emergency Contact"
+                    desc="Person to reach out to in case of emergencies during your trips."
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="emergency-contact" className="text-sm font-medium">
+                        Contact Person Name
+                      </Label>
+                      <div className="relative">
+                        <UserCheck className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="emergency-contact"
+                          value={emergencyContact}
+                          onChange={(e) => setEmergencyContact(e.target.value)}
+                          placeholder="Full name of emergency contact"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="emergency-phone" className="text-sm font-medium">
+                        Contact Phone Number
+                      </Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                        <Input
+                          id="emergency-phone"
+                          value={emergencyPhone}
+                          onChange={(e) => setEmergencyPhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-4 border-t border-slate-100">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                      Save Preferences
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </form>
-          </CardContent>
-        </Card>
-      </TabsContent>
+          </TabsContent>
 
-      {/* Tab 3: Security Settings */}
-      <TabsContent value="security">
-        <Card className="glass-card border border-slate-200">
-          <CardHeader>
-            <CardTitle>Change Password</CardTitle>
-            <CardDescription>
-              Revoke other active sessions and reset your password credentials.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handlePasswordUpdate} className="space-y-6">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="••••••••"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="Minimum 6 characters"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-white border-slate-200"
-                    placeholder="Confirm new password"
-                  />
-                </div>
-              </div>
+          {/* ═══════════ SECURITY ═══════════ */}
+          <TabsContent value="security" className="outline-none space-y-6 mt-0">
+            <Card className="glass-card">
+              <CardContent className="sm:px-6 px-4 sm:py-2">
+                <SectionHeading
+                  icon={KeyRound}
+                  title="Change Password"
+                  desc="Update your password regularly to keep your account secure."
+                />
 
-              <Button
-                type="submit"
-                disabled={updatingPassword}
-                className="bg-secondary hover:bg-secondary text-white px-6 rounded-lg transition-colors font-semibold text-xs h-9"
-              >
-                {updatingPassword ? "Changing Password..." : "Update Password"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+                <form onSubmit={handlePasswordUpdate} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="curr-pass" className="text-sm font-medium">
+                      Current Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="curr-pass"
+                        required
+                        type={showCurrent ? "text" : "password"}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                        className="pl-10 pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrent(!showCurrent)}
+                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
+                      >
+                        {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-pass" className="text-sm font-medium">
+                        New Password
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="new-pass"
+                          required
+                          type={showNew ? "text" : "password"}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Minimum 6 characters"
+                          className="pr-11"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNew(!showNew)}
+                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
+                        >
+                          {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="conf-pass" className="text-sm font-medium">
+                        Confirm New Password
+                      </Label>
+                      <Input
+                        id="conf-pass"
+                        required
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter new password"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-4 border-t border-slate-100">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                      Update Password
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+        </div>
+      </Tabs>
   );
 }

@@ -13,21 +13,32 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const profile = await prisma.travelerProfile.findUnique({
-    where: { userId: session.user.id },
-  });
+  const [profile, tripsCount, bookingsCount] = await Promise.all([
+    prisma.travelerProfile.findUnique({
+      where: { userId: session.user.id },
+    }),
+    prisma.trip.count({ where: { userId: session.user.id } }),
+    prisma.booking.count({ where: { userId: session.user.id } }),
+  ]);
 
   return (
-    <div className="space-y-8 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your personal information, traveler credentials, and security preferences.
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 font-display">
+          Profile Settings
+        </h1>
+        <p className="text-sm text-slate-500 font-medium">
+          Manage your personal details, traveler credentials, and security settings.
         </p>
       </div>
 
-      <ProfileTabsClient user={session.user} initialProfile={profile} />
+      <ProfileTabsClient
+        user={session.user}
+        initialProfile={profile}
+        tripsCount={tripsCount}
+        bookingsCount={bookingsCount}
+      />
     </div>
   );
 }
-

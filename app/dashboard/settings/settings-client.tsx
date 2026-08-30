@@ -227,7 +227,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
 
   /* ── Render ── */
   return (
-    <div className="w-full max-w-5xl mx-auto">
       <Tabs defaultValue="profile" className="w-full">
         {/* ── Tab Navigation ── */}
         <TabsList className="w-full flex bg-slate-100 p-1.5 border border-slate-200 rounded-2xl mb-8 overflow-x-auto gap-1">
@@ -689,6 +688,5 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
           </TabsContent>
         )}
       </Tabs>
-    </div>
   );
 }

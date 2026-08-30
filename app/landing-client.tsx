@@ -878,7 +878,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             </p>
 
             {/* Selector tabs */}
-            <div className="flex flex-wrap justify-center gap-2 pt-4">
+            <div className="flex flex-wrap justify-center gap-3 pt-4">
               {SAMPLE_ITINERARIES.map((item) => (
                 <button
                   key={item.id}
