@@ -19,6 +19,8 @@ import {
   Globe,
   Plane,
   Star,
+  BarChart3,
+  PieChart,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -138,6 +140,44 @@ function EmptyBookingsList({ message }: { message: string }) {
     </div>
   );
 }
+
+function TopPackagesBox({ packages }: { packages: { title: string; bookings: number; revenue: number; currency: string }[] }) {
+  return (
+    <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+      <CardHeader className="pb-3 border-b border-slate-100">
+        <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <Package className="h-4 w-4 text-primary" />
+          Top Packages
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 flex-1">
+        {packages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <Package className="h-8 w-8 text-slate-200 mb-2" />
+            <p className="text-xs text-slate-400">No package data yet</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {packages.map((pkg, i) => (
+              <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0 ${
+                  i === 0 ? "bg-primary/10 text-primary" : i === 1 ? "bg-secondary/10 text-secondary" : "bg-slate-100 text-slate-500"
+                }`}>{i + 1}</div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-800 truncate">{pkg.title}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{pkg.bookings} booking{pkg.bookings !== 1 ? "s" : ""}</p>
+                </div>
+                <span className="text-xs font-bold text-slate-700 shrink-0">{formatCurrency(pkg.revenue, pkg.currency)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+
 
 function BookingRow({
   name,
@@ -269,7 +309,7 @@ async function TravelerDashboard({
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
             Welcome back, {userName} 👋
           </h1>
-          <p className="text-white/50 text-sm mt-2 max-w-md">
+          <p className="text-white/50 text-sm mt-3 max-w-md">
             Here&apos;s what&apos;s happening with your travels. Explore new destinations, check your bookings, or plan your next adventure.
           </p>
         </div>
@@ -356,7 +396,7 @@ async function AgencyDashboard({
     where: { ownerId: userId },
   });
 
-  const [allBookings, packagesCount] = await Promise.all([
+  const [allBookings, packagesCount, agencyPackages] = await Promise.all([
     agency
       ? prisma.booking.findMany({
         where: { agencyId: agency.id },
@@ -369,9 +409,15 @@ async function AgencyDashboard({
         where: { agencyId: agency.id, status: "PUBLISHED" },
       })
       : Promise.resolve(0),
+    agency
+      ? prisma.package.findMany({
+        where: { agencyId: agency.id },
+        select: { id: true, title: true, currency: true },
+      })
+      : Promise.resolve([]),
   ]);
 
-  const recentBookings = allBookings.slice(0, 5);
+  const recentBookings = allBookings.slice(0, 8);
   const totalRevenue = allBookings.reduce(
     (sum, b) => sum + Number(b.totalAmount),
     0
@@ -412,6 +458,30 @@ async function AgencyDashboard({
     ([status, count]) => ({ status: status as string, count: count as number })
   );
 
+  // Top packages by booking count
+  const packageBookingMap = new globalThis.Map<string, { bookings: number; revenue: number }>();
+  allBookings.forEach((b) => {
+    if (b.packageId) {
+      const existing = packageBookingMap.get(b.packageId) || { bookings: 0, revenue: 0 };
+      packageBookingMap.set(b.packageId, {
+        bookings: existing.bookings + 1,
+        revenue: existing.revenue + Number(b.totalAmount),
+      });
+    }
+  });
+  const topPackages = agencyPackages
+    .map((pkg) => ({
+      title: pkg.title,
+      bookings: packageBookingMap.get(pkg.id)?.bookings || 0,
+      revenue: packageBookingMap.get(pkg.id)?.revenue || 0,
+      currency: pkg.currency,
+    }))
+    .filter((p) => p.bookings > 0)
+    .sort((a, b) => b.bookings - a.bookings)
+    .slice(0, 4);
+
+
+
   return (
     <div className="space-y-6">
       {/* Hero */}
@@ -425,7 +495,7 @@ async function AgencyDashboard({
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
             Agency Dashboard
           </h1>
-          <p className="text-white/50 text-sm mt-2 max-w-md">
+          <p className="text-white/50 text-sm mt-3 max-w-md">
             Welcome back, {userName}. Manage your travel operations, monitor bookings, and grow your business.
           </p>
         </div>
@@ -487,9 +557,17 @@ async function AgencyDashboard({
         />
       </div>
 
-      {/* Bookings + Charts */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1 bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+      {/* Row A: Charts side by side */}
+      <AnalyticsCharts
+        monthlyRevenue={monthlyRevenue}
+        bookingsByStatus={bookingsByStatus}
+        isTraveler={false}
+      />
+
+      {/* Row B: Recent Bookings + Top Packages */}
+      <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
+        {/* Scrollable Recent Bookings */}
+        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -503,7 +581,7 @@ async function AgencyDashboard({
           </CardHeader>
           <CardContent className="p-4">
             {recentBookings.length > 0 ? (
-              <div className="space-y-2">
+              <div className="max-h-[320px] overflow-y-auto space-y-2 pr-1 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                 {recentBookings.map((b) => (
                   <BookingRow
                     key={b.id}
@@ -521,13 +599,8 @@ async function AgencyDashboard({
           </CardContent>
         </Card>
 
-        <div className="md:col-span-2">
-          <AnalyticsCharts
-            monthlyRevenue={monthlyRevenue}
-            bookingsByStatus={bookingsByStatus}
-            isTraveler={false}
-          />
-        </div>
+        {/* Top Packages */}
+        <TopPackagesBox packages={topPackages} />
       </div>
     </div>
   );
@@ -602,7 +675,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
             Admin Dashboard
           </h1>
-          <p className="text-white/50 text-sm mt-2 max-w-md">
+          <p className="text-white/50 text-sm mt-3 max-w-md">
             Welcome back, {userName}. Platform-wide analytics, user management, and system controls at your fingertips.
           </p>
         </div>
@@ -664,9 +737,17 @@ async function AdminDashboard({ userName }: { userName: string }) {
         />
       </div>
 
-      {/* Bookings + Charts */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1 bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+      {/* Row A: Charts side by side */}
+      <AnalyticsCharts
+        monthlyRevenue={monthlyRevenue}
+        bookingsByStatus={bookingsByStatus}
+        isTraveler={false}
+      />
+
+      {/* Row B: Recent Bookings + Platform Summary */}
+      <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
+        {/* Scrollable Recent Bookings */}
+        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -680,7 +761,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
           </CardHeader>
           <CardContent className="p-4">
             {recentBookings.length > 0 ? (
-              <div className="space-y-2">
+              <div className="max-h-[320px] overflow-y-auto space-y-2 pr-1">
                 {recentBookings.map((b) => (
                   <BookingRow
                     key={b.id}
@@ -698,13 +779,35 @@ async function AdminDashboard({ userName }: { userName: string }) {
           </CardContent>
         </Card>
 
-        <div className="md:col-span-2">
-          <AnalyticsCharts
-            monthlyRevenue={monthlyRevenue}
-            bookingsByStatus={bookingsByStatus}
-            isTraveler={false}
-          />
-        </div>
+        {/* Platform Overview */}
+        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+          <CardHeader className="pb-3 border-b border-slate-100">
+            <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Users className="h-4 w-4 text-violet-500" />
+              Platform Stats
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 flex flex-col items-center justify-center flex-1 space-y-3">
+            <div className="text-center">
+              <p className="text-3xl font-extrabold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
+              <p className="text-xs text-slate-400 mt-0.5 font-medium">Total Platform Volume</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 w-full pt-3 border-t border-slate-100 text-center">
+              <div>
+                <p className="font-extrabold text-slate-800 text-base">{totalUsers}</p>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Users</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-slate-800 text-base">{totalAgencies}</p>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Agencies</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-slate-800 text-base">{totalPackages}</p>
+                <p className="text-[10px] text-slate-400 font-semibold uppercase">Packages</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

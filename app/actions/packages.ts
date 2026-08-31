@@ -143,3 +143,76 @@ export async function togglePackageStatus(packageId: string) {
     basePrice: Number(updatedPackage.basePrice),
   };
 }
+
+export async function updatePackage(
+  packageId: string,
+  data: {
+    title: string;
+    description: string;
+    duration: string | number;
+    maxGroupSize?: string | number;
+    difficulty: "EASY" | "MODERATE" | "CHALLENGING" | "EXTREME";
+    destinations: string[];
+    inclusions: string[];
+    exclusions: string[];
+    basePrice: string | number;
+    currency: string;
+  }
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Unauthorized. Please log in.");
+  }
+
+  const access = await getUserAgencyAccess(session.user.id, session.user.role);
+  if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+    throw new Error("Unauthorized. Only agencies or managers can update packages.");
+  }
+
+  const pkg = await prisma.package.findUnique({ where: { id: packageId } });
+  if (!pkg || pkg.agencyId !== access.agencyId) {
+    throw new Error("Package not found or unauthorized.");
+  }
+
+  const duration = typeof data.duration === "string" ? parseInt(data.duration) : data.duration;
+  const maxGroupSize = data.maxGroupSize
+    ? typeof data.maxGroupSize === "string"
+      ? parseInt(data.maxGroupSize)
+      : data.maxGroupSize
+    : null;
+  const basePrice = typeof data.basePrice === "string" ? parseFloat(data.basePrice) : data.basePrice;
+
+  const formattedDestinations = data.destinations.map((dest) => {
+    const parts = dest.split(",");
+    const name = parts[0]?.trim() || dest;
+    const country = parts[1]?.trim() || "";
+    return { name, country, lat: null, lng: null };
+  });
+
+  const updated = await prisma.package.update({
+    where: { id: packageId },
+    data: {
+      title: data.title,
+      description: data.description,
+      duration: duration || 1,
+      maxGroupSize,
+      difficulty: data.difficulty,
+      destinations: formattedDestinations,
+      inclusions: data.inclusions,
+      exclusions: data.exclusions,
+      basePrice: basePrice || 0,
+      currency: data.currency,
+    },
+  });
+
+  revalidatePath("/dashboard/packages");
+  revalidatePath("/packages");
+
+  return {
+    ...updated,
+    basePrice: Number(updated.basePrice),
+  };
+}

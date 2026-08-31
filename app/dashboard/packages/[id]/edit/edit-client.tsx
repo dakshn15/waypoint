@@ -13,7 +13,7 @@ import { SUPPORTED_CURRENCIES } from "@/constants/config";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createPackage } from "@/app/actions/packages";
+import { updatePackage } from "@/app/actions/packages";
 
 const STEPS = [
   { label: "Basic Info", icon: FileText },
@@ -23,24 +23,42 @@ const STEPS = [
   { label: "Review", icon: CheckCircle2 },
 ];
 
-export default function NewPackagePage() {
+interface InitialData {
+  title: string;
+  description: string;
+  duration: string;
+  maxGroupSize: string;
+  difficulty: string;
+  destinations: string[];
+  inclusions: string[];
+  exclusions: string[];
+  basePrice: string;
+  currency: string;
+}
+
+interface EditPackageClientProps {
+  packageId: string;
+  initialData: InitialData;
+}
+
+export default function EditPackageClient({ packageId, initialData }: EditPackageClientProps) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    duration: "",
-    maxGroupSize: "",
-    difficulty: "EASY",
-    destinations: [] as string[],
+    title: initialData.title,
+    description: initialData.description,
+    duration: initialData.duration,
+    maxGroupSize: initialData.maxGroupSize,
+    difficulty: initialData.difficulty,
+    destinations: initialData.destinations,
     newDestination: "",
-    inclusions: [] as string[],
+    inclusions: initialData.inclusions,
     newInclusion: "",
-    exclusions: [] as string[],
+    exclusions: initialData.exclusions,
     newExclusion: "",
-    basePrice: "",
-    currency: "INR",
+    basePrice: initialData.basePrice,
+    currency: initialData.currency,
   });
 
   const addToList = (field: "destinations" | "inclusions" | "exclusions", inputField: "newDestination" | "newInclusion" | "newExclusion") => {
@@ -54,7 +72,7 @@ export default function NewPackagePage() {
     setFormData({ ...formData, [field]: formData[field].filter((_, i) => i !== index) });
   };
 
-  const handleCreate = async () => {
+  const handleUpdate = async () => {
     if (!formData.title || !formData.duration || !formData.basePrice) {
       toast.error("Please fill in the title, duration, and price.");
       return;
@@ -62,7 +80,7 @@ export default function NewPackagePage() {
 
     setLoading(true);
     try {
-      await createPackage({
+      await updatePackage(packageId, {
         title: formData.title,
         description: formData.description,
         duration: formData.duration,
@@ -74,11 +92,11 @@ export default function NewPackagePage() {
         basePrice: formData.basePrice,
         currency: formData.currency,
       });
-      toast.success("Package created successfully!");
+      toast.success("Package updated successfully!");
       router.push("/dashboard/packages");
       router.refresh();
     } catch (err: any) {
-      toast.error(err.message || "Failed to create package");
+      toast.error(err.message || "Failed to update package");
     } finally {
       setLoading(false);
     }
@@ -94,14 +112,15 @@ export default function NewPackagePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Create Package</h1>
-          <p className="text-sm text-slate-500 font-medium mt-0.5">Fill in the details for your new travel package.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Edit Package</h1>
+          <p className="text-sm text-slate-500 font-medium mt-0.5">Update the details of your travel package.</p>
         </div>
       </div>
 
       {/* Step Progress */}
       <div className="flex items-center gap-1 overflow-x-auto pb-1">
         {STEPS.map((s, i) => {
+          const StepIcon = s.icon;
           const isActive = i === step;
           const isCompleted = i < step;
           return (
@@ -109,11 +128,11 @@ export default function NewPackagePage() {
               <button
                 type="button"
                 onClick={() => i < step && setStep(i)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   isActive
-                    ? "bg-secondary text-white shadow-sm shadow-secondary/20 cursor-default"
+                    ? "bg-secondary text-white shadow-sm shadow-secondary/20"
                     : isCompleted
-                      ? "bg-secondary/10 text-secondary hover:bg-secondary/20 cursor-pointer"
+                      ? "bg-secondary/10 text-secondary hover:bg-secondary/20"
                       : "bg-slate-100 text-slate-400 cursor-default"
                 }`}
               >
@@ -182,12 +201,12 @@ export default function NewPackagePage() {
               </div>
               <div className="flex flex-wrap gap-2 min-h-[40px]">
                 {formData.destinations.map((dest, i) => (
-                  <Badge key={i} className="gap-1.5 py-1.5 px-3 text-sm font-medium bg-secondary/10 text-secondary border border-secondary/20">
+                  <Badge key={i} variant="secondary" className="gap-1.5 py-1.5 px-3 text-sm font-medium bg-secondary/10 text-secondary border border-secondary/20">
                     <MapPin className="h-3 w-3" /> {dest}
                     <button onClick={() => removeFromList("destinations", i)} className="ml-1 cursor-pointer hover:text-rose-500 transition-colors"><X className="h-3.5 w-3.5" /></button>
                   </Badge>
                 ))}
-                {formData.destinations.length === 0 && <p className="text-sm text-slate-400 italic">No destinations added yet. Add one above.</p>}
+                {formData.destinations.length === 0 && <p className="text-sm text-slate-400">No destinations added yet.</p>}
               </div>
             </div>
           )}
@@ -255,7 +274,7 @@ export default function NewPackagePage() {
           {/* Step 4: Review */}
           {step === 4 && (
             <div className="space-y-4">
-              <h3 className="font-bold text-lg text-slate-900">Review Your Package</h3>
+              <h3 className="font-bold text-lg text-slate-900">Review Your Changes</h3>
               <div className="grid gap-3">
                 {[
                   { label: "Title", value: formData.title || "—" },
@@ -285,8 +304,8 @@ export default function NewPackagePage() {
                 Next <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
-              <Button onClick={handleCreate} disabled={loading} className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 hover:to-slate-600/90 text-white rounded-xl h-11 px-6 shadow-sm shadow-secondary/20 cursor-pointer">
-                {loading ? "Creating..." : "Create Package"}
+              <Button onClick={handleUpdate} disabled={loading} className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 hover:to-slate-600/90 text-white rounded-xl h-11 px-6 shadow-sm shadow-secondary/20 cursor-pointer">
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             )}
           </div>

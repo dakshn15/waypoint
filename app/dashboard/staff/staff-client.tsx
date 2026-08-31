@@ -21,10 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Users, Trash2, ShieldAlert, Plus, Mail, ToggleLeft, UserCog, Pencil } from "lucide-react";
+import { Users, Trash2, ShieldAlert, Plus, Mail, ToggleLeft, UserCog, Pencil, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { addAgencyStaff, deleteAgencyStaff, toggleStaffStatus, updateAgencyStaff } from "@/app/actions/staff";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface StaffMember {
   id: string;
@@ -47,6 +48,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<StaffMember | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -66,7 +68,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
   const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case "MANAGER":
-        return "bg-secondary/10 text-secondary border border-secondary/20";
+        return "bg-violet-500/10 text-violet-600 border border-violet-500/20";
       case "AGENT":
         return "bg-secondary/10 text-secondary border border-secondary/20";
       case "SUPPORT":
@@ -92,16 +94,20 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
     }
   }
 
-  async function handleDeleteStaff(userId: string) {
-    if (!confirm("Are you sure you want to delete this staff member? All their access will be immediately terminated.")) {
-      return;
-    }
+  async function handleDeleteStaff(member: StaffMember) {
+    setDeleteTarget(member);
+  }
+
+  async function confirmDeleteStaff() {
+    if (!deleteTarget) return;
+    const userId = deleteTarget.user.id;
     setActionId(userId);
     try {
       await deleteAgencyStaff(userId);
       setStaff((prev) => prev.filter((s) => s.user.id !== userId));
       toast.success("Staff member deleted successfully.");
       router.refresh();
+      setDeleteTarget(null);
     } catch (err: any) {
       toast.error(err.message || "Failed to delete staff member.");
     } finally {
@@ -176,8 +182,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Staff Management</h1>
-          <p className="text-slate-500 mt-1">Manage staff roles, status, and permissions for your agency.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Staff Management</h1>
+          <p className="text-sm text-slate-500 font-medium mt-0.5">Manage staff roles, status, and permissions for your agency.</p>
         </div>
 
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
@@ -270,6 +276,22 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
         </Dialog>
       </div>
 
+      {/* Staff Stats */}
+      {staff.length > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { label: "Total Staff", value: staff.length, color: "text-slate-900", bg: "bg-slate-100" },
+            { label: "Active", value: staff.filter(s => s.active).length, color: "text-secondary", bg: "bg-secondary/10" },
+            { label: "Inactive", value: staff.filter(s => !s.active).length, color: "text-slate-400", bg: "bg-slate-100" },
+          ].map((stat) => (
+            <div key={stat.label} className={`rounded-2xl border border-slate-200/60 ${stat.bg} p-4 text-center`}>
+              <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
+              <p className="text-xs text-slate-500 font-semibold mt-0.5">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {staff.length === 0 ? (
         <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-16">
@@ -300,7 +322,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               >
                 <CardContent className="p-6 relative">
                   <button
-                    onClick={() => handleDeleteStaff(s.user.id)}
+                    onClick={() => handleDeleteStaff(s)}
                     disabled={isSelfAction}
                     className="absolute top-5 right-5 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-colors border border-transparent hover:border-rose-500/10 cursor-pointer"
                     title="Delete Staff Member"
@@ -420,6 +442,17 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete Staff Member"
+        description={`Are you sure you want to delete ${deleteTarget?.user.name || "this staff member"}? All their access will be immediately terminated. This cannot be undone.`}
+        confirmLabel="Yes, Delete Member"
+        variant="destructive"
+        loading={!!actionId}
+        onConfirm={confirmDeleteStaff}
+      />
     </div>
   );
 }

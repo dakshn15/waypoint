@@ -71,13 +71,6 @@ const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administrator",
 };
 
-const ROLE_COLORS: Record<string, string> = {
-  TRAVELER: "bg-primary/10 text-primary",
-  AGENCY: "bg-secondary/10 text-secondary",
-  STAFF: "bg-emerald-500/10 text-emerald-600",
-  ADMIN: "bg-violet-500/10 text-violet-600",
-};
-
 export function DashboardSidebar({
   navItems,
   userName,
@@ -148,7 +141,7 @@ export function DashboardSidebar({
         {/* Logo Header */}
         <div
           className={cn(
-            "flex items-center px-4 py-4 border-b border-slate-100",
+            "flex items-center px-4 py-4.5 border-b border-slate-100",
             isCollapsed ? "lg:justify-center justify-between" : "justify-between"
           )}
         >
@@ -234,10 +227,7 @@ export function DashboardSidebar({
                 <p className="text-sm font-semibold truncate text-slate-800">{userName}</p>
                 <span
                   className={cn(
-                    "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md",
-                    ROLE_COLORS[userRole] || ROLE_COLORS.TRAVELER
-                  )}
-                >
+                    "text-[10px] text-slate-400 font-medium block mt-1 uppercase tracking-wider")}>
                   {ROLE_LABELS[userRole] || userRole}
                 </span>
               </div>

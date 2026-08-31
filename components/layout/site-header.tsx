@@ -76,11 +76,11 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
               </Link>
             ) : (
               <div className="hidden lg:flex items-center gap-3">
-                <Link href="/login" className="text-[13px] font-semibold text-slate-600 hover:text-primary transition-colors">
+                <Link href="/login" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
                   Log in
                 </Link>
                 <Link href="/register">
-                  <Button className="rounded-full font-semibold text-sm bg-secondary hover:bg-secondary/90 text-white">
+                  <Button variant="secondary" className="rounded-full">
                     Get Started
                   </Button>
                 </Link>
@@ -149,7 +149,7 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="w-full"
                     >
-                      <Button className="w-full rounded-xl font-semibold text-sm bg-secondary hover:bg-secondary/90 text-white justify-center">
+                      <Button className="w-full rounded-xl">
                         Get Started
                       </Button>
                     </Link>

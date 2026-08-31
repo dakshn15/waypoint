@@ -29,6 +29,7 @@ import { createTask, updateTaskStatus, deleteTask, reassignTask } from "@/app/ac
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { TaskStatus, Priority, TaskCategory } from "@prisma/client";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface StaffUser {
   id: string;
@@ -79,6 +80,7 @@ export default function TasksClient({
   const [createOpen, setCreateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
 
   // Filters
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
@@ -154,9 +156,13 @@ export default function TasksClient({
     }
   }
 
-  async function handleDeleteTask(taskId: string) {
-    if (!confirm("Are you sure you want to delete this task?")) return;
+  async function handleDeleteTask(task: Task) {
+    setDeleteTarget(task);
+  }
 
+  async function confirmDeleteTask() {
+    if (!deleteTarget) return;
+    const taskId = deleteTarget.id;
     setActionId(taskId);
     try {
       const res = await deleteTask(taskId);
@@ -165,12 +171,32 @@ export default function TasksClient({
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
       toast.success("Task deleted successfully.");
       router.refresh();
+      setDeleteTarget(null);
     } catch (err: any) {
       toast.error(err.message || "Failed to delete task.");
     } finally {
       setActionId(null);
     }
   }
+
+  const getPriorityBorder = (priority: Priority) => {
+    switch (priority) {
+      case "HIGH": return "border-l-4 border-l-rose-500";
+      case "MEDIUM": return "border-l-4 border-l-primary";
+      default: return "border-l-4 border-l-slate-300";
+    }
+  };
+
+  const isOverdue = (task: Task) => {
+    if (task.status === "COMPLETED") return false;
+    return new Date(task.dueDate) < new Date();
+  };
+
+  const isDueSoon = (task: Task) => {
+    if (task.status === "COMPLETED") return false;
+    const diff = new Date(task.dueDate).getTime() - Date.now();
+    return diff > 0 && diff < 48 * 60 * 60 * 1000; // within 48h
+  };
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
@@ -180,7 +206,6 @@ export default function TasksClient({
         return "bg-primary/10 text-primary border border-primary/20";
       default:
         return "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20";
-        return "bg-slate-500/10 text-slate-500 border border-slate-500/20";
     }
   };
 
@@ -230,8 +255,7 @@ export default function TasksClient({
           return (
             <Card
               key={task.id}
-              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative ${task.status === "COMPLETED" ? "opacity-70" : ""
-                }`}
+              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative overflow-hidden ${task.status === "COMPLETED" ? "opacity-70" : ""} ${getPriorityBorder(task.priority)}`}
             >
               <CardContent className="p-5 flex flex-col justify-between h-full min-h-[170px]">
                 <div className="space-y-2">
@@ -265,9 +289,9 @@ export default function TasksClient({
                       </div>
                       <div>
                         <h3
-                          className={`font-bold text-base leading-snug ${task.status === "COMPLETED"
-                            ? "line-through text-slate-400"
-                            : "text-slate-900"
+                          className={`text-base leading-snug ${task.status === "COMPLETED"
+                            ? "font-medium text-slate-400 line-through"
+                            : "font-bold text-slate-900"
                             }`}
                         >
                           {task.title}
@@ -282,7 +306,7 @@ export default function TasksClient({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteTask(task.id)}
+                        onClick={() => handleDeleteTask(task)}
                         disabled={isPending}
                         className="h-8 w-8 text-slate-400 hover:text-rose-500 rounded-lg shrink-0 cursor-pointer"
                         title="Delete Task"
@@ -301,8 +325,10 @@ export default function TasksClient({
                         {task.category}
                       </span>
                       <span className="flex items-center gap-1 font-medium">
-                        <Clock className="h-3.5 w-3.5 text-slate-400" />
-                        Due: {formatDate(new Date(task.dueDate))}
+                        <Clock className={`h-3.5 w-3.5 ${isOverdue(task) ? "text-rose-500" : isDueSoon(task) ? "text-amber-500" : "text-slate-400"}`} />
+                        <span className={isOverdue(task) ? "text-rose-500 font-semibold" : isDueSoon(task) ? "text-amber-500 font-semibold" : ""}>
+                          {isOverdue(task) ? "Overdue: " : isDueSoon(task) ? "Due soon: " : "Due: "}{formatDate(new Date(task.dueDate))}
+                        </span>
                       </span>
                     </div>
 
@@ -333,39 +359,45 @@ export default function TasksClient({
                       <div className="flex items-center gap-1.5">
                         <User className="h-3.5 w-3.5 text-slate-400" />
                         <span className="text-xs text-slate-500 font-medium">Assignee:</span>
-                        <Select
-                          value={task.staffId || "UNASSIGNED"}
-                          onValueChange={async (val) => {
-                            const targetStaffId = val === "UNASSIGNED" ? null : val;
-                            toast.promise(
-                              reassignTask(task.id, targetStaffId),
-                              {
-                                loading: "Updating assignee...",
-                                success: () => {
-                                  setTasks((prev) =>
-                                    prev.map((t) =>
-                                      t.id === task.id ? { ...t, staffId: targetStaffId, staff: staffList.find(s => s.id === targetStaffId) || null } : t
-                                    )
-                                  );
-                                  return "Assignee updated successfully!";
-                                },
-                                error: "Failed to update assignee."
-                              }
-                            );
-                          }}
-                        >
-                          <SelectTrigger className="h-7 min-w-[120px] bg-white/40 border border-slate-200 rounded-lg text-xs py-0 px-2 flex items-center justify-between cursor-pointer">
-                            <SelectValue placeholder="Unassigned" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white border rounded-lg max-h-[160px] overflow-y-auto">
-                            <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
-                            {staffList.map((s) => (
-                              <SelectItem key={s.id} value={s.id}>
-                                {s.user.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        {(() => {
+                          const matchedStaff = staffList.find(s => s.id === task.staffId || s.userId === task.staffId);
+                          const currentAssigneeVal = matchedStaff ? matchedStaff.id : "UNASSIGNED";
+                          return (
+                            <Select
+                              value={currentAssigneeVal}
+                              onValueChange={async (val) => {
+                                const targetStaffId = val === "UNASSIGNED" ? null : val;
+                                toast.promise(
+                                  reassignTask(task.id, targetStaffId),
+                                  {
+                                    loading: "Updating assignee...",
+                                    success: () => {
+                                      setTasks((prev) =>
+                                        prev.map((t) =>
+                                          t.id === task.id ? { ...t, staffId: targetStaffId, staff: staffList.find(s => s.id === targetStaffId) || null } : t
+                                        )
+                                      );
+                                      return "Assignee updated successfully!";
+                                    },
+                                    error: "Failed to update assignee."
+                                  }
+                                );
+                              }}
+                            >
+                              <SelectTrigger className="h-8 min-w-[130px] w-auto bg-white border border-slate-200 rounded-lg text-xs py-0 px-2.5 flex items-center justify-between cursor-pointer font-medium">
+                                <SelectValue placeholder="Unassigned" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
+                                {staffList.map((s) => (
+                                  <SelectItem key={s.id} value={s.id}>
+                                    {s.user.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          );
+                        })()}
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
@@ -534,15 +566,15 @@ export default function TasksClient({
       )}
 
       {/* Filters Hub */}
-      <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
-        <CardContent className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-3">
+      <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
+        <CardContent className="p-4 grid gap-4 grid-cols-1 sm:grid-cols-3">
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-slate-500">Filter by Category</Label>
+            <Label className="text-xs font-bold text-slate-600">Filter by Category</Label>
             <Select value={filterCategory} onValueChange={(v) => v && setFilterCategory(v)}>
-              <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
+              <SelectTrigger className="h-10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white border rounded-xl">
+              <SelectContent>
                 <SelectItem value="ALL">All Categories</SelectItem>
                 <SelectItem value="BOOKING">Booking</SelectItem>
                 <SelectItem value="CUSTOMER">Customer</SelectItem>
@@ -553,12 +585,12 @@ export default function TasksClient({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-slate-500">Filter by Priority</Label>
+            <Label className="text-xs font-bold text-slate-600">Filter by Priority</Label>
             <Select value={filterPriority} onValueChange={(v) => v && setFilterPriority(v)}>
-              <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
+              <SelectTrigger className="h-10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white border rounded-xl">
+              <SelectContent>
                 <SelectItem value="ALL">All Priorities</SelectItem>
                 <SelectItem value="HIGH">High</SelectItem>
                 <SelectItem value="MEDIUM">Medium</SelectItem>
@@ -569,12 +601,12 @@ export default function TasksClient({
 
           {isManagerOrOwner && (
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-slate-500">Filter by Staff Member</Label>
+              <Label className="text-xs font-bold text-slate-600">Filter by Staff Member</Label>
               <Select value={filterStaff} onValueChange={(v) => v && setFilterStaff(v)}>
-                <SelectTrigger className="w-full h-10 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-xs">
+                <SelectTrigger className="h-10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border rounded-xl">
+                <SelectContent>
                   <SelectItem value="ALL">All Staff</SelectItem>
                   <SelectItem value="UNASSIGNED">Unassigned Tasks</SelectItem>
                   {staffList.map((s) => (
@@ -737,7 +769,7 @@ export default function TasksClient({
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[var(--waypoint-navy)] hover:bg-[var(--waypoint-teal)] text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
               >
                 {loading ? "Assigning..." : "Assign Task"}
               </Button>
@@ -745,6 +777,17 @@ export default function TasksClient({
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete Task"
+        description={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel="Yes, Delete Task"
+        variant="destructive"
+        loading={!!actionId}
+        onConfirm={confirmDeleteTask}
+      />
     </div>
   );
 }

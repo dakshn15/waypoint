@@ -111,3 +111,51 @@ export async function deleteVendor(vendorId: string) {
     return { error: error.message || "Failed to delete vendor" };
   }
 }
+
+export async function updateVendor(
+  vendorId: string,
+  data: {
+    name: string;
+    category: string;
+    location?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    description?: string;
+  }
+) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return { error: "Unauthorized. Please log in." };
+    }
+
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER" && access.staffRole !== "AGENT")) {
+      return { error: "Unauthorized. Only managers, agents, or owners can update vendors." };
+    }
+
+    const vendor = await prisma.vendor.findUnique({ where: { id: vendorId } });
+    if (!vendor || vendor.agencyId !== access.agencyId) {
+      return { error: "Vendor not found." };
+    }
+
+    const updated = await prisma.vendor.update({
+      where: { id: vendorId },
+      data: {
+        name: data.name.trim(),
+        category: data.category as any,
+        location: data.location || null,
+        contactEmail: data.contactEmail || null,
+        contactPhone: data.contactPhone || null,
+        description: data.description || null,
+      },
+    });
+
+    return { success: true, vendor: updated };
+  } catch (error: any) {
+    return { error: error.message || "Failed to update vendor" };
+  }
+}
