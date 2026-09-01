@@ -48,7 +48,7 @@ export default async function AgencyPackagesPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-2">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Packages</h1>
           <p className="text-sm text-slate-500 font-medium">
@@ -56,7 +56,7 @@ export default async function AgencyPackagesPage() {
           </p>
         </div>
         <Link href="/dashboard/packages/new">
-          <Button className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white gap-2 rounded-xl px-5 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all">
+          <Button className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
             <Plus className="h-4 w-4" /> Create Package
           </Button>
         </Link>

@@ -669,7 +669,6 @@ export default function TasksClient({
                 placeholder="Verify details for Booking #..."
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -681,7 +680,7 @@ export default function TasksClient({
                 placeholder="Describe the operations, steps, or requests..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl text-sm min-h-[80px]"
+                className="min-h-[80px]"
               />
             </div>
 
@@ -695,7 +694,6 @@ export default function TasksClient({
                   min={new Date().toISOString().split("T")[0]}
                   value={form.dueDate}
                   onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-xs"
                 />
               </div>
 
@@ -705,10 +703,10 @@ export default function TasksClient({
                   value={form.priority}
                   onValueChange={(v) => v && setForm({ ...form, priority: v as Priority })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border rounded-xl">
+                  <SelectContent>
                     <SelectItem value="LOW">Low</SelectItem>
                     <SelectItem value="MEDIUM">Medium</SelectItem>
                     <SelectItem value="HIGH">High</SelectItem>
@@ -724,10 +722,10 @@ export default function TasksClient({
                   value={form.category}
                   onValueChange={(v) => v && setForm({ ...form, category: v as TaskCategory })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border rounded-xl">
+                  <SelectContent>
                     <SelectItem value="SYSTEM">System</SelectItem>
                     <SelectItem value="BOOKING">Booking</SelectItem>
                     <SelectItem value="CUSTOMER">Customer</SelectItem>
@@ -742,10 +740,10 @@ export default function TasksClient({
                   value={form.staffId}
                   onValueChange={(v) => setForm({ ...form, staffId: v || "" })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger>
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border rounded-xl">
+                  <SelectContent>
                     <SelectItem value="">Unassigned</SelectItem>
                     {staffList.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
@@ -762,14 +760,13 @@ export default function TasksClient({
                 type="button"
                 variant="outline"
                 onClick={() => setCreateOpen(false)}
-                className="rounded-xl h-11 cursor-pointer"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 text-white"
               >
                 {loading ? "Assigning..." : "Assign Task"}
               </Button>

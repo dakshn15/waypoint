@@ -70,7 +70,7 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
           <div className="flex items-center gap-2 shrink-0">
             {isAuthenticated ? (
               <Link href="/dashboard" className="hidden lg:block">
-                <Button className="rounded-full font-semibold text-sm bg-primary hover:bg-primary/90 text-white">
+                <Button variant="secondary" className="rounded-full">
                   Dashboard
                 </Button>
               </Link>

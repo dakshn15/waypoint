@@ -90,7 +90,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
           placeholder="Search travelers by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 h-11 rounded-xl border-slate-200 bg-white text-sm"
+          className="pl-10"
         />
       </div>
 

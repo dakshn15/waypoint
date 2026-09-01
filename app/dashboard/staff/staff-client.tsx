@@ -183,13 +183,13 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Staff Management</h1>
-          <p className="text-sm text-slate-500 font-medium mt-0.5">Manage staff roles, status, and permissions for your agency.</p>
+          <p className="text-sm text-slate-500 font-medium mt-1.5">Manage staff roles, status, and permissions for your agency.</p>
         </div>
 
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-secondary hover:bg-secondary text-white gap-2 font-semibold h-11 px-5 rounded-xl transition-colors cursor-pointer">
+              <Button className="bg-secondary hover:bg-secondary text-white gap-2">
                 <Plus className="h-4 w-4" /> Add Staff Member
               </Button>
             }
@@ -207,7 +207,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -220,7 +219,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
               </div>
 
@@ -232,7 +230,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   placeholder="Defaults to: password123"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
                 />
                 <p className="text-[10px] text-slate-500 mt-0.5">Staff members will use this password to log in.</p>
               </div>
@@ -243,10 +240,10 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   value={formData.role}
                   onValueChange={(v: string | null) => v && setFormData({ ...formData, role: v as any })}
                 >
-                  <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border shadow-lg rounded-xl">
+                  <SelectContent>
                     <SelectItem value="AGENT">Agent (Default)</SelectItem>
                     <SelectItem value="MANAGER">Manager</SelectItem>
                     <SelectItem value="SUPPORT">Support Officer</SelectItem>
@@ -259,14 +256,13 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   type="button"
                   variant="outline"
                   onClick={() => setInviteOpen(false)}
-                  className="rounded-xl h-11 cursor-pointer"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                  className="bg-secondary hover:bg-secondary text-white"
                 >
                   {loading ? "Inviting..." : "Create Staff Account"}
                 </Button>
@@ -304,7 +300,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             </p>
             <Button
               onClick={() => setInviteOpen(true)}
-              className="bg-secondary/10 text-secondary hover:bg-secondary/20 border border-secondary/30 font-semibold h-11 px-6 rounded-xl cursor-pointer"
+              className="bg-secondary/10 text-secondary hover:bg-secondary/20 border border-secondary/30"
             >
               Add Your First Staff Member
             </Button>
@@ -389,7 +385,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 required
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -401,7 +396,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 placeholder="Leave empty to keep unchanged"
                 value={editFormData.password}
                 onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
-                className="bg-white/50 border border-slate-200 focus:border-secondary rounded-xl h-11 text-sm"
               />
             </div>
 
@@ -411,10 +405,10 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 value={editFormData.role}
                 onValueChange={(v: string | null) => v && setEditFormData({ ...editFormData, role: v as any })}
               >
-                <SelectTrigger className="w-full h-11 bg-white/50 border border-slate-200 rounded-xl px-3.5 text-sm">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border shadow-lg rounded-xl">
+                <SelectContent>
                   <SelectItem value="AGENT">Agent</SelectItem>
                   <SelectItem value="MANAGER">Manager</SelectItem>
                   <SelectItem value="SUPPORT">Support Officer</SelectItem>
@@ -427,14 +421,13 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setEditStaff(null)}
-                className="rounded-xl h-11 cursor-pointer"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 cursor-pointer"
+                className="bg-secondary hover:bg-secondary text-white"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>

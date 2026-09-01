@@ -6,16 +6,22 @@ import { serializePrisma } from "@/lib/utils";
 import EditPackageClient from "./edit-client";
 
 interface EditPackagePageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditPackagePage({ params }: EditPackagePageProps) {
+  const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) redirect("/login");
 
   const pkg = await prisma.package.findUnique({
-    where: { id: params.id },
+    where: { id },
+    include: {
+      itineraries: {
+        orderBy: { dayNumber: "asc" },
+      },
+    },
   });
 
   if (!pkg) notFound();
@@ -47,6 +53,12 @@ export default async function EditPackagePage({ params }: EditPackagePageProps) 
         exclusions: Array.isArray(pkg.exclusions) ? pkg.exclusions as string[] : [],
         basePrice: String(Number(pkg.basePrice)),
         currency: pkg.currency,
+        imageUrl: pkg.images?.[0] || "",
+        itineraries: (pkg.itineraries || []).map((it) => ({
+          dayNumber: it.dayNumber,
+          title: it.title,
+          description: it.description || "",
+        })),
       })}
     />
   );

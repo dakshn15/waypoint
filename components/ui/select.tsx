@@ -18,13 +18,22 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+function SelectValue({ className, children, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left truncate", className)}
       {...props}
-    />
+    >
+      {typeof children === "function"
+        ? children
+        : children || ((val: any) => (
+            typeof val === "string" && val === val.toUpperCase() && /[A-Z]/.test(val)
+              ? val.split("_").map((w) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")
+              : val
+          ))
+      }
+    </SelectPrimitive.Value>
   )
 }
 
@@ -41,7 +50,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-900 shadow-xs transition-all outline-none select-none hover:border-slate-300 hover:bg-slate-50/50 focus:border-secondary focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-slate-400 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer",
+        "flex py-2.5 w-full items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 shadow-xs transition-all outline-none select-none hover:border-slate-300 hover:bg-slate-50/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-slate-400 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer",
         className
       )}
       {...props}
@@ -83,7 +92,7 @@ function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "relative isolate z-50 max-h-72 min-w-[180px] w-[var(--anchor-width)] overflow-x-hidden overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-1.5 text-slate-900 shadow-xl shadow-slate-900/10 backdrop-blur-xl duration-150 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "relative isolate z-50 max-h-72 min-w-[180px] w-[var(--anchor-width)] overflow-x-hidden overflow-y-auto rounded-lg border border-slate-200/80 bg-white p-1.5 text-slate-900 shadow-xl shadow-slate-900/10 backdrop-blur-xl duration-150 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className
           )}
           {...props}
@@ -119,7 +128,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-slate-700 outline-none select-none transition-colors data-highlighted:bg-slate-100 data-highlighted:text-slate-900 data-selected:bg-secondary/10 data-selected:text-secondary data-selected:font-semibold data-disabled:pointer-events-none data-disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-slate-700 outline-none select-none transition-colors data-highlighted:bg-slate-100 data-highlighted:text-slate-900 hover:bg-slate-100 hover:text-slate-900 data-selected:bg-slate-100 data-selected:text-slate-900 data-selected:font-semibold data-disabled:pointer-events-none data-disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -128,7 +137,7 @@ function SelectItem({
         {children}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator>
-        <CheckIcon className="size-4 text-secondary stroke-[2.5] shrink-0" />
+        <CheckIcon className="size-4 text-slate-700 stroke-[2.5] shrink-0" />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   )

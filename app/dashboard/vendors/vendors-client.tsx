@@ -198,27 +198,23 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                           </Button>
                         }
                       />
-                      <DropdownMenuContent align="end" className="w-52 bg-white border border-slate-100 shadow-2xl shadow-slate-200/60 rounded-2xl p-1.5">
-                        <DropdownMenuItem
-                          onClick={() => openEdit(vendor)}
-                          className="flex items-center gap-2.5 cursor-pointer rounded-xl text-sm px-3 py-2 hover:bg-slate-50 transition-colors"
-                        >
-                          <Pencil className="h-3.5 w-3.5 text-slate-500" />
+                      <DropdownMenuContent align="end" className="w-52">
+                        <DropdownMenuItem onClick={() => openEdit(vendor)}>
+                          <Pencil className="h-3.5 w-3.5 text-slate-400" />
                           Edit Vendor
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleToggleActive(vendor.id, vendor.active)}
                           disabled={isPending}
-                          className="flex items-center gap-2.5 cursor-pointer rounded-xl text-sm px-3 py-2 hover:bg-slate-50 transition-colors"
                         >
-                          <RefreshCw className="h-3.5 w-3.5 text-slate-500" />
+                          <RefreshCw className="h-3.5 w-3.5 text-slate-400" />
                           {vendor.active ? "Deactivate Vendor" : "Activate Vendor"}
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-slate-100 my-1" />
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => setDeleteTarget(vendor)}
                           disabled={isPending}
-                          className="flex items-center gap-2.5 text-rose-600 focus:text-rose-600 cursor-pointer rounded-xl text-sm px-3 py-2 hover:bg-rose-50 transition-colors font-semibold"
+                          variant="destructive"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           Delete Vendor
@@ -285,17 +281,16 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
                 id="edit-vendor-name"
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="h-11 rounded-xl border-slate-200 bg-white text-sm"
               />
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm font-semibold text-slate-700">Category</Label>
               <Select value={editForm.category} onValueChange={(v: string | null) => v && setEditForm({ ...editForm, category: v })}>
-                <SelectTrigger className="w-full h-11 bg-white border border-slate-200 rounded-xl px-3 text-sm">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border border-slate-100 shadow-2xl rounded-xl">
+                <SelectContent>
                   {CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</SelectItem>
                   ))}
@@ -305,17 +300,17 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
 
             <div className="space-y-2">
               <Label htmlFor="edit-vendor-location" className="text-sm font-semibold text-slate-700">Location</Label>
-              <Input id="edit-vendor-location" value={editForm.location} onChange={(e) => setEditForm({ ...editForm, location: e.target.value })} placeholder="e.g., Mumbai, India" className="h-11 rounded-xl border-slate-200 bg-white text-sm" />
+              <Input id="edit-vendor-location" value={editForm.location} onChange={(e) => setEditForm({ ...editForm, location: e.target.value })} placeholder="e.g., Mumbai, India" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-slate-700">Email</Label>
-                <Input type="email" value={editForm.contactEmail} onChange={(e) => setEditForm({ ...editForm, contactEmail: e.target.value })} placeholder="vendor@email.com" className="h-11 rounded-xl border-slate-200 bg-white text-sm" />
+                <Input type="email" value={editForm.contactEmail} onChange={(e) => setEditForm({ ...editForm, contactEmail: e.target.value })} placeholder="vendor@email.com" />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-slate-700">Phone</Label>
-                <Input value={editForm.contactPhone} onChange={(e) => setEditForm({ ...editForm, contactPhone: e.target.value })} placeholder="+91 ..." className="h-11 rounded-xl border-slate-200 bg-white text-sm" />
+                <Input value={editForm.contactPhone} onChange={(e) => setEditForm({ ...editForm, contactPhone: e.target.value })} placeholder="+91 ..." />
               </div>
             </div>
 
@@ -325,8 +320,8 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
             </div>
 
             <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="rounded-xl h-11 border-slate-200 cursor-pointer">Cancel</Button>
-              <Button type="submit" disabled={editLoading} className="bg-gradient-to-r from-primary to-orange-400 text-white rounded-xl h-11 px-5 cursor-pointer font-semibold">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>Cancel</Button>
+              <Button type="submit" disabled={editLoading} className="bg-gradient-to-r from-primary to-orange-400 text-white">
                 {editLoading ? "Saving..." : "Save Changes"}
               </Button>
             </div>

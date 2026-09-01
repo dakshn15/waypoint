@@ -183,8 +183,8 @@ export function DashboardSidebar({
                   className={cn(
                     "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 relative group",
                     isActive
-                      ? "bg-primary/8 text-primary font-semibold"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50",
+                      ? "bg-primary/10 text-primary"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
                     isCollapsed && "lg:justify-center lg:px-2"
                   )}
                   title={isCollapsed ? item.title : undefined}
@@ -196,7 +196,7 @@ export function DashboardSidebar({
                   <Icon
                     className={cn(
                       "h-[18px] w-[18px] shrink-0 transition-colors",
-                      isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-600"
+                      isActive ? "text-primary" : "text-slate-600 group-hover:text-slate-900"
                     )}
                   />
                   {(!isCollapsed || mobileOpen) && <span>{item.title}</span>}

@@ -79,7 +79,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="bg-gradient-to-r from-primary to-orange-400 text-white gap-2 rounded-xl h-11 px-5 font-semibold shadow-sm shadow-primary/20 cursor-pointer" />
+          <Button className="bg-gradient-to-r from-primary to-orange-400 text-white shadow-sm shadow-primary/20" />
         }
       >
         <Plus className="h-4 w-4" /> Add Vendor
@@ -100,7 +100,6 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
               placeholder="e.g., Taj Hotels"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="h-11 rounded-xl border-slate-200 bg-white text-sm"
             />
           </div>
 
@@ -183,7 +182,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white font-semibold rounded-xl h-11 px-5 cursor-pointer gap-2"
+              className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Add Vendor

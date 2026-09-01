@@ -132,7 +132,7 @@ function ActionCard({
 function EmptyBookingsList({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
+      <div className="h-14 w-14 rounded-lg bg-slate-100 flex items-center justify-center mb-3">
         <CalendarCheck className="h-7 w-7 text-slate-300" />
       </div>
       <p className="font-semibold text-sm text-slate-700">No bookings yet</p>
@@ -143,7 +143,7 @@ function EmptyBookingsList({ message }: { message: string }) {
 
 function TopPackagesBox({ packages }: { packages: { title: string; bookings: number; revenue: number; currency: string }[] }) {
   return (
-    <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+    <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
       <CardHeader className="pb-3 border-b border-slate-100">
         <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
@@ -567,7 +567,7 @@ async function AgencyDashboard({
       {/* Row B: Recent Bookings + Top Packages */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -665,7 +665,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 p-6 md:p-8 text-white">
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 p-6 md:p-8 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_60%)]" />
         <div className="absolute top-4 right-4 opacity-10">
           <Star className="h-24 w-24" />
@@ -747,7 +747,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
       {/* Row B: Recent Bookings + Platform Summary */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -780,7 +780,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         </Card>
 
         {/* Platform Overview */}
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Users className="h-4 w-4 text-violet-500" />
@@ -832,7 +832,7 @@ async function StaffDashboard({
   if (!staff) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="h-16 w-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mb-4">
+        <div className="h-16 w-16 rounded-lg bg-rose-500/10 flex items-center justify-center mb-4">
           <AlertCircle className="h-8 w-8 text-rose-500" />
         </div>
         <h3 className="font-bold text-lg text-slate-900">Staff Profile Not Found</h3>
@@ -888,7 +888,7 @@ async function StaffDashboard({
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 p-6 md:p-8 text-white">
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 p-6 md:p-8 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_60%)]" />
         <div className="absolute top-4 right-4 opacity-10">
           <ListTodo className="h-24 w-24" />
@@ -944,7 +944,7 @@ async function StaffDashboard({
       {/* Tasks + Bookings */}
       <div className="grid gap-5 md:grid-cols-2">
         {/* Active Tasks */}
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
@@ -983,7 +983,7 @@ async function StaffDashboard({
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
+                <div className="h-14 w-14 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-3">
                   <CheckCircle2 className="h-7 w-7 text-emerald-500" />
                 </div>
                 <p className="font-semibold text-sm text-slate-700">All caught up!</p>
@@ -994,7 +994,7 @@ async function StaffDashboard({
         </Card>
 
         {/* Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm flex flex-col">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">

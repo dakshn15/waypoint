@@ -18,6 +18,8 @@ export async function createPackage(data: {
   exclusions: string[];
   basePrice: string | number;
   currency: string;
+  imageUrl?: string;
+  itineraries?: Array<{ dayNumber: number; title: string; description?: string }>;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -58,9 +60,17 @@ export async function createPackage(data: {
       destinations: formattedDestinations,
       inclusions: data.inclusions,
       exclusions: data.exclusions,
+      images: data.imageUrl ? [data.imageUrl] : [],
       basePrice: basePrice || 0,
       currency: data.currency || "INR",
       status: "PUBLISHED", // Auto-publish for usability
+      itineraries: data.itineraries && data.itineraries.length > 0 ? {
+        create: data.itineraries.map((it, idx) => ({
+          dayNumber: it.dayNumber || idx + 1,
+          title: it.title || `Day ${idx + 1}`,
+          description: it.description || "",
+        })),
+      } : undefined,
     },
   });
 
@@ -157,6 +167,8 @@ export async function updatePackage(
     exclusions: string[];
     basePrice: string | number;
     currency: string;
+    imageUrl?: string;
+    itineraries?: Array<{ dayNumber: number; title: string; description?: string }>;
   }
 ) {
   const session = await auth.api.getSession({
@@ -203,10 +215,25 @@ export async function updatePackage(
       destinations: formattedDestinations,
       inclusions: data.inclusions,
       exclusions: data.exclusions,
+      images: data.imageUrl !== undefined ? (data.imageUrl ? [data.imageUrl] : []) : undefined,
       basePrice: basePrice || 0,
       currency: data.currency,
     },
   });
+
+  if (data.itineraries !== undefined) {
+    await prisma.itinerary.deleteMany({ where: { packageId } });
+    if (data.itineraries.length > 0) {
+      await prisma.itinerary.createMany({
+        data: data.itineraries.map((it, idx) => ({
+          packageId,
+          dayNumber: it.dayNumber || idx + 1,
+          title: it.title || `Day ${idx + 1}`,
+          description: it.description || "",
+        })),
+      });
+    }
+  }
 
   revalidatePath("/dashboard/packages");
   revalidatePath("/packages");

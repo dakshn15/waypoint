@@ -310,7 +310,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       value={profileName}
                       onChange={(e) => setProfileName(e.target.value)}
                       placeholder="Your display name"
-                      className="h-11 bg-white border-slate-200 rounded-xl"
                     />
                   </div>
 
@@ -323,7 +322,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={profilePhone}
                         onChange={(e) => setProfilePhone(e.target.value)}
                         placeholder="+91 98765 43210"
-                        className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
+                        className="pl-10"
                       />
                     </div>
                   </div>
@@ -337,7 +336,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       id="profile-email"
                       disabled
                       value={user.email}
-                      className="h-11 pl-10 bg-slate-100 border-slate-200 rounded-xl cursor-not-allowed opacity-60"
+                      className="pl-10 bg-slate-100 cursor-not-allowed opacity-60"
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground">Email cannot be changed for security reasons.</p>
@@ -346,8 +345,8 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                 <div className="flex justify-end pt-4 border-t border-slate-100">
                   <Button
                     type="submit"
+                    variant="secondary"
                     disabled={loading}
-                    className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Save Changes
@@ -378,7 +377,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="Enter current password"
-                        className="h-11 pl-10 pr-11 bg-white border-slate-200 rounded-xl"
+                        className="pl-10 pr-11"
                       />
                       <button
                         type="button"
@@ -401,7 +400,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           placeholder="Minimum 6 characters"
-                          className="h-11 pr-11 bg-white border-slate-200 rounded-xl"
+                          className="pr-11"
                         />
                         <button
                           type="button"
@@ -421,7 +420,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-enter new password"
-                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
@@ -429,8 +427,8 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   <div className="flex justify-end pt-4 border-t border-slate-100">
                     <Button
                       type="submit"
+                      variant="secondary"
                       disabled={loading}
-                      className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
                       Update Password
@@ -486,10 +484,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> Currency
                     </Label>
                     <Select value={currency} onValueChange={(val) => setCurrency(val || "INR")}>
-                      <SelectTrigger className="!w-full h-11 bg-white border-slate-200 rounded-xl">
+                      <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border rounded-xl">
+                      <SelectContent>
                         <SelectItem value="INR">₹ INR — Indian Rupee</SelectItem>
                         <SelectItem value="USD">$ USD — US Dollar</SelectItem>
                         <SelectItem value="EUR">€ EUR — Euro</SelectItem>
@@ -503,10 +501,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       <Languages className="h-3.5 w-3.5 text-muted-foreground" /> Language
                     </Label>
                     <Select value={lang} onValueChange={(val) => setLang(val || "en")}>
-                      <SelectTrigger className="!w-full h-11 bg-white border-slate-200 rounded-xl">
+                      <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border rounded-xl">
+                      <SelectContent>
                         <SelectItem value="en">English (US / IN)</SelectItem>
                         <SelectItem value="hi">Hindi (हिंदी)</SelectItem>
                         <SelectItem value="es">Spanish (Español)</SelectItem>
@@ -553,7 +551,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                 <div className="flex justify-end pt-5 mt-5 border-t border-slate-100">
                   <Button
                     type="submit"
-                    className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
+                    variant="secondary"
                   >
                     <Save className="h-4 w-4" /> Save Preferences
                   </Button>
@@ -580,7 +578,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={agencyForm.name}
                         onChange={(e) => setAgencyForm({ ...agencyForm, name: e.target.value })}
                         placeholder="Your agency name"
-                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
 
@@ -591,7 +588,6 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={agencyForm.logo}
                         onChange={(e) => setAgencyForm({ ...agencyForm, logo: e.target.value })}
                         placeholder="https://example.com/logo.png"
-                        className="h-11 bg-white border-slate-200 rounded-xl"
                       />
                     </div>
                   </div>
@@ -612,7 +608,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                           value={agencyForm.website}
                           onChange={(e) => setAgencyForm({ ...agencyForm, website: e.target.value })}
                           placeholder="www.agency.com"
-                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
+                          className="pl-10"
                         />
                       </div>
                     </div>
@@ -626,7 +622,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                           value={agencyForm.email}
                           onChange={(e) => setAgencyForm({ ...agencyForm, email: e.target.value })}
                           placeholder="support@agency.com"
-                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
+                          className="pl-10"
                         />
                       </div>
                     </div>
@@ -640,7 +636,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                           value={agencyForm.phone}
                           onChange={(e) => setAgencyForm({ ...agencyForm, phone: e.target.value })}
                           placeholder="+91 98765 43210"
-                          className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
+                          className="pl-10"
                         />
                       </div>
                     </div>
@@ -655,7 +651,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                         value={agencyForm.address}
                         onChange={(e) => setAgencyForm({ ...agencyForm, address: e.target.value })}
                         placeholder="123 Tourism Way, Suite 4B, Mumbai"
-                        className="h-11 pl-10 bg-white border-slate-200 rounded-xl"
+                        className="pl-10"
                       />
                     </div>
                   </div>
@@ -668,15 +664,14 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                       onChange={(e) => setAgencyForm({ ...agencyForm, description: e.target.value })}
                       placeholder="Tell travelers what makes your agency special..."
                       rows={4}
-                      className="bg-white border-slate-200 rounded-xl resize-none"
                     />
                   </div>
 
                   <div className="flex justify-end pt-5 mt-5 border-t border-slate-100">
                     <Button
                       type="submit"
+                      variant="secondary"
                       disabled={loading}
-                      className="h-11 bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-6 gap-2 cursor-pointer transition-all shadow-sm"
                     >
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                       Save Agency Profile
