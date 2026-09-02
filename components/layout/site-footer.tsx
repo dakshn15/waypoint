@@ -61,7 +61,7 @@ export function SiteFooter({ children }: SiteFooterProps) {
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/15 group-hover:shadow-primary/30 transition-shadow">
                 <Compass className="h-5 w-5 text-white" />
               </div>
-              <span className="text-2xl font-extrabold font-display text-white tracking-tight">
+              <span className="text-2xl font-bold font-display text-white tracking-tight">
                 Way<span className="text-primary">point</span>
               </span>
             </Link>

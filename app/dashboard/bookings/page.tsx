@@ -87,7 +87,7 @@ export default async function BookingsPage() {
       {bookings.length === 0 ? (
         <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-20">
-            <div className="h-16 w-16 rounded-2xl bg-secondary/10 flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
               <CalendarCheck className="h-8 w-8 text-secondary" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-1">No bookings yet</h3>

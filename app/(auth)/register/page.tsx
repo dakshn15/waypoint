@@ -100,7 +100,7 @@ export default function RegisterPage() {
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
       <div className="md:mb-8 mb-5 text-center">
-        <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
+        <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight">
           Create your account
         </h1>
         <p className="text-sm text-slate-500 mt-2">
@@ -116,8 +116,8 @@ export default function RegisterPage() {
           onClick={() => setRole("TRAVELER")}
           disabled={loading || googleLoading}
           className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${role === "TRAVELER"
-              ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-              : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
+            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+            : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
             }`}
         >
           {role === "TRAVELER" && (
@@ -127,8 +127,8 @@ export default function RegisterPage() {
           )}
           <div
             className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${role === "TRAVELER"
-                ? "bg-primary text-white"
-                : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
+              ? "bg-primary text-white"
+              : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
               }`}
           >
             <User className="h-5 w-5" />
@@ -145,8 +145,8 @@ export default function RegisterPage() {
           onClick={() => setRole("AGENCY")}
           disabled={loading || googleLoading}
           className={`group relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${role === "AGENCY"
-              ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-              : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
+            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+            : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-md"
             }`}
         >
           {role === "AGENCY" && (
@@ -156,8 +156,8 @@ export default function RegisterPage() {
           )}
           <div
             className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${role === "AGENCY"
-                ? "bg-primary text-white"
-                : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
+              ? "bg-primary text-white"
+              : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
               }`}
           >
             <Building2 className="h-5 w-5" />
@@ -248,10 +248,10 @@ export default function RegisterPage() {
               </div>
               <span
                 className={`text-[10px] font-bold uppercase tracking-wider ${pwStrength <= 1
-                    ? "text-red-500"
-                    : pwStrength === 2
-                      ? "text-amber-500"
-                      : "text-emerald-500"
+                  ? "text-red-500"
+                  : pwStrength === 2
+                    ? "text-amber-500"
+                    : "text-emerald-500"
                   }`}
               >
                 {pwLabel}

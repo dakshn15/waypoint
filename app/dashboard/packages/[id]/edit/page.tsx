@@ -20,6 +20,10 @@ export default async function EditPackagePage({ params }: EditPackagePageProps) 
     include: {
       itineraries: {
         orderBy: { dayNumber: "asc" },
+        include: {
+          activities: true,
+          hotel: true,
+        },
       },
     },
   });
@@ -58,6 +62,15 @@ export default async function EditPackagePage({ params }: EditPackagePageProps) 
           dayNumber: it.dayNumber,
           title: it.title,
           description: it.description || "",
+          hotelName: it.hotel?.name || "",
+          activities: (it.activities || []).map((act) => ({
+            time: act.time || "",
+            duration: act.duration || "",
+            type: act.type || "SIGHTSEEING",
+            title: act.title,
+            description: act.description || "",
+            location: act.location || "",
+          })),
         })),
       })}
     />

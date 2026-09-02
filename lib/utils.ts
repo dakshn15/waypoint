@@ -6,11 +6,26 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = "INR") {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  const code = (currency || "INR").toUpperCase();
+  const localeMap: Record<string, string> = {
+    USD: "en-US",
+    EUR: "en-IE",
+    GBP: "en-GB",
+    INR: "en-IN",
+    AED: "en-AE",
+    THB: "th-TH",
+    SGD: "en-SG",
+  };
+  const locale = localeMap[code] || "en-US";
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: code,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch (e) {
+    return `${code} ${amount.toLocaleString()}`;
+  }
 }
 
 export function formatDate(date: string | Date) {

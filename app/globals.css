@@ -100,17 +100,24 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply font-sans bg-background text-foreground;
   }
+
   html {
     @apply font-sans scroll-smooth;
   }
-  
+
   /* Apply display font family globally to all head elements */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-jakarta), var(--font-sans), sans-serif;
-    @apply tracking-tight font-extrabold text-slate-900;
+    @apply tracking-tight font-bold text-slate-900;
   }
 }
 
@@ -128,12 +135,15 @@
   scrollbar-width: thin;
   scrollbar-color: #e2e8f0 transparent;
 }
+
 .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 999px;
@@ -158,12 +168,14 @@
   height: 8px;
   transition: all 0.3s ease;
 }
+
 .testimonials-swiper .swiper-pagination-bullet-active {
   background: #E46F44 !important;
   opacity: 1 !important;
   width: 20px !important;
   border-radius: 4px !important;
 }
+
 .testimonials-swiper .swiper-pagination {
   bottom: 0px !important;
 }
@@ -178,27 +190,29 @@
   outline: none;
   cursor: pointer;
 }
+
 .range-filled::-webkit-slider-runnable-track {
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(
-    to right,
-    var(--wp-primary) 0%,
-    var(--wp-primary) var(--range-progress, 100%),
-    #e2e8f0 var(--range-progress, 100%),
-    #e2e8f0 100%
-  );
+  background: linear-gradient(to right,
+      var(--wp-primary) 0%,
+      var(--wp-primary) var(--range-progress, 100%),
+      #e2e8f0 var(--range-progress, 100%),
+      #e2e8f0 100%);
 }
+
 .range-filled::-moz-range-track {
   height: 6px;
   border-radius: 999px;
   background: #e2e8f0;
 }
+
 .range-filled::-moz-range-progress {
   height: 6px;
   border-radius: 999px;
   background: var(--wp-primary);
 }
+
 .range-filled::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -207,20 +221,22 @@
   border-radius: 50%;
   background: var(--wp-primary);
   border: 3px solid white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   margin-top: -7px;
   cursor: pointer;
   transition: box-shadow 0.2s ease;
 }
+
 .range-filled::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 6px rgba(228,111,68,0.12);
+  box-shadow: 0 0 0 6px rgba(228, 111, 68, 0.12);
 }
+
 .range-filled::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: var(--wp-primary);
   border: 3px solid white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }

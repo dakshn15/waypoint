@@ -119,7 +119,7 @@ export function DashboardSidebar({
           // Mobile slide-in behavior vs Desktop visibility
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           // Desktop width collapse toggle
-          isCollapsed ? "lg:w-[68px]" : "lg:w-64",
+          isCollapsed ? "lg:w-[68px]" : "xl:w-64 lg:w-60",
           "w-64" // standard mobile width
         )}
       >
@@ -150,7 +150,7 @@ export function DashboardSidebar({
               <span className="text-white font-bold text-sm">W</span>
             </div>
             {(!isCollapsed || mobileOpen) && (
-              <span className="text-lg font-extrabold tracking-tight text-secondary font-display">
+              <span className="text-lg font-bold tracking-tight text-secondary font-display">
                 Waypoint
               </span>
             )}
@@ -227,7 +227,7 @@ export function DashboardSidebar({
                 <p className="text-sm font-semibold truncate text-slate-800">{userName}</p>
                 <span
                   className={cn(
-                    "text-[10px] text-slate-400 font-medium block mt-1 uppercase tracking-wider")}>
+                    "text-[11px] text-slate-400 font-medium block mt-1 uppercase tracking-wider")}>
                   {ROLE_LABELS[userRole] || userRole}
                 </span>
               </div>
@@ -236,7 +236,7 @@ export function DashboardSidebar({
           <Button
             variant="ghost"
             className={cn(
-              "w-full mt-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer",
+              "w-full mt-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer",
               isCollapsed && !mobileOpen ? "lg:px-2 lg:justify-center" : "justify-start"
             )}
             onClick={handleLogout}

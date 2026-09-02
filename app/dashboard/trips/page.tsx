@@ -93,7 +93,7 @@ export default async function TripsPage() {
           </p>
         </div>
         <Link href="/trip-builder">
-          <Button className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white">
+          <Button>
             <Sparkles className="h-4 w-4" /> Create New Trip
           </Button>
         </Link>
@@ -101,7 +101,7 @@ export default async function TripsPage() {
 
       {trips.length === 0 ? (
         /* Empty State */
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-20">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
               <Plane className="h-8 w-8 text-primary" />
@@ -111,7 +111,7 @@ export default async function TripsPage() {
               Create your first AI-powered trip plan and it will appear here.
             </p>
             <Link href="/trip-builder">
-              <Button className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 hover:to-slate-600/90 text-white gap-2 rounded-xl shadow-md shadow-secondary/20">
+              <Button>
                 <Sparkles className="h-4 w-4" /> Create AI Trip
               </Button>
             </Link>
@@ -208,7 +208,7 @@ export default async function TripsPage() {
                     <div className="flex flex-wrap gap-2 items-center justify-between pt-3 border-t border-slate-100 mt-auto">
                       <div>
                         <span className="text-xs text-slate-400 block font-medium mb-1.5">Estimated Budget</span>
-                        <span className="text-lg font-extrabold text-slate-900 font-display">
+                        <span className="text-lg font-bold text-slate-900 font-display">
                           {formatCurrency(Number(trip.budget), trip.currency)}
                         </span>
                       </div>

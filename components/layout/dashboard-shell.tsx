@@ -58,7 +58,7 @@ export function DashboardShell({
       <div
         className={cn(
           "flex flex-col min-h-screen transition-all duration-300",
-          collapsed ? "lg:pl-[68px]" : "lg:pl-64",
+          collapsed ? "lg:pl-[68px]" : "xl:pl-64 lg:pl-60",
           "pl-0"
         )}
       >

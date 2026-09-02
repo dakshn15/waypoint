@@ -431,7 +431,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
             The intelligent way to{" "}
             <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
               plan your journey.
@@ -533,7 +533,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                     <Compass className="h-3.5 w-3.5 text-white" />
                   </div>
-                  <span className="text-[12px] font-extrabold text-slate-900">Way<span className="text-primary">point</span></span>
+                  <span className="text-[12px] font-bold text-slate-900">Way<span className="text-primary">point</span></span>
                 </div>
 
                 {/* Nav items */}
@@ -600,7 +600,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   {/* Welcome header */}
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-lg font-extrabold text-slate-900">Welcome back, Rohit 👋</span>
+                      <span className="text-lg font-bold text-slate-900">Welcome back, Rohit 👋</span>
                     </div>
                     <p className="text-sm text-slate-500 mt-0.5">Here's what's happening with your travels.</p>
                   </div>
@@ -618,7 +618,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                           <span className="text-[11px] font-semibold text-slate-500">{label}</span>
                           <Icon className="h-3 w-3" style={{ color }} />
                         </div>
-                        <div className="text-2xl font-extrabold text-slate-900 leading-none">{value}</div>
+                        <div className="text-2xl font-bold text-slate-900 leading-none">{value}</div>
                         <div className="text-[10px] text-slate-400 mt-1">{sub}</div>
                       </div>
                     ))}
@@ -763,7 +763,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <stat.icon className="md:h-5.5 md:w-5.5 h-4 w-4 transition-colors duration-300" />
                 </div>
                 <div className="md:space-y-2 space-y-1">
-                  <h4 className="md:text-3xl text-2xl font-extrabold tracking-tight text-slate-900 font-display">
+                  <h4 className="md:text-3xl text-2xl font-bold tracking-tight text-slate-900 font-display">
                     {stat.value}
                   </h4>
                   <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
@@ -789,7 +789,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
                 <Flame className="h-3.5 w-3.5" /> Trending Routes
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display text-slate-900">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display text-slate-900">
                 Explore Popular <span className="text-primary">Indian Destinations</span>
               </h2>
               <p className="text-slate-500 lg:text-base text-sm max-w-lg lg:leading-relaxed">
@@ -820,7 +820,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent pointer-events-none" />
 
                   {/* Category Tag Badge */}
-                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg ${item.badgeColor} text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm border border-white/10`}>
+                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg ${item.badgeColor} text-white text-[10px] font-bold uppercase tracking-wider shadow-sm border border-white/10`}>
                     {item.tag}
                   </span>
 
@@ -831,10 +831,10 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
                   {/* Location Title Overlay */}
                   <div className="absolute bottom-3 left-3 right-3 text-white z-10 space-y-0.5">
-                    <span className="text-[10px] font-extrabold text-[#E8AA9B] uppercase tracking-widest block drop-shadow-sm">
+                    <span className="text-[10px] font-bold text-[#E8AA9B] uppercase tracking-widest block drop-shadow-sm">
                       {item.state}
                     </span>
-                    <h3 className="text-base sm:text-lg font-extrabold font-display leading-tight text-white drop-shadow-md">
+                    <h3 className="text-base sm:text-lg font-bold font-display leading-tight text-white drop-shadow-md">
                       {item.title}
                     </h3>
                   </div>
@@ -850,7 +850,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <span className="text-xs text-slate-500 block font-semibold">Starting from</span>
-                      <span className="text-lg font-extrabold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
+                      <span className="text-lg font-bold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
                     </div>
                     <span className="h-8 px-3 rounded-lg bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 group-hover:bg-primary group-hover:text-white transition-all">
                       Build Trip <Sparkles className="h-3 w-3" />
@@ -870,7 +870,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-widest">
               <Sparkles className="h-3.5 w-3.5" /> AI Custom Outputs
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display">
               See what Gemini AI plans in <span className="text-primary">30 seconds</span>.
             </h2>
             <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
@@ -898,7 +898,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
           <div className="grid grid-cols-1 md:grid-cols-12 lg:gap-8 gap-6 items-start max-w-5xl mx-auto">
             {/* Header info */}
             <div className="lg:col-span-4 md:col-span-5 space-y-5 bg-white sm:p-6 p-4 rounded-2xl border border-slate-200/60 shadow-xs">
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-secondary/10 text-secondary">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary">
                 {currentItinerary.tag}
               </span>
               <h3 className="sm:text-xl text-lg font-bold font-display leading-tight text-slate-900">{currentItinerary.title}</h3>
@@ -930,7 +930,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">{d.day}</span>
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{d.day}</span>
                       <span className="h-1 w-1 rounded-full bg-slate-300 hidden sm:inline-block" />
                       <h4 className="text-lg font-bold text-slate-900 font-display leading-tight">{d.activity}</h4>
                     </div>
@@ -952,7 +952,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 text-secondary text-[11px] font-bold uppercase tracking-widest border border-secondary/20">
               <Zap className="h-3.5 w-3.5" /> Platform Capabilities
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display">
               Everything you need to{" "}
               <span className="text-primary">travel smarter.</span>
             </h2>
@@ -997,7 +997,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold uppercase tracking-widest text-primary">
               <Zap className="h-3.5 w-3.5" /> How It Works
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display">
               From idea to itinerary{" "}
               <span className="text-primary">in 3 steps.</span>
             </h2>
@@ -1047,7 +1047,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   <div className={`h-10 w-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                     <s.icon className="h-5 w-5" style={{ color: s.color }} />
                   </div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest" style={{ color: s.color }}>Step {String(s.step).padStart(2, '0')}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: s.color }}>Step {String(s.step).padStart(2, '0')}</span>
                 </div>
 
                 {/* Text */}
@@ -1056,7 +1056,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
                 {/* Pill preview card */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5">
-                  <div className="text-[9px] font-extrabold uppercase tracking-widest mb-1.5" style={{ color: s.color }}>{s.highlight}</div>
+                  <div className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: s.color }}>{s.highlight}</div>
                   <p className="text-[11px] text-slate-600 font-medium italic">{s.pill}</p>
                 </div>
               </div>
@@ -1072,7 +1072,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 text-rose-500 text-[11px] font-bold uppercase tracking-widest border border-rose-500/20">
               <Heart className="h-3.5 w-3.5" /> Traveler Reviews
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display">
               Loved by solo travelers{" "}
               <span className="text-primary">&amp; agencies.</span>
             </h2>
@@ -1137,7 +1137,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-[11px] font-bold uppercase tracking-widest text-secondary mb-5">
                 <HelpCircle className="h-3.5 w-3.5" /> FAQ
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold font-display mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4">
                 Frequently asked{" "}
                 <span className="text-primary">questions.</span>
               </h2>
@@ -1169,7 +1169,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                       className="w-full md:px-6 sm:p-5 p-4 md:py-5 text-left flex items-center justify-between gap-3 cursor-pointer focus:outline-none"
                     >
                       <span className="flex items-center gap-3.5">
-                        <span className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 transition-colors ${isOpen ? "bg-primary text-white" : "bg-slate-100 text-slate-500"
+                        <span className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 transition-colors ${isOpen ? "bg-primary text-white" : "bg-slate-100 text-slate-500"
                           }`}>
                           {index + 1}
                         </span>
@@ -1216,7 +1216,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 </div>
 
                 <div>
-                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-[1.15] font-display mb-3">
+                  <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-[1.15] font-display mb-3">
                     Plan smarter.{" "}
                     <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
                       Travel better.
@@ -1281,7 +1281,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                   ].map(({ label, value }) => (
                     <div key={label} className="bg-slate-900/80 rounded-xl p-2.5 text-center border border-slate-800/60">
                       <div className="text-[9px] text-slate-500 font-semibold mb-0.5">{label}</div>
-                      <div className="text-[13px] font-extrabold text-white">{value}</div>
+                      <div className="text-[13px] font-bold text-white">{value}</div>
                     </div>
                   ))}
                 </div>

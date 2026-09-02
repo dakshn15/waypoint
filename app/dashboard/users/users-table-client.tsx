@@ -277,7 +277,6 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl gap-1.5 shadow-sm transition-all"
             >
               <Plus className="h-4 w-4" />
               Add User
@@ -376,7 +375,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
       </Card>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="glass-card max-w-md p-6">
+        <DialogContent className="glass-card max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Register New User</DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -477,7 +476,6 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register User"}
               </Button>
@@ -487,7 +485,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
       </Dialog>
 
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-        <DialogContent className="glass-card max-w-md p-6">
+        <DialogContent className="glass-card max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit User Profile</DialogTitle>
           </DialogHeader>
@@ -593,7 +591,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
       </Dialog>
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="glass-card border-rose-500/20 max-w-md p-6">
+        <DialogContent className="glass-card border-rose-500/20 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">Delete User Account</DialogTitle>
             <DialogDescription className="mt-2 text-xs text-muted-foreground leading-relaxed">

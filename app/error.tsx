@@ -24,7 +24,7 @@ export default function Error({
           <AlertTriangle className="h-8 w-8" />
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary mb-3">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-secondary mb-3">
           Something went wrong
         </h1>
         <p className="text-sm text-slate-500 leading-relaxed mb-3 max-w-sm mx-auto">

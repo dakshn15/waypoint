@@ -306,7 +306,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
               </nav>
 
               {/* Title */}
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white font-display mb-4 max-w-4xl">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-white font-display mb-4 max-w-4xl">
                 {pkg.title}
               </h1>
 
@@ -349,7 +349,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Duration</p>
-                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">{pkg.duration} Days</p>
+                  <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-display truncate">{pkg.duration} Days</p>
                 </div>
               </div>
 
@@ -360,7 +360,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Difficulty</p>
-                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display capitalize truncate">{pkg.difficulty.toLowerCase()}</p>
+                  <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-display capitalize truncate">{pkg.difficulty.toLowerCase()}</p>
                 </div>
               </div>
 
@@ -371,7 +371,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Rating</p>
-                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">
+                  <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-display truncate">
                     {pkg.rating} <span className="text-slate-400 font-normal text-xs">({pkg.reviews || 12})</span>
                   </p>
                 </div>
@@ -380,11 +380,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
               {/* Price */}
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                  <span className="text-sm sm:text-base font-extrabold text-emerald-600">₹</span>
+                  <span className="text-sm sm:text-base font-bold text-emerald-600">₹</span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Starting at</p>
-                  <p className="text-sm sm:text-base md:text-lg font-extrabold text-slate-900 font-display truncate">
+                  <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-display truncate">
                     ₹{pkg.basePrice.toLocaleString("en-IN")}
                     <span className="text-slate-400 font-normal text-xs ml-0.5">/person</span>
                   </p>
@@ -412,7 +412,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                     <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <h2 className="text-base sm:text-lg font-extrabold font-display text-slate-900">Tour Highlights</h2>
+                    <h2 className="text-base sm:text-lg font-bold font-display text-slate-900">Tour Highlights</h2>
                   </div>
                   <div className="sm:p-7 p-4">
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -438,7 +438,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                     <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
                       <Check className="h-3.5 w-3.5 text-emerald-600" />
                     </div>
-                    <h3 className="text-sm font-extrabold font-display text-slate-900">What&apos;s Included</h3>
+                    <h3 className="text-sm font-bold font-display text-slate-900">What&apos;s Included</h3>
                   </div>
                   <ul className="p-5 space-y-3">
                     {(pkg.inclusions && pkg.inclusions.length > 0 ? pkg.inclusions : ["Accommodations and daily activities"]).map((inc: string, i: number) => (
@@ -455,7 +455,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                     <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
                       <X className="h-3.5 w-3.5 text-rose-500" />
                     </div>
-                    <h3 className="text-sm font-extrabold font-display text-slate-900">Not Included</h3>
+                    <h3 className="text-sm font-bold font-display text-slate-900">Not Included</h3>
                   </div>
                   <ul className="p-5 space-y-3">
                     {(pkg.exclusions && pkg.exclusions.length > 0 ? pkg.exclusions : ["Personal expenses, laundry, tips"]).map((exc: string, i: number) => (
@@ -478,7 +478,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                       <CalendarDays className="h-4.5 w-4.5 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-lg sm:text-xl font-extrabold font-display text-slate-900 mb-2">Day-by-Day Itinerary</h2>
+                      <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900 mb-2">Day-by-Day Itinerary</h2>
                       <p className="text-xs text-slate-500">Detailed daily plan with activities, dining, and accommodations</p>
                     </div>
                   </div>
@@ -492,7 +492,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                       {pkg.itineraries.map((day: any, dayIdx: number) => (
                         <div key={day.dayNumber} className="relative sm:pl-12 pl-0">
                           {/* Day number circle on the vertical line */}
-                          <div className="hidden sm:flex absolute left-0 top-5 w-[37px] h-[37px] rounded-full bg-gradient-to-br from-primary to-primary/80 items-center justify-center text-white font-extrabold text-sm shadow-md border-[3px] border-[#FAFAF9] z-10">
+                          <div className="hidden sm:flex absolute left-0 top-5 w-[37px] h-[37px] rounded-full bg-gradient-to-br from-primary to-primary/80 items-center justify-center text-white font-bold text-sm shadow-md border-[3px] border-[#FAFAF9] z-10">
                             {day.dayNumber}
                           </div>
 
@@ -501,11 +501,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
                             {/* Day header */}
                             <div className="px-4 sm:px-5 py-4 border-b border-slate-100 flex items-center gap-3">
                               {/* Mobile day number */}
-                              <div className="sm:hidden w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-sm">
+                              <div className="sm:hidden w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
                                 {day.dayNumber}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-extrabold text-slate-900 font-display truncate">{day.title}</h3>
+                                <h3 className="text-sm font-bold text-slate-900 font-display truncate">{day.title}</h3>
                                 <p className="text-xs text-slate-500 mt-2 truncate">{day.description}</p>
                               </div>
                               <span className={`hidden sm:inline-flex text-[10px] px-2.5 py-1 rounded-full border font-bold uppercase tracking-wide shrink-0 ${difficultyColor(pkg.difficulty)}`}>
@@ -537,7 +537,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                                     <div className="flex items-center gap-2 mb-0.5">
                                       <span className="text-[11px] font-bold text-primary">{act.time}</span>
                                       <span className="text-[9px] text-slate-400">•</span>
-                                      <span className="text-[10px] text-slate-400 font-medium">{act.duration}</span>
+                                      <span className="text-[11px] text-slate-400 font-medium">{act.duration}</span>
                                     </div>
                                     <h4 className="text-sm font-bold text-slate-900 leading-snug">{act.title}</h4>
                                     {act.description && <p className="text-sm text-slate-500 mt-2 leading-relaxed">{act.description}</p>}
@@ -580,7 +580,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Organized By</p>
-                      <h4 className="text-base font-extrabold text-slate-900 font-display">{pkg.agencyName}</h4>
+                      <h4 className="text-base font-bold text-slate-900 font-display">{pkg.agencyName}</h4>
                     </div>
                   </div>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
@@ -619,7 +619,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
         <div className="flex items-center justify-between gap-3 px-4 py-2.5 max-w-lg mx-auto">
           <div className="min-w-0">
             <div className="flex items-baseline gap-1">
-              <span className="text-lg font-extrabold text-slate-900 font-display leading-tight">
+              <span className="text-lg font-bold text-slate-900 font-display leading-tight">
                 ₹{pkg.basePrice.toLocaleString("en-IN")}
               </span>
               <span className="text-[11px] text-slate-400 font-medium">/person</span>

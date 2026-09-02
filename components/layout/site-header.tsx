@@ -45,7 +45,7 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
             <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
               <Compass className="h-4 w-4 text-white" />
             </div>
-            <span className="font-extrabold tracking-tight text-slate-900 text-[15px]">Way<span className="text-primary">point</span></span>
+            <span className="font-bold tracking-tight text-slate-900 text-[15px]">Way<span className="text-primary">point</span></span>
           </Link>
 
           {/* Desktop Nav Links (lg and above) */}
@@ -111,9 +111,8 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
                     key={link.label}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`px-3 py-2.5 rounded-md hover:bg-slate-100/80 hover:text-primary transition-colors flex items-center gap-2 ${
-                      isActive ? "bg-primary/5 text-primary font-bold" : ""
-                    }`}
+                    className={`px-3 py-2.5 rounded-md hover:bg-slate-100/80 hover:text-primary transition-colors flex items-center gap-2 ${isActive ? "bg-primary/5 text-primary font-bold" : ""
+                      }`}
                   >
                     {link.icon && <span className="text-primary">{link.icon}</span>}
                     {link.label}

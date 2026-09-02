@@ -68,12 +68,12 @@ interface VendorsClientProps {
 }
 
 const CATEGORY_CONFIG: Record<string, { icon: React.ReactNode; color: string }> = {
-  HOTEL: { icon: <Hotel className="h-4 w-4" />, color: "bg-secondary/10 text-secondary border-secondary/20" },
-  TRANSPORT: { icon: <Car className="h-4 w-4" />, color: "bg-secondary/10 text-secondary border-secondary/20" },
-  RESTAURANT: { icon: <Utensils className="h-4 w-4" />, color: "bg-primary/10 text-primary border-primary/20" },
-  ACTIVITY: { icon: <Camera className="h-4 w-4" />, color: "bg-orange-500/10 text-orange-600 border-orange-500/20" },
-  GUIDE: { icon: <Globe className="h-4 w-4" />, color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  OTHER: { icon: <Building2 className="h-4 w-4" />, color: "bg-slate-100 text-slate-500 border-slate-200" },
+  HOTEL: { icon: <Hotel className="h-4 w-4" />, color: "bg-indigo-50 text-indigo-600 border border-indigo-200/60" },
+  TRANSPORT: { icon: <Car className="h-4 w-4" />, color: "bg-teal-50 text-teal-600 border border-teal-200/60" },
+  RESTAURANT: { icon: <Utensils className="h-4 w-4" />, color: "bg-rose-50 text-rose-600 border border-rose-200/60" },
+  ACTIVITY: { icon: <Camera className="h-4 w-4" />, color: "bg-amber-50 text-amber-600 border border-amber-200/60" },
+  GUIDE: { icon: <Globe className="h-4 w-4" />, color: "bg-emerald-50 text-emerald-600 border border-emerald-200/60" },
+  OTHER: { icon: <Building2 className="h-4 w-4" />, color: "bg-purple-50 text-purple-600 border border-purple-200/60" },
 };
 
 const CATEGORIES = ["HOTEL", "TRANSPORT", "RESTAURANT", "ACTIVITY", "GUIDE", "OTHER"];
@@ -170,7 +170,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
           return (
             <Card
               key={vendor.id}
-              className={`glass-card group hover:shadow-2xl hover:shadow-secondary/10 transition-all hover:-translate-y-0.5 border border-slate-200/60 rounded-2xl overflow-hidden ${!vendor.active ? "opacity-65" : ""}`}
+              className={`glass-card group hover:shadow-2xl hover:shadow-secondary/10 transition-all hover:-translate-y-0.5 border border-slate-200/60 rounded-lg overflow-hidden ${!vendor.active ? "opacity-65" : ""}`}
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-3">
@@ -269,7 +269,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
 
       {/* Edit Vendor Dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-        <DialogContent className="sm:max-w-md bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="sm:max-w-md bg-white border border-slate-200 shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit Vendor</DialogTitle>
             <DialogDescription className="text-sm text-slate-500">Update the details for this vendor partner.</DialogDescription>

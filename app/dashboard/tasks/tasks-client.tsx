@@ -247,7 +247,7 @@ export default function TasksClient({
     }
 
     return (
-      <div className="grid gap-4 mt-4 md:grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-5 mt-4 md:grid-cols-1 lg:grid-cols-2">
         {list.map((task) => {
           const isPending = actionId === task.id;
           const assignedUser = task.staff?.user;
@@ -255,9 +255,9 @@ export default function TasksClient({
           return (
             <Card
               key={task.id}
-              className={`glass-card border border-slate-200 hover:shadow-xl transition-all rounded-2xl relative overflow-hidden ${task.status === "COMPLETED" ? "opacity-70" : ""} ${getPriorityBorder(task.priority)}`}
+              className={`py-0 glass-card border border-slate-200 hover:shadow-xl transition-all rounded-lg relative overflow-hidden ${task.status === "COMPLETED" ? "opacity-70" : ""} ${getPriorityBorder(task.priority)}`}
             >
-              <CardContent className="p-5 flex flex-col justify-between h-full min-h-[170px]">
+              <CardContent className="sm:p-5 p-4 flex flex-col justify-between h-full min-h-[170px]">
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-2.5">
@@ -308,7 +308,7 @@ export default function TasksClient({
                         size="icon"
                         onClick={() => handleDeleteTask(task)}
                         disabled={isPending}
-                        className="h-8 w-8 text-slate-400 hover:text-rose-500 rounded-lg shrink-0 cursor-pointer"
+                        className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg shrink-0 cursor-pointer"
                         title="Delete Task"
                       >
                         <Trash2 className="h-4.5 w-4.5" />
@@ -335,14 +335,14 @@ export default function TasksClient({
                     <div className="flex items-center gap-2">
                       <Badge
                         variant="outline"
-                        className={`text-[9px] uppercase font-extrabold tracking-wider ${getPriorityColor(
+                        className={`text-[9px] uppercase font-bold tracking-wider ${getPriorityColor(
                           task.priority
                         )}`}
                       >
                         {task.priority}
                       </Badge>
                       <Badge
-                        className={`text-[9px] uppercase font-extrabold tracking-wider ${task.status === "COMPLETED"
+                        className={`text-[9px] uppercase font-bold tracking-wider ${task.status === "COMPLETED"
                           ? "bg-secondary/10 text-secondary border-secondary/20"
                           : task.status === "IN_PROGRESS"
                             ? "bg-primary/10 text-primary border-primary/20"
@@ -421,7 +421,6 @@ export default function TasksClient({
                               variant="outline"
                               onClick={() => handleUpdateStatus(task.id, "IN_PROGRESS")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 rounded-lg flex items-center gap-1 hover:bg-secondary/5 hover:text-secondary hover:border-secondary/20 cursor-pointer"
                             >
                               <Play className="h-3 w-3 fill-primary" /> Start Work
                             </Button>
@@ -431,7 +430,6 @@ export default function TasksClient({
                               size="xs"
                               onClick={() => handleUpdateStatus(task.id, "COMPLETED")}
                               disabled={isPending}
-                              className="text-xs h-7 px-2.5 bg-secondary hover:bg-secondary/90 text-white rounded-lg flex items-center gap-1 cursor-pointer"
                             >
                               <Check className="h-3.5 w-3.5" /> Mark Done
                             </Button>
@@ -452,10 +450,10 @@ export default function TasksClient({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Task Assignment Board
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 mt-1.5">
             Delegate and track operational duties, package revisions, and traveler booking requests.
           </p>
         </div>
@@ -463,7 +461,6 @@ export default function TasksClient({
         {isManagerOrOwner && (
           <Button
             onClick={() => setCreateOpen(true)}
-            className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl h-11 px-5 flex items-center gap-2 cursor-pointer shadow-md"
           >
             <Plus className="h-4.5 w-4.5" /> Assign Task
           </Button>
@@ -471,103 +468,90 @@ export default function TasksClient({
       </div>
       {/* Staff Performance Overview for Managers */}
       {isManagerOrOwner && (
-        <div className="space-y-3 mt-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-secondary" /> Staff Workload & Performance
-              </h2>
-              <p className="text-xs text-slate-500">
-                Track completion progress and workload distribution across your operations team.
-              </p>
-            </div>
-          </div>
+        <div className="mt-4 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {staffList.map((staff) => {
+            const staffTasks = tasks.filter((t) => t.staffId === staff.id);
+            const completed = staffTasks.filter((t) => t.status === "COMPLETED").length;
+            const pending = staffTasks.length - completed;
+            const completionRate = staffTasks.length > 0 ? Math.round((completed / staffTasks.length) * 100) : 0;
 
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {staffList.map((staff) => {
-              const staffTasks = tasks.filter((t) => t.staffId === staff.id);
-              const completed = staffTasks.filter((t) => t.status === "COMPLETED").length;
-              const pending = staffTasks.length - completed;
-              const completionRate = staffTasks.length > 0 ? Math.round((completed / staffTasks.length) * 100) : 0;
-
-              return (
-                <Card key={staff.id} className="glass-card border border-slate-200 rounded-xl shadow-xs">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs uppercase">
-                          {staff.user.name.slice(0, 2)}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-slate-900">{staff.user.name}</h4>
-                          <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{staff.role.toLowerCase()}</span>
-                        </div>
-                      </div>
-                      <Badge className="text-[9px] uppercase font-extrabold tracking-wider bg-slate-500/10 text-slate-500 border border-slate-200/30">
-                        {completionRate}% Done
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-center border-y border-slate-100 py-2 mt-2">
-                      <div>
-                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Assigned</span>
-                        <strong className="text-sm font-extrabold text-slate-800">{staffTasks.length}</strong>
+            return (
+              <Card key={staff.id} className="py-0 glass-card border border-slate-200 rounded-lg shadow-xs">
+                <CardContent className="sm:p-5 p-4 space-y-3 flex flex-col">
+                  <div className="flex flex-wrap justify-between items-start gap-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-md bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs uppercase">
+                        {staff.user.name.slice(0, 2)}
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Pending</span>
-                        <strong className="text-sm font-extrabold text-primary">{pending}</strong>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-500 font-semibold block uppercase">Completed</span>
-                        <strong className="text-sm font-extrabold text-secondary">{completed}</strong>
+                        <h4 className="font-bold text-sm text-slate-900">{staff.user.name}</h4>
+                        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{staff.role.toLowerCase()}</span>
                       </div>
                     </div>
+                    <Badge className="text-[9px] uppercase font-bold tracking-wider bg-slate-500/10 text-slate-500 border border-slate-200/30">
+                      {completionRate}% Done
+                    </Badge>
+                  </div>
 
-                    {/* Progress Bar */}
-                    <div className="space-y-1 pt-1">
-                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-secondary rounded-full transition-all duration-500"
-                          style={{ width: `${completionRate}%` }}
-                        />
-                      </div>
+                  <div className="grid grid-cols-3 gap-2 text-center border-y border-slate-100 py-2 mt-2">
+                    <div>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Assigned</span>
+                      <strong className="text-sm font-bold text-slate-800">{staffTasks.length}</strong>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    <div>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Pending</span>
+                      <strong className="text-sm font-bold text-primary">{pending}</strong>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Completed</span>
+                      <strong className="text-sm font-bold text-secondary">{completed}</strong>
+                    </div>
+                  </div>
 
-            {/* Unassigned Work Card */}
-            {(() => {
-              const unassignedTasks = tasks.filter((t) => t.staffId === null);
-              const unassignedPending = unassignedTasks.filter((t) => t.status !== "COMPLETED").length;
-              return (
-                <Card className="glass-card border border-dashed border-slate-300 rounded-xl shadow-xs">
-                  <CardContent className="p-4 flex flex-col justify-between h-full min-h-[120px]">
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-600">Unallocated Tasks</h4>
-                        <span className="text-[10px] text-slate-400 font-medium">Needs assignment</span>
-                      </div>
-                      <Badge className="text-[9px] uppercase font-extrabold tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                        {unassignedPending} Open
-                      </Badge>
+                  {/* Progress Bar */}
+                  <div className="space-y-1 pt-1">
+                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-secondary rounded-full transition-all duration-500"
+                        style={{ width: `${completionRate}%` }}
+                      />
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
 
-                    <div className="text-xs text-slate-500 mt-2">
-                      There are currently <strong className="text-slate-700">{unassignedTasks.length} unassigned</strong> operational tasks.
+          {/* Unassigned Work Card */}
+          {(() => {
+            const unassignedTasks = tasks.filter((t) => t.staffId === null);
+            const unassignedPending = unassignedTasks.filter((t) => t.status !== "COMPLETED").length;
+            return (
+              <Card className="py-0 glass-card border border-dashed border-slate-300 rounded-lg shadow-xs">
+                <CardContent className="sm:p-5 p-4 flex flex-col justify-between h-full min-h-[120px]">
+                  <div className="flex flex-wrap justify-between items-start gap-2">
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-600">Unallocated Tasks</h4>
+                      <span className="text-[11px] text-slate-400 font-medium">Needs assignment</span>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })()}
-          </div>
+                    <Badge className="text-[9px] uppercase font-bold tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                      {unassignedPending} Open
+                    </Badge>
+                  </div>
+
+                  <div className="text-xs text-slate-500 mt-2">
+                    There are currently <strong className="text-slate-700">{unassignedTasks.length} unassigned</strong> operational tasks.
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
         </div>
       )}
 
       {/* Filters Hub */}
-      <Card className="glass-card border border-slate-200/80 rounded-2xl shadow-sm">
-        <CardContent className="p-4 grid gap-4 grid-cols-1 sm:grid-cols-3">
+      <Card className="py-0 glass-card border border-slate-200/80 rounded-lg shadow-sm">
+        <CardContent className="sm:p-5 p-4 grid gap-4 grid-cols-1 sm:grid-cols-3">
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-slate-600">Filter by Category</Label>
             <Select value={filterCategory} onValueChange={(v) => v && setFilterCategory(v)}>
@@ -623,17 +607,17 @@ export default function TasksClient({
 
       {/* Task Status Tabs */}
       <Tabs defaultValue="all" className="w-full mt-2">
-        <TabsList className="bg-slate-500/10 p-1 border border-slate-200 rounded-xl max-w-full overflow-x-auto flex flex-nowrap md:inline-flex shrink-0 items-center">
-          <TabsTrigger value="all" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
+        <TabsList className="bg-slate-500/10 p-1 border border-slate-200 rounded-lg max-w-full overflow-x-auto flex flex-nowrap md:inline-flex shrink-0 items-center">
+          <TabsTrigger value="all" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             All Tasks ({filteredTasks.length})
           </TabsTrigger>
-          <TabsTrigger value="todo" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
+          <TabsTrigger value="todo" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             To Do ({filteredTasks.filter((t) => t.status === "TODO").length})
           </TabsTrigger>
-          <TabsTrigger value="in_progress" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
+          <TabsTrigger value="in_progress" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             In Progress ({filteredTasks.filter((t) => t.status === "IN_PROGRESS").length})
           </TabsTrigger>
-          <TabsTrigger value="completed" className="rounded-lg px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
+          <TabsTrigger value="completed" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             Completed ({filteredTasks.filter((t) => t.status === "COMPLETED").length})
           </TabsTrigger>
         </TabsList>
@@ -652,7 +636,7 @@ export default function TasksClient({
 
       {/* Create Task Assignment Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Assign New Task</DialogTitle>
             <DialogDescription className="text-xs text-slate-500 mt-1">
@@ -766,7 +750,6 @@ export default function TasksClient({
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 text-white"
               >
                 {loading ? "Assigning..." : "Assign Task"}
               </Button>

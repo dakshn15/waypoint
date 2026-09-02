@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight">
               Check your inbox
             </h1>
             <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 mx-auto">
               <KeyRound className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight">
               Forgot password?
             </h1>
             <p className="text-sm text-slate-500 mt-2">

@@ -19,8 +19,6 @@ import {
   Globe,
   Plane,
   Star,
-  BarChart3,
-  PieChart,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -54,13 +52,13 @@ function StatCard({
 }) {
   return (
     <Card className="sm:py-5 group relative overflow-hidden bg-white border border-slate-200/60 rounded-lg shadow-sm hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-0.5">
-      <CardContent className="sm:px-5 px-4 flex items-center justify-between gap-1">
+      <CardContent className="sm:px-5 px-4 xl:flex items-center justify-between gap-1">
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</p>
-          <h3 className="text-2xl font-extrabold tracking-tight text-slate-900">{value}</h3>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider xl:pe-0 pe-3">{title}</p>
+          <h3 className="text-2xl font-bold tracking-tight text-slate-900">{value}</h3>
           <p className="text-xs text-slate-400 font-medium">{subtitle}</p>
         </div>
-        <div className={`h-11 w-11 rounded-md ${iconBg} flex-shrink-0 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
+        <div className={`xl:static absolute top-3 right-3 xl:h-11 xl:w-11 xl:rounded-md ${iconBg} flex-shrink-0 flex items-center justify-center xl:shadow-sm group-hover:scale-105 transition-transform`}>
           <Icon className="h-5 w-5" />
         </div>
       </CardContent>
@@ -113,7 +111,7 @@ function ActionCard({
 }) {
   return (
     <Link href={href}>
-      <Card className="sm:py-5 group cursor-pointer bg-white border border-slate-200/60 rounded-lg hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden relative">
+      <Card className="h-full sm:py-5 group cursor-pointer bg-white border border-slate-200/60 rounded-lg hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden relative">
         <CardContent className="flex items-center sm:gap-4 gap-3 sm:px-5 px-4">
           <div className={`sm:h-12 sm:w-12 h-10 w-10 rounded-lg ${gradient} text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-md ${iconShadow}`}>
             <Icon className="sm:h-6 sm:w-6 h-5 w-5" />
@@ -143,7 +141,7 @@ function EmptyBookingsList({ message }: { message: string }) {
 
 function TopPackagesBox({ packages }: { packages: { title: string; bookings: number; revenue: number; currency: string }[] }) {
   return (
-    <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+    <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
       <CardHeader className="pb-3 border-b border-slate-100">
         <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
@@ -160,12 +158,11 @@ function TopPackagesBox({ packages }: { packages: { title: string; bookings: num
           <div className="space-y-2.5">
             {packages.map((pkg, i) => (
               <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-colors">
-                <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0 ${
-                  i === 0 ? "bg-primary/10 text-primary" : i === 1 ? "bg-secondary/10 text-secondary" : "bg-slate-100 text-slate-500"
-                }`}>{i + 1}</div>
+                <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${i === 0 ? "bg-primary/10 text-primary" : i === 1 ? "bg-secondary/10 text-secondary" : "bg-slate-100 text-slate-500"
+                  }`}>{i + 1}</div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-slate-800 truncate">{pkg.title}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{pkg.bookings} booking{pkg.bookings !== 1 ? "s" : ""}</p>
+                  <p className="text-[11px] text-slate-400 font-medium">{pkg.bookings} booking{pkg.bookings !== 1 ? "s" : ""}</p>
                 </div>
                 <span className="text-xs font-bold text-slate-700 shrink-0">{formatCurrency(pkg.revenue, pkg.currency)}</span>
               </div>
@@ -304,9 +301,9 @@ async function TravelerDashboard({
         <div className="absolute top-4 right-4 opacity-10">
           <Plane className="h-24 w-24 -rotate-12" />
         </div>
-        <div className="relative z-10">
+        <div className="relative z-[1]">
           <p className="text-white/60 text-sm font-medium mb-1">{getGreeting()}</p>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
             Welcome back, {userName} 👋
           </h1>
           <p className="text-white/50 text-sm mt-3 max-w-md">
@@ -490,9 +487,9 @@ async function AgencyDashboard({
         <div className="absolute top-4 right-4 opacity-10">
           <TrendingUp className="h-24 w-24" />
         </div>
-        <div className="relative z-10">
+        <div className="relative z-[1]">
           <p className="text-white/60 text-sm font-medium mb-1">{getGreeting()}</p>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
             Agency Dashboard
           </h1>
           <p className="text-white/50 text-sm mt-3 max-w-md">
@@ -509,7 +506,7 @@ async function AgencyDashboard({
           subtitle={`From ${allBookings.length} bookings`}
           icon={DollarSign}
           gradient="bg-gradient-to-r from-emerald-500 to-teal-500"
-          iconBg="bg-emerald-500/10 text-emerald-600"
+          iconBg="xl:bg-emerald-500/10 text-emerald-600"
         />
         <StatCard
           title="Active Bookings"
@@ -517,7 +514,7 @@ async function AgencyDashboard({
           subtitle="Recent bookings"
           icon={CalendarCheck}
           gradient="bg-gradient-to-r from-secondary to-slate-600"
-          iconBg="bg-secondary/10 text-secondary"
+          iconBg="xl:bg-secondary/10 text-secondary"
         />
         <StatCard
           title="Published Packages"
@@ -525,7 +522,7 @@ async function AgencyDashboard({
           subtitle="Active packages"
           icon={Package}
           gradient="bg-gradient-to-r from-primary to-orange-400"
-          iconBg="bg-primary/10 text-primary"
+          iconBg="xl:bg-primary/10 text-primary"
         />
         <StatCard
           title="Total Travelers"
@@ -533,7 +530,7 @@ async function AgencyDashboard({
           subtitle="Unique customers"
           icon={Users}
           gradient="bg-gradient-to-r from-violet-500 to-indigo-500"
-          iconBg="bg-violet-500/10 text-violet-600"
+          iconBg="xl:bg-violet-500/10 text-violet-600"
         />
       </div>
 
@@ -567,7 +564,7 @@ async function AgencyDashboard({
       {/* Row B: Recent Bookings + Top Packages */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -670,9 +667,9 @@ async function AdminDashboard({ userName }: { userName: string }) {
         <div className="absolute top-4 right-4 opacity-10">
           <Star className="h-24 w-24" />
         </div>
-        <div className="relative z-10">
+        <div className="relative z-[1]">
           <p className="text-white/60 text-sm font-medium mb-1">{getGreeting()}</p>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
             Admin Dashboard
           </h1>
           <p className="text-white/50 text-sm mt-3 max-w-md">
@@ -747,7 +744,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
       {/* Row B: Recent Bookings + Platform Summary */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -780,7 +777,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         </Card>
 
         {/* Platform Overview */}
-        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Users className="h-4 w-4 text-violet-500" />
@@ -789,20 +786,20 @@ async function AdminDashboard({ userName }: { userName: string }) {
           </CardHeader>
           <CardContent className="p-4 flex flex-col items-center justify-center flex-1 space-y-3">
             <div className="text-center">
-              <p className="text-3xl font-extrabold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
+              <p className="text-3xl font-bold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
               <p className="text-xs text-slate-400 mt-0.5 font-medium">Total Platform Volume</p>
             </div>
             <div className="grid grid-cols-3 gap-3 w-full pt-3 border-t border-slate-100 text-center">
               <div>
-                <p className="font-extrabold text-slate-800 text-base">{totalUsers}</p>
+                <p className="font-bold text-slate-800 text-base">{totalUsers}</p>
                 <p className="text-[10px] text-slate-400 font-semibold uppercase">Users</p>
               </div>
               <div>
-                <p className="font-extrabold text-slate-800 text-base">{totalAgencies}</p>
+                <p className="font-bold text-slate-800 text-base">{totalAgencies}</p>
                 <p className="text-[10px] text-slate-400 font-semibold uppercase">Agencies</p>
               </div>
               <div>
-                <p className="font-extrabold text-slate-800 text-base">{totalPackages}</p>
+                <p className="font-bold text-slate-800 text-base">{totalPackages}</p>
                 <p className="text-[10px] text-slate-400 font-semibold uppercase">Packages</p>
               </div>
             </div>
@@ -836,7 +833,7 @@ async function StaffDashboard({
           <AlertCircle className="h-8 w-8 text-rose-500" />
         </div>
         <h3 className="font-bold text-lg text-slate-900">Staff Profile Not Found</h3>
-        <p className="text-sm text-slate-500 mt-1">Please contact your agency administrator.</p>
+        <p className="text-sm text-slate-500 mt-1.5">Please contact your agency administrator.</p>
       </div>
     );
   }
@@ -893,9 +890,9 @@ async function StaffDashboard({
         <div className="absolute top-4 right-4 opacity-10">
           <ListTodo className="h-24 w-24" />
         </div>
-        <div className="relative z-10">
+        <div className="relative z-[1]">
           <p className="text-white/60 text-sm font-medium mb-1">{getGreeting()}</p>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
             Welcome back, {userName}! 👋
           </h1>
           <p className="text-white/50 text-sm mt-2 flex items-center gap-2">
@@ -967,14 +964,14 @@ async function StaffDashboard({
               <div className="space-y-3">
                 {activeTasks.map((t) => (
                   <div key={t.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-xl space-y-2 hover:bg-slate-50 transition-colors">
-                    <div className="flex justify-between items-start gap-2">
+                    <div className="flex flex-wrap justify-between items-start gap-2">
                       <span className="font-semibold text-sm text-slate-800 line-clamp-1">{t.title}</span>
                       <Badge variant="outline" className={`text-[8px] px-1.5 uppercase font-bold shrink-0 ${getPriorityColor(t.priority)}`}>
                         {t.priority}
                       </Badge>
                     </div>
                     <p className="text-xs text-slate-400 line-clamp-1">{t.description}</p>
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-medium">
+                    <div className="flex justify-between items-center text-[11px] text-slate-400 font-medium">
                       <span className="bg-slate-100 px-1.5 py-0.5 rounded-md">{t.category}</span>
                       <span>Due: {formatDate(new Date(t.dueDate))}</span>
                     </div>

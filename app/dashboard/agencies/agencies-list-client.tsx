@@ -461,7 +461,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Register Agency Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="glass-card max-w-md p-6 border-slate-200">
+        <DialogContent className="glass-card max-w-md border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-900">Register New Agency</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -562,7 +562,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Edit Agency Dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-        <DialogContent className="glass-card max-w-md p-6 border-slate-200">
+        <DialogContent className="glass-card max-w-md border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-900">Edit Agency Tenant</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -688,7 +688,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="glass-card border-rose-500/20 max-w-md p-6">
+        <DialogContent className="glass-card border-rose-500/20 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">Delete Travel Agency</DialogTitle>
             <DialogDescription className="mt-2 text-xs text-slate-500 leading-relaxed">

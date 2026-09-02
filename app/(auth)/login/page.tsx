@@ -89,7 +89,7 @@ export default function LoginPage() {
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
       <div className="md:mb-8 mb-5 text-center">
-        <h1 className="text-2xl sm:text-[28px] font-extrabold tracking-tight">
+        <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight">
           Welcome back
         </h1>
         <p className="text-sm text-slate-500 mt-2">

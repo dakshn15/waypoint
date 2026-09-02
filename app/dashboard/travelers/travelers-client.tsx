@@ -84,7 +84,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
   return (
     <>
       {/* Search Bar */}
-      <div className="relative">
+      <div className="relative max-w-96">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           placeholder="Search travelers by name or email..."
@@ -95,20 +95,20 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
       </div>
 
       {/* Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-5">
         {[
           { label: "Total Travelers", value: travelers.length, icon: Users, color: "text-secondary", bg: "bg-secondary/10" },
           { label: "Total Bookings", value: travelers.reduce((s, t) => s + t.bookingsCount, 0), icon: CalendarCheck, color: "text-primary", bg: "bg-primary/10" },
           { label: "Total Revenue", value: formatCurrency(travelers.reduce((s, t) => s + t.totalSpent, 0), "INR"), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-500/10" },
         ].map((stat) => (
-          <Card key={stat.label} className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${stat.bg}`}>
+          <Card key={stat.label} className="bg-white border border-slate-200/60 rounded-lg shadow-sm">
+            <CardContent className="sm:p-5 p-4 flex items-center gap-3">
+              <div className={`h-10 w-10 rounded-md flex items-center justify-center ${stat.bg}`}>
                 <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-lg font-extrabold text-slate-900">{stat.value}</p>
-                <p className="text-xs text-slate-400 font-semibold">{stat.label}</p>
+                <p className="text-lg font-bold text-slate-900">{stat.value}</p>
+                <p className="text-xs text-slate-400 font-medium mt-1.5">{stat.label}</p>
               </div>
             </CardContent>
           </Card>
@@ -116,9 +116,9 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
       </div>
 
       {/* Travelers Table */}
-      <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden">
+      <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[780px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 {["Traveler", "Email", "Bookings", "Total Spent", "Last Booking", ""].map((h) => (
@@ -140,7 +140,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
                   <tr key={t.user.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => setSelected(t)}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                        <div className="h-9 w-9 rounded-md bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-bold text-sm shrink-0">
                           {initials(t.user.name)}
                         </div>
                         <span className="font-semibold text-slate-900 text-sm">{t.user.name || "Unknown"}</span>
@@ -178,7 +178,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
             <>
               <SheetHeader className="p-6 border-b border-slate-100">
                 <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-extrabold text-xl shrink-0">
+                  <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-bold text-xl shrink-0">
                     {initials(selected.user.name)}
                   </div>
                   <div>
@@ -192,12 +192,12 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <div className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
-                    <p className="text-xl font-extrabold text-slate-900">{selected.bookingsCount}</p>
-                    <p className="text-xs text-slate-400 font-semibold">Bookings</p>
+                    <p className="text-xl font-bold text-slate-900">{selected.bookingsCount}</p>
+                    <p className="text-xs text-slate-400 font-medium mt-1.5">Bookings</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
-                    <p className="text-xl font-extrabold text-emerald-600">{formatCurrency(selected.totalSpent, "INR")}</p>
-                    <p className="text-xs text-slate-400 font-semibold">Total Spent</p>
+                    <p className="text-xl font-bold text-emerald-600">{formatCurrency(selected.totalSpent, "INR")}</p>
+                    <p className="text-xs text-slate-400 font-medium mt-1.5">Total Spent</p>
                   </div>
                 </div>
               </SheetHeader>
@@ -217,7 +217,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
                   <div className="space-y-2.5">
                     {selected.bookings.map((b) => (
                       <div key={b.id} className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                        <div className="h-8 w-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="h-8 w-8 rounded-md bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
                           <Package className="h-4 w-4 text-secondary" />
                         </div>
                         <div className="min-w-0 flex-1">

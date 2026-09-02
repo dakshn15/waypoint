@@ -63,9 +63,9 @@ export function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!loading) onOpenChange(v); }}>
-      <DialogContent className="max-w-sm bg-white border border-slate-200 rounded-2xl shadow-2xl p-6">
+      <DialogContent className="max-w-sm bg-white border border-slate-200 shadow-lg">
         <DialogHeader className="space-y-3">
-          <div className={`h-12 w-12 rounded-2xl ${iconBg} flex items-center justify-center mx-auto`}>
+          <div className={`h-12 w-12 rounded-lg ${iconBg} flex items-center justify-center mx-auto`}>
             <Icon className={`h-6 w-6 ${iconColor}`} />
           </div>
           <DialogTitle className="text-center text-lg font-bold text-slate-900">
@@ -75,17 +75,17 @@ export function ConfirmDialog({
             {description}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex gap-3 mt-4">
+        <div className="flex gap-3">
           <Button
             variant="outline"
-            className="flex-1 rounded-xl h-10 border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
+            className="flex-1"
             disabled={loading}
             onClick={() => onOpenChange(false)}
           >
             {cancelLabel}
           </Button>
           <Button
-            className={`flex-1 rounded-xl h-10 font-semibold cursor-pointer ${confirmStyle}`}
+            className={`flex-1 ${confirmStyle}`}
             disabled={loading}
             onClick={onConfirm}
           >

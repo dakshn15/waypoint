@@ -18,12 +18,12 @@ import { useRouter } from "next/navigation";
 import { addVendor } from "@/app/actions/vendors";
 
 const CATEGORIES = [
-  "HOTEL",
-  "TRANSPORT",
-  "RESTAURANT",
-  "ACTIVITY",
-  "GUIDE",
-  "OTHER",
+  "Hotel",
+  "Transport",
+  "Restaurant",
+  "Activity",
+  "Guide",
+  "Other",
 ];
 
 export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
@@ -79,7 +79,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="bg-gradient-to-r from-primary to-orange-400 text-white shadow-sm shadow-primary/20" />
+          <Button />
         }
       >
         <Plus className="h-4 w-4" /> Add Vendor
@@ -94,7 +94,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label htmlFor="vendor-name">Vendor Name *</Label>
+            <Label htmlFor="vendor-name">Vendor Name <span className="text-rose-500">*</span></Label>
             <Input
               id="vendor-name"
               placeholder="e.g., Taj Hotels"
@@ -110,7 +110,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
                 <button
                   key={cat}
                   type="button"
-                  className={`p-2 rounded-lg border text-xs font-medium transition-all ${
+                  className={`p-2 rounded-md border text-sm font-medium transition-all cursor-pointer ${
                     form.category === cat
                       ? "border-[var(--waypoint-teal)] bg-[var(--waypoint-teal)]/10 text-[var(--waypoint-teal)]"
                       : "border-border hover:border-[var(--waypoint-teal)]/50 text-muted-foreground"
@@ -182,7 +182,6 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Add Vendor

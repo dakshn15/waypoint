@@ -351,7 +351,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               size="sm"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="h-8 w-8 p-0 rounded-lg border-slate-200 cursor-pointer"
+              className="h-8 w-8 p-0 rounded-md border-slate-200 cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -364,7 +364,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                   size="sm"
                   onClick={() => setCurrentPage(page)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-lg text-xs font-bold cursor-pointer",
+                    "h-8 w-8 p-0 rounded-md text-xs font-bold cursor-pointer",
                     currentPage === page
                       ? "bg-secondary text-white border-secondary hover:bg-secondary/90"
                       : "border-slate-200 text-slate-600 hover:bg-slate-50"
@@ -379,7 +379,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               size="sm"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="h-8 w-8 p-0 rounded-lg border-slate-200 cursor-pointer"
+              className="h-8 w-8 p-0 rounded-md border-slate-200 cursor-pointer"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -390,7 +390,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
       {/* Action Confirmation Dialog */}
       {selectedBooking && dlg && (
         <Dialog open={true} onOpenChange={() => { if (!loading) { setSelectedBooking(null); setDialogMode(null); } }}>
-          <DialogContent className="max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-6">
+          <DialogContent className="max-w-md bg-white border border-slate-200 shadow-lg">
             <DialogHeader className="space-y-2">
               <DialogTitle className="flex items-center gap-2 text-lg font-bold text-slate-900">
                 <dlg.icon className="h-5 w-5" />

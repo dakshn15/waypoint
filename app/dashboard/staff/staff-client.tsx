@@ -189,12 +189,12 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-secondary hover:bg-secondary text-white gap-2">
+              <Button>
                 <Plus className="h-4 w-4" /> Add Staff Member
               </Button>
             }
           />
-          <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
+          <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 shadow-lg">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Invite Staff Member</DialogTitle>
             </DialogHeader>
@@ -262,7 +262,6 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-secondary hover:bg-secondary text-white"
                 >
                   {loading ? "Inviting..." : "Create Staff Account"}
                 </Button>
@@ -280,8 +279,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             { label: "Active", value: staff.filter(s => s.active).length, color: "text-secondary", bg: "bg-secondary/10" },
             { label: "Inactive", value: staff.filter(s => !s.active).length, color: "text-slate-400", bg: "bg-slate-100" },
           ].map((stat) => (
-            <div key={stat.label} className={`rounded-2xl border border-slate-200/60 ${stat.bg} p-4 text-center`}>
-              <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
+            <div key={stat.label} className={`rounded-lg border border-slate-200/60 ${stat.bg} p-4 text-center`}>
+              <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
               <p className="text-xs text-slate-500 font-semibold mt-0.5">{stat.label}</p>
             </div>
           ))}
@@ -289,7 +288,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
       )}
 
       {staff.length === 0 ? (
-        <Card className="glass-card border border-slate-200 rounded-2xl shadow-sm">
+        <Card className="glass-card border border-slate-200 rounded-lg shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="h-16 w-16 bg-gradient-to-tr from-secondary/10 to-secondary/10 rounded-full flex items-center justify-center mb-4">
               <Users className="h-8 w-8 text-secondary" />
@@ -313,30 +312,30 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             return (
               <Card
                 key={s.id}
-                className={`glass-card hover:shadow-xl transition-all hover:-translate-y-0.5 border rounded-2xl overflow-hidden ${!s.active ? "opacity-65" : "border-slate-200"
+                className={`glass-card hover:shadow-xl transition-all hover:-translate-y-0.5 border rounded-lg overflow-hidden ${!s.active ? "opacity-65" : "border-slate-200"
                   }`}
               >
                 <CardContent className="p-6 relative">
                   <button
                     onClick={() => handleDeleteStaff(s)}
                     disabled={isSelfAction}
-                    className="absolute top-5 right-5 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 transition-colors border border-transparent hover:border-rose-500/10 cursor-pointer"
+                    className="absolute top-5 right-5 flex items-center justify-center text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
                     title="Delete Staff Member"
                   >
-                    <Trash2 className="h-4.5 w-4.5" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
 
                   <button
                     onClick={() => handleEditClick(s)}
                     disabled={isSelfAction}
-                    className="absolute top-5 right-13 h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-500/5 transition-colors border border-transparent hover:border-slate-500/10 cursor-pointer"
+                    className="absolute top-5 right-12 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                     title="Edit Staff Member"
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
 
                   <div className="flex items-center gap-3 mb-5">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary to-slate-700 flex items-center justify-center text-white font-extrabold text-lg shadow-inner">
+                    <div className="h-10 w-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-secondary to-slate-700 flex items-center justify-center text-white font-bold text-lg shadow-inner">
                       {s.user.name?.charAt(0)?.toUpperCase() || "S"}
                     </div>
                     <div>
@@ -348,7 +347,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <Badge variant="outline" className={`text-[10px] font-extrabold tracking-widest uppercase ${getRoleBadgeStyle(s.role)}`}>
+                    <Badge variant="outline" className={`text-[10px] font-bold tracking-widest uppercase ${getRoleBadgeStyle(s.role)}`}>
                       {s.role}
                     </Badge>
 
@@ -373,7 +372,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
 
       {/* Edit Staff Dialog */}
       <Dialog open={!!editStaff} onOpenChange={(open) => !open && setEditStaff(null)}>
-        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit Staff Member</DialogTitle>
           </DialogHeader>

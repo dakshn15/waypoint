@@ -27,7 +27,7 @@ export default function AuthLayout({
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Compass className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-extrabold tracking-tight text-white">
+            <span className="text-xl font-bold tracking-tight text-white">
               Way<span className="text-primary">point</span>
             </span>
           </Link>
@@ -35,7 +35,7 @@ export default function AuthLayout({
 
         {/* Center Headline */}
         <div className="relative z-10 space-y-5 max-w-lg">
-          <h2 className="text-3xl xl:text-5xl font-extrabold tracking-tight leading-[1.1] text-white">
+          <h2 className="text-3xl xl:text-5xl font-bold tracking-tight leading-[1.1] text-white">
             Your next adventure{" "}
             <span className="bg-gradient-to-r from-primary via-primary/80 to-wp-primary-light bg-clip-text text-transparent">
               starts here.
@@ -65,7 +65,7 @@ export default function AuthLayout({
         {/* Bottom Testimonial */}
         <div className="relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 xl:p-5 max-w-md">
           <p className="text-xs xl:text-sm text-white/80 leading-relaxed italic">
-            &ldquo;Waypoint planned our entire Rajasthan trip in under 30 seconds. 
+            &ldquo;Waypoint planned our entire Rajasthan trip in under 30 seconds.
             The AI itinerary was so detailed we didn&apos;t miss a single experience.&rdquo;
           </p>
           <div className="flex items-center gap-3 mt-3">
@@ -90,7 +90,7 @@ export default function AuthLayout({
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
               <Compass className="h-4.5 w-4.5 text-white" />
             </div>
-            <span className="text-lg font-extrabold tracking-tight text-secondary">
+            <span className="text-lg font-bold tracking-tight text-secondary">
               Way<span className="text-primary">point</span>
             </span>
           </Link>

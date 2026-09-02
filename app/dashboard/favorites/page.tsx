@@ -106,7 +106,7 @@ export default async function FavoritesPage() {
       </div>
 
       {favorites.length === 0 ? (
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-20">
             <div className="h-16 w-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mb-4">
               <Heart className="h-8 w-8 text-rose-500" />
@@ -210,7 +210,7 @@ export default async function FavoritesPage() {
                     <div className="flex flex-wrap gap-2 items-center justify-between pt-3 border-t border-slate-100 mt-auto">
                       <div>
                         <span className="text-xs text-slate-400 block font-medium mb-0.5">Package Price</span>
-                        <span className="text-lg font-extrabold text-slate-900 font-display">
+                        <span className="text-lg font-bold text-slate-900 font-display">
                           {formatCurrency(Number(pkg.basePrice), pkg.currency)}
                         </span>
                         <span className="text-[11px] text-slate-400 ml-1">/person</span>

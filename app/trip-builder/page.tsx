@@ -359,7 +359,7 @@ export default function TripBuilderPage() {
                   <span className="text-slate-300 hidden sm:inline">•</span>
                   <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Gemini 2.0 Engine</span>
                 </div>
-                <p className="text-sm text-slate-500 mt-1">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
+                <p className="text-sm text-slate-500 mt-1.5">Step {step + 1} of 6 — <strong className="text-slate-900 font-bold">{STEPS[step].label}</strong></p>
               </div>
             </div>
 
@@ -373,8 +373,8 @@ export default function TripBuilderPage() {
 
           {/* Dynamic Progress Bar Line */}
           <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-orange-500 transition-all duration-500 ease-out rounded-full" 
+            <div
+              className="h-full bg-gradient-to-r from-primary to-orange-500 transition-all duration-500 ease-out rounded-full"
               style={{ width: `${((step + 1) / 6) * 100}%` }}
             />
           </div>
@@ -390,13 +390,12 @@ export default function TripBuilderPage() {
                   key={s.label}
                   type="button"
                   onClick={() => { if (i < step) setStep(i); }}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                    isActive
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${isActive
                       ? "bg-slate-900 text-white shadow-sm scale-[1.02]"
                       : isCompleted
-                      ? "bg-primary/10 text-primary hover:bg-primary/15"
-                      : "bg-slate-100/90 text-slate-500 hover:text-slate-800"
-                  }`}
+                        ? "bg-primary/10 text-primary hover:bg-primary/15"
+                        : "bg-slate-100/90 text-slate-500 hover:text-slate-800"
+                    }`}
                 >
                   {isCompleted ? <Check className="h-3.5 w-3.5 text-primary" /> : <span className="text-[10px] opacity-70">0{i + 1}</span>}
                   <span>{s.label}</span>
@@ -413,7 +412,7 @@ export default function TripBuilderPage() {
 
           {/* ═══ LEFT PANE: LIVE TRIP PASSPORT / SPEC BOARD ═══ */}
           <div className="space-y-4 md:sticky md:top-28">
-            
+
             {/* Digital Travel Passport Ticket Card */}
             <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden relative">
 
@@ -654,11 +653,10 @@ export default function TripBuilderPage() {
                             key={dest.name}
                             type="button"
                             onClick={() => toggleFeaturedDestination(dest.name)}
-                            className={`group relative rounded-xl overflow-hidden border-2 text-left transition-all cursor-pointer h-28 ${
-                              isSelected
+                            className={`group relative rounded-xl overflow-hidden border-2 text-left transition-all cursor-pointer h-28 ${isSelected
                                 ? "border-primary ring-2 ring-primary/20 shadow-md scale-[1.02]"
                                 : "border-transparent hover:border-slate-300"
-                            }`}
+                              }`}
                           >
                             <img src={dest.image} alt={dest.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                             <div className={`absolute inset-0 transition-colors ${isSelected ? "bg-gradient-to-t from-primary/80 via-primary/30 to-primary/10" : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"}`} />
@@ -840,13 +838,11 @@ export default function TripBuilderPage() {
                           key={style.value}
                           type="button"
                           onClick={() => setFormData({ ...formData, travelStyle: style.value })}
-                          className={`relative p-4 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.travelStyle === style.value ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}
+                          className={`relative p-4 rounded-xl border-2 text-center transition-all cursor-pointer ${formData.travelStyle === style.value ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                            }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg mx-auto mb-2 flex items-center justify-center ${
-                            formData.travelStyle === style.value ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
-                          }`}>{STYLE_ICONS[style.value]}</div>
+                          <div className={`w-8 h-8 rounded-lg mx-auto mb-2 flex items-center justify-center ${formData.travelStyle === style.value ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
+                            }`}>{STYLE_ICONS[style.value]}</div>
                           <span className={`text-sm font-bold block ${formData.travelStyle === style.value ? "text-slate-900" : "text-slate-600"}`}>{style.label}</span>
                           <span className="text-[10px] text-slate-500 block mt-0.5">~₹{getRecommendedBudgetPerDay(style.value).toLocaleString("en-IN")}/day</span>
                         </button>
@@ -927,9 +923,8 @@ export default function TripBuilderPage() {
                         key={interest}
                         type="button"
                         onClick={() => toggleInterest(interest)}
-                        className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 text-xs font-bold transition-all cursor-pointer ${
-                          formData.interests.includes(interest) ? "border-primary bg-primary/5 text-primary shadow-xs" : "border-slate-200 bg-[#FAFAF9] text-slate-700 hover:border-slate-300"
-                        }`}
+                        className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 text-xs font-bold transition-all cursor-pointer ${formData.interests.includes(interest) ? "border-primary bg-primary/5 text-primary shadow-xs" : "border-slate-200 bg-[#FAFAF9] text-slate-700 hover:border-slate-300"
+                          }`}
                       >
                         {INTEREST_ICONS[interest] || <Compass className="h-3.5 w-3.5" />}
                         {interest}
@@ -961,13 +956,11 @@ export default function TripBuilderPage() {
                           key={pref}
                           type="button"
                           onClick={() => setFormData({ ...formData, stayPreference: pref })}
-                          className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.stayPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}
+                          className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${formData.stayPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                            }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${
-                            formData.stayPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
-                          }`}>{STAY_ICONS[pref] || <Hotel className="h-4 w-4" />}</div>
+                          <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${formData.stayPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
+                            }`}>{STAY_ICONS[pref] || <Hotel className="h-4 w-4" />}</div>
                           <span className={`text-xs font-bold block ${formData.stayPreference === pref ? "text-slate-900" : "text-slate-600"}`}>{pref}</span>
                           <span className="text-[9px] text-slate-500 block mt-1 leading-tight">{STAY_PERKS[pref]}</span>
                         </button>
@@ -991,13 +984,11 @@ export default function TripBuilderPage() {
                           key={pref}
                           type="button"
                           onClick={() => setFormData({ ...formData, transportPreference: pref })}
-                          className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${
-                            formData.transportPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                          }`}
+                          className={`relative p-3.5 rounded-xl border-2 text-center transition-all cursor-pointer ${formData.transportPreference === pref ? "border-primary bg-primary/5 shadow-xs" : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
+                            }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${
-                            formData.transportPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
-                          }`}>{TRANSPORT_ICONS[pref] || <Car className="h-4 w-4" />}</div>
+                          <div className={`w-8 h-8 rounded-lg mx-auto mb-1.5 flex items-center justify-center ${formData.transportPreference === pref ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
+                            }`}>{TRANSPORT_ICONS[pref] || <Car className="h-4 w-4" />}</div>
                           <span className={`text-xs font-bold block ${formData.transportPreference === pref ? "text-slate-900" : "text-slate-600"}`}>{pref}</span>
                           <span className="text-[9px] text-slate-500 block mt-1 leading-tight">{TRANSPORT_PERKS[pref]}</span>
                         </button>
@@ -1026,13 +1017,13 @@ export default function TripBuilderPage() {
                     <p className="text-sm text-slate-500">
                       {generating
                         ? (formData.destinations.length > 1
-                            ? `Gemini AI is planning your ${formData.destinations.length}-city route with intercity transfers & daily schedules.`
-                            : "Gemini AI is crafting your detailed daily schedule & cost breakdown.")
+                          ? `Gemini AI is planning your ${formData.destinations.length}-city route with intercity transfers & daily schedules.`
+                          : "Gemini AI is crafting your detailed daily schedule & cost breakdown.")
                         : <span className="inline-flex flex-wrap items-center justify-center gap-2">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold"><MapPin className="h-3 w-3" /> {destinationLabel}</span>
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold"><CalendarDays className="h-3 w-3" /> {tripDays} Days</span>
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">₹{userBudgetNum.toLocaleString("en-IN")}</span>
-                          </span>}
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold"><MapPin className="h-3 w-3" /> {destinationLabel}</span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold"><CalendarDays className="h-3 w-3" /> {tripDays} Days</span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">₹{userBudgetNum.toLocaleString("en-IN")}</span>
+                        </span>}
                     </p>
                   </div>
 

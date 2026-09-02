@@ -19,7 +19,20 @@ export async function createPackage(data: {
   basePrice: string | number;
   currency: string;
   imageUrl?: string;
-  itineraries?: Array<{ dayNumber: number; title: string; description?: string }>;
+  itineraries?: Array<{
+    dayNumber: number;
+    title: string;
+    description?: string;
+    hotelName?: string;
+    activities?: Array<{
+      time?: string;
+      duration?: string;
+      type?: string;
+      title: string;
+      description?: string;
+      location?: string;
+    }>;
+  }>;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -64,15 +77,38 @@ export async function createPackage(data: {
       basePrice: basePrice || 0,
       currency: data.currency || "INR",
       status: "PUBLISHED", // Auto-publish for usability
-      itineraries: data.itineraries && data.itineraries.length > 0 ? {
-        create: data.itineraries.map((it, idx) => ({
-          dayNumber: it.dayNumber || idx + 1,
-          title: it.title || `Day ${idx + 1}`,
-          description: it.description || "",
-        })),
-      } : undefined,
     },
   });
+
+  if (data.itineraries && data.itineraries.length > 0) {
+    for (const it of data.itineraries) {
+      await prisma.itinerary.create({
+        data: {
+          packageId: createdPackage.id,
+          dayNumber: it.dayNumber,
+          title: it.title,
+          description: it.description || "",
+          hotel: it.hotelName && it.hotelName.trim() ? {
+            create: {
+              name: it.hotelName.trim(),
+              address: `${it.title} Region`,
+              rating: 4.8,
+            }
+          } : undefined,
+          activities: it.activities && it.activities.length > 0 ? {
+            create: it.activities.map((act) => ({
+              time: act.time || "10:00 AM",
+              duration: act.duration || "1.5 hrs",
+              type: (act.type as any) || "SIGHTSEEING",
+              title: act.title,
+              description: act.description || "",
+              location: act.location || "",
+            })),
+          } : undefined,
+        },
+      });
+    }
+  }
 
   revalidatePath("/dashboard/packages");
   revalidatePath("/packages");
@@ -168,7 +204,20 @@ export async function updatePackage(
     basePrice: string | number;
     currency: string;
     imageUrl?: string;
-    itineraries?: Array<{ dayNumber: number; title: string; description?: string }>;
+    itineraries?: Array<{
+      dayNumber: number;
+      title: string;
+      description?: string;
+      hotelName?: string;
+      activities?: Array<{
+        time?: string;
+        duration?: string;
+        type?: string;
+        title: string;
+        description?: string;
+        location?: string;
+      }>;
+    }>;
   }
 ) {
   const session = await auth.api.getSession({
@@ -224,14 +273,33 @@ export async function updatePackage(
   if (data.itineraries !== undefined) {
     await prisma.itinerary.deleteMany({ where: { packageId } });
     if (data.itineraries.length > 0) {
-      await prisma.itinerary.createMany({
-        data: data.itineraries.map((it, idx) => ({
-          packageId,
-          dayNumber: it.dayNumber || idx + 1,
-          title: it.title || `Day ${idx + 1}`,
-          description: it.description || "",
-        })),
-      });
+      for (const it of data.itineraries) {
+        await prisma.itinerary.create({
+          data: {
+            packageId,
+            dayNumber: it.dayNumber,
+            title: it.title,
+            description: it.description || "",
+            hotel: it.hotelName && it.hotelName.trim() ? {
+              create: {
+                name: it.hotelName.trim(),
+                address: `${it.title} Region`,
+                rating: 4.8,
+              }
+            } : undefined,
+            activities: it.activities && it.activities.length > 0 ? {
+              create: it.activities.map((act) => ({
+                time: act.time || "10:00 AM",
+                duration: act.duration || "1.5 hrs",
+                type: (act.type as any) || "SIGHTSEEING",
+                title: act.title,
+                description: act.description || "",
+                location: act.location || "",
+              })),
+            } : undefined,
+          },
+        });
+      }
     }
   }
 

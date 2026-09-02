@@ -38,7 +38,7 @@ export async function addVendor(input: AddVendorInput) {
       data: {
         agencyId: access.agencyId,
         name: input.name.trim(),
-        category: input.category as any,
+        category: (input.category || "OTHER").toUpperCase() as any,
         location: input.location || null,
         contactEmail: input.contactEmail || null,
         contactPhone: input.contactPhone || null,
@@ -146,7 +146,7 @@ export async function updateVendor(
       where: { id: vendorId },
       data: {
         name: data.name.trim(),
-        category: data.category as any,
+        category: (data.category || "OTHER").toUpperCase() as any,
         location: data.location || null,
         contactEmail: data.contactEmail || null,
         contactPhone: data.contactPhone || null,

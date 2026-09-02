@@ -12,7 +12,7 @@ export default function NotFound() {
             <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
               <Compass className="h-4 w-4 text-white" />
             </div>
-            <span className="font-extrabold tracking-tight text-slate-900 text-[15px]">
+            <span className="font-bold tracking-tight text-slate-900 text-[15px]">
               Way<span className="text-primary">point</span>
             </span>
           </Link>
@@ -29,7 +29,7 @@ export default function NotFound() {
         <div className="max-w-md w-full text-center">
           {/* Decorative graphic */}
           <div className="relative mb-8 inline-block">
-            <span className="text-[120px] md:text-[150px] font-extrabold text-slate-200/80 leading-none select-none">
+            <span className="text-[120px] md:text-[150px] font-bold text-slate-200/80 leading-none select-none">
               404
             </span>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -39,7 +39,7 @@ export default function NotFound() {
             </div>
           </div>
 
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary mb-3">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-secondary mb-3">
             Lost your waypoint?
           </h1>
           <p className="text-sm text-slate-500 leading-relaxed mb-8 max-w-sm mx-auto">

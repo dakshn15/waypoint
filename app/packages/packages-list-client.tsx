@@ -149,7 +149,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
             Discover your next{" "}
             <span className="bg-gradient-to-r from-primary via-[#E8AA9B] to-secondary bg-clip-text text-transparent">
               adventure.
@@ -204,7 +204,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
           {/* ── Controls Bar ── */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-extrabold font-display text-slate-900">
+              <h2 className="text-2xl font-bold font-display text-slate-900">
                 {filteredPackages.length} package{filteredPackages.length !== 1 ? "s" : ""} found
               </h2>
               <p className="text-sm text-slate-500 mt-2">
@@ -283,7 +283,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         className="range-filled"
                         style={{ "--range-progress": `${rangeProgress}%` } as React.CSSProperties}
                       />
-                      <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                      <div className="flex justify-between text-[11px] text-slate-400 font-medium">
                         <span>Budget</span>
                         <span>Premium</span>
                       </div>
@@ -305,11 +305,10 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         <button
                           key={diff.key}
                           onClick={() => setDifficulty(diff.key as any)}
-                          className={`w-full text-left px-3.5 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${
-                            difficulty === diff.key
-                              ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
-                              : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
-                          }`}
+                          className={`w-full text-left px-3.5 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${difficulty === diff.key
+                            ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
+                            : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                            }`}
                         >
                           <span className="text-sm">{diff.icon}</span>
                           <div className="flex-1 flex flex-col gap-0.5">
@@ -343,11 +342,10 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         <button
                           key={dur.key}
                           onClick={() => setDuration(dur.key as any)}
-                          className={`text-center px-3 py-3 rounded-xl border transition-all cursor-pointer ${
-                            duration === dur.key
-                              ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
-                              : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
-                          }`}
+                          className={`text-center px-3 py-3 rounded-xl border transition-all cursor-pointer ${duration === dur.key
+                            ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
+                            : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                            }`}
                         >
                           <span className={`text-sm font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
                             {dur.label}
@@ -436,7 +434,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                           {/* Price row */}
                           <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                             <div>
-                              <span className="text-xl font-extrabold text-slate-900 font-display">
+                              <span className="text-xl font-bold text-slate-900 font-display">
                                 ₹{pkg.basePrice.toLocaleString("en-IN")}
                               </span>
                               <span className="text-[11px] text-slate-400 ml-1">/person</span>
@@ -457,7 +455,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
                     <Search className="h-7 w-7 text-primary" />
                   </div>
-                  <h3 className="font-extrabold text-xl text-slate-900 font-display">No packages found</h3>
+                  <h3 className="font-bold text-xl text-slate-900 font-display">No packages found</h3>
                   <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
                     We couldn&apos;t find any packages matching your criteria. Try adjusting your filters or search terms.
                   </p>

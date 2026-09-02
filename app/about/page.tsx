@@ -232,7 +232,7 @@ export default function AboutPage() {
             About Waypoint
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-slate-900 font-display mb-6">
             Travel planning,{" "}
             <span className="bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent">
               reimagined.
@@ -272,7 +272,7 @@ export default function AboutPage() {
               { value: "<30s", label: "AI Trip Plans" },
             ].map((s) => (
               <div key={s.label} className="py-8 md:py-10 text-center">
-                <p className="text-3xl md:text-4xl font-extrabold tracking-tight text-secondary">
+                <p className="text-3xl md:text-4xl font-bold tracking-tight text-secondary">
                   {s.value}
                 </p>
                 <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-1.5">
@@ -290,7 +290,7 @@ export default function AboutPage() {
           {/* Big pull quote */}
           <div className="mb-16 md:mb-20">
             <div className="w-12 h-1.5 rounded-full bg-primary mb-8" />
-            <blockquote className="text-2xl md:text-[2.1rem] font-extrabold text-secondary leading-[1.35] tracking-tight">
+            <blockquote className="text-2xl md:text-[2.1rem] font-bold text-secondary leading-[1.35] tracking-tight">
               &ldquo;We spent three weeks planning a seven-day trip — browsing
               twenty tabs, comparing unverified operators, building
               spreadsheets.{" "}
@@ -346,7 +346,7 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-5xl px-4">
           <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-secondary">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-secondary">
                 What drives us
               </h2>
               <p className="text-sm text-slate-400 mt-2 max-w-md">
@@ -363,15 +363,14 @@ export default function AboutPage() {
                 className="bg-white p-7 hover:bg-[#FAFAF9] transition-colors group"
               >
                 <div
-                  className={`w-10 h-10 rounded-xl ${
-                    i % 2 === 0
+                  className={`w-10 h-10 rounded-xl ${i % 2 === 0
                       ? "bg-primary/10 text-primary"
                       : "bg-secondary/10 text-secondary"
-                  } flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+                    } flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
                 >
                   <p.icon className="h-5 w-5" />
                 </div>
-                <h3 className="font-extrabold text-[15px] text-secondary mb-1.5">
+                <h3 className="font-bold text-[15px] text-secondary mb-1.5">
                   {p.title}
                 </h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
@@ -396,7 +395,7 @@ export default function AboutPage() {
         />
 
         <div className="container mx-auto max-w-4xl px-4 relative z-10 text-center">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
             Everything unified.{" "}
             <span className="text-primary">Nothing scattered.</span>
           </h2>
@@ -448,7 +447,7 @@ export default function AboutPage() {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-white flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/20">
             <Compass className="h-7 w-7" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-secondary tracking-tight mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-secondary tracking-tight mb-4">
             Your next adventure
             <br />
             starts here.

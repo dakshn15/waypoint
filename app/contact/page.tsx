@@ -97,7 +97,7 @@ export default function ContactPage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
               We&apos;d love to{" "}
               <span className="text-primary">hear from you.</span>
             </h1>
@@ -144,7 +144,7 @@ export default function ContactPage() {
                       <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto shadow-sm">
                         <Send className="h-7 w-7" />
                       </div>
-                      <h3 className="text-xl font-extrabold text-slate-900 font-display">Message Received!</h3>
+                      <h3 className="text-xl font-bold text-slate-900 font-display">Message Received!</h3>
                       <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
                         Thank you for reaching out. Our support team will respond within 24 hours.
                       </p>
@@ -160,7 +160,7 @@ export default function ContactPage() {
                   ) : (
                     <>
                       <div className="mb-7">
-                        <h2 className="text-xl font-extrabold text-slate-900 font-display">Send a Message</h2>
+                        <h2 className="text-xl font-bold text-slate-900 font-display">Send a Message</h2>
                         <p className="text-xs text-slate-500 mt-1">Fill out the form below and our team will get back to you shortly.</p>
                       </div>
 

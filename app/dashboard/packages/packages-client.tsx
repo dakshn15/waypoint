@@ -128,7 +128,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
           const coverImage = getPackageCoverImage(pkg);
 
           return (
-            <Card key={pkg.id} className="py-0 glass-card group hover:shadow-xl transition-all hover:-translate-y-1 border border-slate-200/80 rounded-xl overflow-hidden flex flex-col bg-white">
+            <Card key={pkg.id} className="py-0 glass-card group hover:shadow-xl transition-all hover:-translate-y-1 border border-slate-200/80 rounded-lg overflow-hidden flex flex-col bg-white">
               {/* Cover Image Banner */}
               <div className="relative h-48 w-full overflow-hidden bg-slate-100 border-b border-slate-100">
                 <img
@@ -140,7 +140,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                
+
                 {/* Status Badge on top-left of image */}
                 <div className="absolute top-3 left-3">
                   <Badge
@@ -214,7 +214,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                 </div>
 
                 <div className="flex justify-between items-center pt-3 border-t border-slate-100">
-                  <span className="text-lg font-extrabold text-slate-900 font-display">
+                  <span className="text-lg font-bold text-slate-900 font-display">
                     {formatCurrency(pkg.basePrice, pkg.currency)}
                   </span>
                   <Link href={`/packages/${pkg.id}`}>

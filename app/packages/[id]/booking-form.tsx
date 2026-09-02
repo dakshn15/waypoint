@@ -130,7 +130,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
             </span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-extrabold font-display tracking-tight">
+            <span className="text-3xl font-bold font-display tracking-tight">
               {formatCurrency(basePrice, currency)}
             </span>
             <span className="text-sm text-white/40 font-medium">/person</span>
@@ -264,16 +264,14 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
                 key={g.key}
                 type="button"
                 onClick={() => setGateway(g.key)}
-                className={`relative p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                  gateway === g.key
+                className={`relative p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer ${gateway === g.key
                     ? "border-primary bg-primary/5"
                     : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                }`}
+                  }`}
               >
                 {/* Radio indicator */}
-                <div className={`absolute top-3 right-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                  gateway === g.key ? "border-primary bg-primary" : "border-slate-300"
-                }`}>
+                <div className={`absolute top-3 right-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${gateway === g.key ? "border-primary bg-primary" : "border-slate-300"
+                  }`}>
                   {gateway === g.key && (
                     <div className="w-1.5 h-1.5 rounded-full bg-white" />
                   )}
@@ -304,7 +302,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
           </div>
           <div className="border-t border-slate-200 bg-white px-4 py-3.5 flex justify-between items-center">
             <span className="text-sm font-bold text-slate-900">Total Amount</span>
-            <span className="text-xl font-extrabold text-primary font-display">
+            <span className="text-xl font-bold text-primary font-display">
               {formatCurrency(totalAmount, currency)}
             </span>
           </div>

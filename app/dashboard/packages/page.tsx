@@ -56,14 +56,14 @@ export default async function AgencyPackagesPage() {
           </p>
         </div>
         <Link href="/dashboard/packages/new">
-          <Button className="bg-gradient-to-r from-primary to-orange-400 hover:from-primary/90 hover:to-orange-400/90 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+          <Button>
             <Plus className="h-4 w-4" /> Create Package
           </Button>
         </Link>
       </div>
 
       {packages.length === 0 ? (
-        <Card className="bg-white border border-slate-200/60 rounded-2xl shadow-sm">
+        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm">
           <CardContent className="flex flex-col items-center justify-center py-20">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
               <PackageIcon className="h-8 w-8 text-primary" />
@@ -73,7 +73,7 @@ export default async function AgencyPackagesPage() {
               Create your first travel package to start receiving bookings.
             </p>
             <Link href="/dashboard/packages/new">
-              <Button className="bg-gradient-to-r from-secondary to-slate-600 hover:from-secondary/90 hover:to-slate-600/90 text-white gap-2 rounded-xl shadow-md shadow-secondary/20">
+              <Button>
                 <Plus className="h-4 w-4" /> Create First Package
               </Button>
             </Link>

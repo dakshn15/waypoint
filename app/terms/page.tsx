@@ -73,7 +73,7 @@ export default async function TermsPage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-slate-900 font-display mb-4">
               Terms of{" "}
               <span className="text-primary">Service</span>
             </h1>
@@ -109,7 +109,7 @@ export default async function TermsPage() {
                   key={i}
                   className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-6 lg:p-8"
                 >
-                  <h2 className="text-base sm:text-lg font-extrabold text-secondary mb-3">{s.title}</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-secondary mb-3">{s.title}</h2>
                   <p className="text-sm text-slate-600 leading-relaxed">{s.content}</p>
                   {s.list && (
                     <ul className="mt-4 space-y-2.5">
