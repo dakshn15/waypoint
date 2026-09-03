@@ -852,7 +852,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                       <span className="text-xs text-slate-500 block font-semibold">Starting from</span>
                       <span className="text-lg font-bold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
                     </div>
-                    <span className="h-8 px-3 rounded-lg bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 group-hover:bg-primary group-hover:text-white transition-all">
+                    <span className="h-8 px-3 rounded-md bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 group-hover:bg-primary group-hover:text-white transition-all">
                       Build Trip <Sparkles className="h-3 w-3" />
                     </span>
                   </div>

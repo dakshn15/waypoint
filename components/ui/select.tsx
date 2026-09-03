@@ -22,7 +22,7 @@ function SelectValue({ className, children, ...props }: SelectPrimitive.Value.Pr
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
-      className={cn("flex flex-1 text-left truncate", className)}
+      className={cn("block min-w-0 flex-1 text-left truncate", className)}
       {...props}
     >
       {typeof children === "function"
@@ -50,7 +50,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex py-2.5 w-full items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 shadow-xs transition-all outline-none select-none hover:border-slate-300 hover:bg-slate-50/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-slate-400 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer",
+        "flex py-2.5 w-full items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 shadow-xs transition-all outline-none select-none hover:border-slate-300 hover:bg-slate-50/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-slate-400 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer min-w-0",
         className
       )}
       {...props}

@@ -163,7 +163,7 @@ export default function NewPackagePage() {
               <button
                 type="button"
                 onClick={() => i < step && setStep(i)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${isActive
+                className={`flex items-center gap-2 sm:px-3 px-1.5 py-1.5 rounded-md text-xs font-semibold transition-all ${isActive
                   ? "bg-secondary text-white shadow-sm shadow-secondary/20 cursor-default"
                   : isCompleted
                     ? "bg-secondary/10 text-secondary hover:bg-secondary/20 cursor-pointer"
@@ -380,7 +380,7 @@ export default function NewPackagePage() {
             <div className="space-y-6">
               {/* Day-by-Day Itinerary Plan Builder */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-3 sm:items-center items-start justify-between">
                   <div>
                     <Label className="text-sm font-semibold text-slate-800 block">Day-by-Day Itinerary & Activity Timeline</Label>
                     <p className="text-xs text-slate-500 mt-0.5">Build day titles, times, activity types, and locations displayed on the tour details page.</p>
@@ -416,7 +416,7 @@ export default function NewPackagePage() {
                   {formData.itineraries.map((it, idx) => (
                     <div key={idx} className="p-4 sm:p-5 rounded-xl bg-slate-50/80 border border-slate-200 space-y-4">
                       {/* Day Header */}
-                      <div className="flex items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
                         <div className="flex items-center gap-2">
                           <Badge className="bg-secondary text-white border-0 text-xs font-bold px-2.5 py-1">
                             Day {it.dayNumber || idx + 1}
@@ -488,7 +488,7 @@ export default function NewPackagePage() {
 
                       {/* Activities Timeline Section */}
                       <div className="space-y-3 pt-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-2 items-center justify-between">
                           <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Activities Timeline</span>
                           <Button
                             type="button"
@@ -634,10 +634,10 @@ export default function NewPackagePage() {
                   ))}
 
                   {formData.itineraries.length === 0 && (
-                    <div className="p-6 text-center rounded-2xl bg-slate-50 border border-dashed border-slate-200">
+                    <div className="sm:p-6 p-4 text-center rounded-2xl bg-slate-50 border border-dashed border-slate-200">
                       <CalendarDays className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                      <p className="text-xs font-semibold text-slate-600">No itinerary days created yet.</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5 mb-3">Click &quot;+ Add Day&quot; above to build custom day-by-day activity timelines.</p>
+                      <p className="text-base font-semibold text-slate-900 mb-1.5">No itinerary days created yet.</p>
+                      <p className="text-xs text-slate-400 mt-0.5 mb-3">Click &quot;+ Add Day&quot; above to build custom day-by-day activity timelines.</p>
                       <Button
                         type="button"
                         variant="outline"
@@ -737,7 +737,7 @@ export default function NewPackagePage() {
                   { label: "Inclusions", value: formData.inclusions.length ? `${formData.inclusions.length} item${formData.inclusions.length !== 1 ? "s" : ""}` : "None" },
                   { label: "Exclusions", value: formData.exclusions.length ? `${formData.exclusions.length} item${formData.exclusions.length !== 1 ? "s" : ""}` : "None" },
                 ].map((row) => (
-                  <div key={row.label} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+                  <div key={row.label} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50/80 border border-slate-100">
                     <span className="text-xs font-semibold text-slate-400 w-24 shrink-0 pt-0.5">{row.label}</span>
                     <span className="text-sm font-semibold text-slate-800">{row.value}</span>
                   </div>

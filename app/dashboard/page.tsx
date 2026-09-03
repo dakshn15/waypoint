@@ -51,7 +51,7 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <Card className="sm:py-5 group relative overflow-hidden bg-white border border-slate-200/60 rounded-lg shadow-sm hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-0.5">
+    <Card className="sm:py-5 py-4 group relative overflow-hidden bg-white border border-slate-200/60 rounded-lg shadow-sm hover:shadow-lg hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-0.5">
       <CardContent className="sm:px-5 px-4 xl:flex items-center justify-between gap-1">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider xl:pe-0 pe-3">{title}</p>
@@ -111,13 +111,13 @@ function ActionCard({
 }) {
   return (
     <Link href={href}>
-      <Card className="h-full sm:py-5 group cursor-pointer bg-white border border-slate-200/60 rounded-lg hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden relative">
+      <Card className="h-full sm:py-5 py-4 group cursor-pointer bg-white border border-slate-200/60 rounded-lg hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden relative">
         <CardContent className="flex items-center sm:gap-4 gap-3 sm:px-5 px-4">
           <div className={`sm:h-12 sm:w-12 h-10 w-10 rounded-lg ${gradient} text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-md ${iconShadow}`}>
             <Icon className="sm:h-6 sm:w-6 h-5 w-5" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-slate-900 mb-1.5">{title}</h3>
+            <h3 className="font-bold sm:text-lg text-base text-slate-900 leading-tight mb-1.5">{title}</h3>
             <p className="text-xs text-slate-500">{subtitle}</p>
           </div>
           <ArrowRight className="h-5 w-5 text-slate-300 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
@@ -148,7 +148,7 @@ function TopPackagesBox({ packages }: { packages: { title: string; bookings: num
           Top Packages
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 flex-1">
+      <CardContent className="px-4 sm:px-5 flex-1">
         {packages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <Package className="h-8 w-8 text-slate-200 mb-2" />
@@ -157,7 +157,7 @@ function TopPackagesBox({ packages }: { packages: { title: string; bookings: num
         ) : (
           <div className="space-y-2.5">
             {packages.map((pkg, i) => (
-              <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-colors">
+              <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-colors">
                 <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${i === 0 ? "bg-primary/10 text-primary" : i === 1 ? "bg-secondary/10 text-secondary" : "bg-slate-100 text-slate-500"
                   }`}>{i + 1}</div>
                 <div className="min-w-0 flex-1">
@@ -576,7 +576,7 @@ async function AgencyDashboard({
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
+          <CardContent className="px-4 sm:px-5">
             {recentBookings.length > 0 ? (
               <div className="max-h-[320px] overflow-y-auto space-y-2 pr-1 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                 {recentBookings.map((b) => (
@@ -756,7 +756,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
+          <CardContent className="p-4 sm:p-5 !pt-0">
             {recentBookings.length > 0 ? (
               <div className="max-h-[320px] overflow-y-auto space-y-2 pr-1">
                 {recentBookings.map((b) => (
@@ -784,7 +784,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
               Platform Stats
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 flex flex-col items-center justify-center flex-1 space-y-3">
+          <CardContent className="px-4 sm:px-5 flex flex-col items-center justify-center flex-1 space-y-3">
             <div className="text-center">
               <p className="text-3xl font-bold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
               <p className="text-xs text-slate-400 mt-0.5 font-medium">Total Platform Volume</p>

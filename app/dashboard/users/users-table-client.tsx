@@ -382,7 +382,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
               Add a new traveler, agency owner, or staff member to the system.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleCreateUser} className="space-y-4 mt-4">
+          <form onSubmit={handleCreateUser} className="space-y-4 mt-2">
             <div className="space-y-1.5">
               <Label htmlFor="create-name">Name <span className="text-rose-500">*</span></Label>
               <Input
@@ -489,7 +489,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit User Profile</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdateUser} className="space-y-4 mt-4">
+          <form onSubmit={handleUpdateUser} className="space-y-4 mt-2">
             <div className="space-y-1.5">
               <Label htmlFor="edit-name">Name <span className="text-rose-500">*</span></Label>
               <Input

@@ -153,7 +153,7 @@ export function DashboardHeader({ onToggleSidebar, collapsed }: DashboardHeaderP
   }
 
   return (
-    <header className="py-3.5 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between px-4 md:px-6">
+    <header className="py-3.5 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between px-4 md:px-6 gap-3">
       {/* Search & Sidebar Toggle */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
         {onToggleSidebar && (
@@ -192,69 +192,86 @@ export function DashboardHeader({ onToggleSidebar, collapsed }: DashboardHeaderP
       <div className="flex items-center gap-3">
         {/* Notifications Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="h-9 w-9 relative flex items-center justify-center rounded-xl hover:bg-slate-50 border border-slate-200/60 focus:outline-none transition-all cursor-pointer">
-            <Bell className="h-4 w-4 text-slate-500" />
+          <DropdownMenuTrigger className="h-9 w-9 relative flex items-center justify-center rounded-lg hover:bg-slate-100 border border-slate-200/80 focus:outline-none transition-all cursor-pointer shrink-0">
+            <Bell className="h-4 w-4 text-slate-600" />
             {unreadCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] p-0 flex items-center justify-center text-[9px] font-bold bg-primary border-white border-2 text-white rounded-full">
                 {unreadCount}
               </Badge>
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 p-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-slate-200/50 rounded-2xl">
-            <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-xs font-bold text-slate-900 tracking-tight">Notifications</span>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={8}
+            className="w-[calc(100vw-32px)] sm:w-80 max-w-[360px] p-2 bg-white/98 backdrop-blur-xl border border-slate-200/90 shadow-xl shadow-slate-900/10 rounded-lg overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-2 py-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-900 tracking-tight">Notifications</span>
+                {unreadCount > 0 && (
+                  <Badge className="bg-primary/10 text-primary border-0 text-[10px] font-bold px-1.5 py-0.2 rounded-md">
+                    {unreadCount} new
+                  </Badge>
+                )}
+              </div>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
-                  className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1 font-semibold bg-transparent border-0 cursor-pointer transition-colors"
+                  className="text-xs text-primary hover:text-primary-dark flex items-center gap-1 font-semibold bg-transparent border-0 cursor-pointer transition-colors"
                 >
                   <Check className="h-3 w-3" /> Mark all as read
                 </button>
               )}
             </div>
-            <DropdownMenuSeparator className="my-1 bg-slate-100" />
+            <DropdownMenuSeparator className="my-1.5 bg-slate-100" />
             {notifications.length === 0 ? (
               <div className="py-8 text-center">
                 <Bell className="h-8 w-8 text-slate-200 mx-auto mb-2" />
                 <p className="text-xs text-slate-400 font-medium">No notifications yet</p>
               </div>
             ) : (
-              <div className="max-h-72 overflow-y-auto space-y-1 scrollbar-thin">
+              <div className="max-h-80 overflow-y-auto space-y-1.5 p-0.5 scrollbar-thin">
                 {notifications.map((notif) => (
                   <DropdownMenuItem
                     key={notif.id}
                     onClick={() => !notif.read && markAsRead(notif.id)}
-                    className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-all cursor-pointer text-left ${notif.read ? "opacity-60" : "bg-primary/5"
-                      }`}
+                    className={`flex items-start gap-2.5 p-3 rounded-lg transition-all cursor-pointer text-left border ${
+                      notif.read
+                        ? "bg-white border-slate-100/80 opacity-75 hover:bg-slate-50/80"
+                        : "bg-slate-50/90 border-slate-200/80 hover:bg-slate-100/70"
+                    }`}
                   >
-                    <div className="mt-0.5 rounded-lg bg-slate-100 p-1.5 shrink-0">
+                    <div className="mt-0.5 rounded-md bg-white border border-slate-200/70 p-2 shrink-0 shadow-xs flex items-center justify-center">
                       {getIcon(notif.type)}
                     </div>
-                    <div className="flex-1 space-y-0.5 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <p className={`text-xs font-medium truncate ${notif.read ? "text-slate-500" : "text-slate-900"
-                          }`}>
+                    <div className="flex-1 space-y-1 min-w-0">
+                      <div className="flex items-start justify-between gap-1.5 min-w-0">
+                        <p
+                          className={`text-xs font-bold leading-snug line-clamp-1 flex-1 min-w-0 ${
+                            notif.read ? "text-slate-600" : "text-slate-900"
+                          }`}
+                        >
                           {notif.title}
                         </p>
-                        <div className="flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                           {!notif.read && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                            <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
                           )}
                           <button
                             onClick={(e) => deleteNotification(notif.id, e)}
-                            className="h-5 w-5 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer transition-colors"
+                            className="h-5 w-5 rounded-md hover:bg-slate-200/80 flex items-center justify-center text-slate-400 hover:text-rose-600 transition-colors bg-transparent border-0 cursor-pointer"
                             title="Remove"
                           >
                             <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </div>
-                      <p className="text-[11px] text-slate-500 leading-relaxed break-words">
+                      <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2">
                         {notif.message}
                       </p>
-                      <p className="text-[9px] text-slate-400 font-medium">
+                      <span className="text-[10px] text-slate-400 font-medium block">
                         {formatTime(notif.createdAt)}
-                      </p>
+                      </span>
                     </div>
                   </DropdownMenuItem>
                 ))}

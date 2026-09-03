@@ -158,7 +158,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           <button
             title="Mark as Processing"
             onClick={() => openDialog(booking, "PROCESSING")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-amber-500 hover:bg-amber-50 transition-colors cursor-pointer"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors cursor-pointer"
           >
             <PlayCircle className="h-4 w-4" />
           </button>
@@ -167,7 +167,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           <button
             title="Mark as Completed"
             onClick={() => openDialog(booking, "COMPLETED")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-secondary hover:bg-secondary/10 transition-colors cursor-pointer"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors cursor-pointer"
           >
             <CheckSquare2 className="h-4 w-4" />
           </button>
@@ -176,7 +176,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           <button
             title="Mark as Pending"
             onClick={() => openDialog(booking, "PENDING")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-sky-600 hover:bg-sky-50 hover:text-sky-700 transition-colors cursor-pointer"
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -185,7 +185,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           <button
             title="Cancel Booking"
             onClick={() => openDialog(booking, "CANCEL")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors cursor-pointer"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
           >
             <XCircle className="h-4 w-4" />
           </button>
@@ -246,7 +246,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
   return (
     <>
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1">
+      <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-thin">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab}

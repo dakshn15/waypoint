@@ -47,7 +47,7 @@ function SectionHeading({ icon: Icon, title, desc }: { icon: any; title: string;
       </div>
       <div>
         <h3 className="text-base font-bold tracking-tight text-slate-900 font-display">{title}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+        <p className="text-xs text-muted-foreground mt-1">{desc}</p>
       </div>
     </div>
   );

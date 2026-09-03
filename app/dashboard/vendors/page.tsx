@@ -94,8 +94,8 @@ export default async function VendorsPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-2 max-w-sm">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
             Vendor Management
           </h1>
@@ -107,7 +107,7 @@ export default async function VendorsPage() {
       </div>
 
       {/* Category Stats */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 xl:grid-cols-6">
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <Card
             key={key}

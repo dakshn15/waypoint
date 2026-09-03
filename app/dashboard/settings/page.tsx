@@ -56,7 +56,7 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Page Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-sm">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Settings</h1>
         <p className="text-sm text-slate-500 font-medium">
           Manage your account profile, credentials, and agency details.

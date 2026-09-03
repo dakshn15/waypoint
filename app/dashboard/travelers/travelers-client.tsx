@@ -95,7 +95,7 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
       </div>
 
       {/* Stats Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-5">
+      <div className="grid sm:grid-cols-3 grid-cols-1 gap-5">
         {[
           { label: "Total Travelers", value: travelers.length, icon: Users, color: "text-secondary", bg: "bg-secondary/10" },
           { label: "Total Bookings", value: travelers.reduce((s, t) => s + t.bookingsCount, 0), icon: CalendarCheck, color: "text-primary", bg: "bg-primary/10" },
@@ -173,39 +173,42 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
 
       {/* Traveler Detail Sheet */}
       <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent className="sm:max-w-md bg-white border-l border-slate-200 p-0 overflow-y-auto">
+        <SheetContent className="w-[90vw] max-w-full sm:max-w-md bg-white border-l border-slate-200 p-0 overflow-y-auto">
           {selected && (
             <>
-              <SheetHeader className="p-6 border-b border-slate-100">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-bold text-xl shrink-0">
+              <SheetHeader className="p-4 sm:p-6 border-b border-slate-100 relative">
+                <div className="flex items-center gap-3 sm:gap-4 pr-6 min-w-0">
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg bg-gradient-to-br from-secondary to-secondary/80 flex items-center justify-center text-white font-bold text-lg sm:text-xl shrink-0">
                     {initials(selected.user.name)}
                   </div>
-                  <div>
-                    <SheetTitle className="text-lg font-bold text-slate-900">{selected.user.name || "Unknown"}</SheetTitle>
-                    <SheetDescription className="flex items-center gap-1 text-sm text-slate-500 mt-0.5">
-                      <Mail className="h-3.5 w-3.5" /> {selected.user.email}
+                  <div className="min-w-0 flex-1">
+                    <SheetTitle className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                      {selected.user.name || "Unknown"}
+                    </SheetTitle>
+                    <SheetDescription className="flex items-center gap-1 text-xs sm:text-sm text-slate-500 mt-0.5 min-w-0">
+                      <Mail className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate block min-w-0">{selected.user.email}</span>
                     </SheetDescription>
                   </div>
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
-                    <p className="text-xl font-bold text-slate-900">{selected.bookingsCount}</p>
-                    <p className="text-xs text-slate-400 font-medium mt-1.5">Bookings</p>
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mt-4">
+                  <div className="bg-slate-50 rounded-lg p-2.5 sm:p-3 text-center border border-slate-100 min-w-0">
+                    <p className="text-lg sm:text-xl font-bold text-slate-900 truncate">{selected.bookingsCount}</p>
+                    <p className="text-xs text-slate-400 font-medium mt-1">Bookings</p>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
-                    <p className="text-xl font-bold text-emerald-600">{formatCurrency(selected.totalSpent, "INR")}</p>
-                    <p className="text-xs text-slate-400 font-medium mt-1.5">Total Spent</p>
+                  <div className="bg-slate-50 rounded-lg p-2.5 sm:p-3 text-center border border-slate-100 min-w-0">
+                    <p className="text-base sm:text-xl font-bold text-emerald-600 truncate">{formatCurrency(selected.totalSpent, "INR")}</p>
+                    <p className="text-xs text-slate-400 font-medium mt-1">Total Spent</p>
                   </div>
                 </div>
               </SheetHeader>
 
               {/* Booking History */}
-              <div className="p-6 space-y-3">
+              <div className="p-4 sm:p-6 space-y-3">
                 <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                  <CalendarCheck className="h-4 w-4 text-secondary" />
+                  <CalendarCheck className="h-4 w-4 text-secondary shrink-0" />
                   Booking History
                 </h3>
                 {selected.bookings.length === 0 ? (
@@ -216,19 +219,21 @@ export default function TravelersClient({ travelers }: TravelersClientProps) {
                 ) : (
                   <div className="space-y-2.5">
                     {selected.bookings.map((b) => (
-                      <div key={b.id} className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                        <div className="h-8 w-8 rounded-md bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <Package className="h-4 w-4 text-secondary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-sm text-slate-900 line-clamp-1">{b.packageTitle || "Custom Trip"}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Clock className="h-3 w-3 text-slate-400" />
-                            <span className="text-xs text-slate-400">{formatDate(new Date(b.travelDate))}</span>
+                      <div key={b.id} className="flex items-center justify-between gap-2 p-3 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="h-8 w-8 rounded-md bg-secondary/10 flex items-center justify-center shrink-0">
+                            <Package className="h-4 w-4 text-secondary" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-xs sm:text-sm text-slate-900 truncate">{b.packageTitle || "Custom Trip"}</p>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Clock className="h-3 w-3 text-slate-400 shrink-0" />
+                              <span className="text-[11px] text-slate-400 truncate">{formatDate(new Date(b.travelDate))}</span>
+                            </div>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-bold text-slate-900">{formatCurrency(b.totalAmount, b.currency)}</p>
+                          <p className="text-xs sm:text-sm font-bold text-slate-900">{formatCurrency(b.totalAmount, b.currency)}</p>
                           <Badge variant="outline" className={`text-[9px] font-bold tracking-wider mt-1 ${STATUS_STYLE[b.status] || "bg-slate-100 text-slate-600"}`}>
                             {b.status}
                           </Badge>

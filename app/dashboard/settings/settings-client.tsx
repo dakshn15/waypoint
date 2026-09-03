@@ -76,7 +76,7 @@ function SectionHeading({ icon: Icon, title, desc }: { icon: any; title: string;
       </div>
       <div>
         <h3 className="text-base font-bold tracking-tight">{title}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+        <p className="text-xs text-muted-foreground mt-1">{desc}</p>
       </div>
     </div>
   );
@@ -267,7 +267,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
         <form onSubmit={handleUpdateProfile} className="space-y-6">
           {/* Avatar Card */}
           <Card className="bg-white border border-slate-200/60 shadow-sm overflow-hidden">
-            <CardContent className="p-6">
+            <CardContent className="sm:p-6 p-4">
               <SectionHeading icon={User} title="Profile Information" desc="Your personal details and public avatar shown across the platform." />
 
               <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-lg bg-slate-50 border border-slate-200/50">
@@ -300,8 +300,8 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
 
           {/* Details Card */}
           <Card className="bg-white border border-slate-200/60 shadow-sm">
-            <CardContent className="p-6 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <CardContent className="sm:p-6 p-4 sm:space-y-5 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="profile-name" className="text-sm font-medium">Full Name <span className="text-rose-500">*</span></Label>
                   <Input
@@ -358,10 +358,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
         <div className="space-y-6">
           {/* Password Card */}
           <Card className="bg-white border border-slate-200/60 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="sm:p-6 p-4">
               <SectionHeading icon={KeyRound} title="Change Password" desc="Update your password regularly to keep your account secure." />
 
-              <form onSubmit={handlePasswordUpdate} className="space-y-5">
+              <form onSubmit={handlePasswordUpdate} className="sm:space-y-5 space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="curr-pass" className="text-sm font-medium">Current Password <span className="text-rose-500">*</span></Label>
                   <div className="relative">
@@ -385,7 +385,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="new-pass" className="text-sm font-medium">New Password <span className="text-rose-500">*</span></Label>
                     <div className="relative">
@@ -432,12 +432,12 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
 
           {/* 2FA Card */}
           <Card className="bg-white border border-slate-200/60 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="sm:p-6 p-4">
               <SectionHeading icon={ShieldCheck} title="Two-Factor Authentication" desc="Add an extra layer of protection to your account with 2FA." />
 
-              <div className="flex items-center justify-between gap-4 p-5 rounded-lg bg-gradient-to-r from-secondary/5 to-[#E8AA9B]/5 border border-secondary/20">
+              <div className="flex items-center justify-between gap-4 sm:p-5 p-4 rounded-lg bg-gradient-to-r from-secondary/5 to-[#E8AA9B]/5 border border-secondary/20">
                 <div className="flex items-center gap-4">
-                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${tfaEnabled ? 'bg-secondary' : 'bg-slate-300'} transition-colors`}>
+                  <div className={`h-10 w-10 rounded-md flex items-center flex-shrink-0 justify-center ${tfaEnabled ? 'bg-secondary' : 'bg-slate-300'} transition-colors`}>
                     <ShieldCheck className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -474,12 +474,12 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
         <form onSubmit={handleSavePreferences} className="space-y-6">
           {/* Regional */}
           <Card className="bg-white border border-slate-200/60 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="sm:p-6 p-4">
               <SectionHeading icon={Globe} title="Regional Settings" desc="Set your preferred currency and language for the platform." />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
+                <div>
+                  <Label className="text-sm font-medium flex items-center gap-2 mb-2">
                     <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> Currency
                   </Label>
                   <Select value={currency} onValueChange={(val) => setCurrency(val || "INR")}>
@@ -517,7 +517,7 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
 
           {/* Notifications */}
           <Card className="bg-white border border-slate-200/60 shadow-sm">
-            <CardContent className="p-6">
+            <CardContent className="sm:p-6 p-4">
               <SectionHeading icon={Bell} title="Notifications" desc="Control what alerts and updates you receive from the platform." />
 
               <div className="space-y-3">
@@ -563,10 +563,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
           <form onSubmit={handleUpdateAgency} className="space-y-6">
             {/* Agency Identity */}
             <Card className="bg-white border border-slate-200/60 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="sm:p-6 p-4">
                 <SectionHeading icon={Building2} title="Agency Information" desc="Update your travel agency's public profile, branding, and contact details." />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="agency-name" className="text-sm font-medium">Agency Name <span className="text-rose-500">*</span></Label>
                     <Input
@@ -593,10 +593,10 @@ export default function SettingsClient({ user, agency, canManageAgency }: Settin
 
             {/* Contact & Location */}
             <Card className="bg-white border border-slate-200/60 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="sm:p-6 p-4">
                 <SectionHeading icon={Globe} title="Contact & Location" desc="Public contact information displayed to travelers and partners." />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 sm:gap-5 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="agency-web" className="text-sm font-medium">Website</Label>
                     <div className="relative">

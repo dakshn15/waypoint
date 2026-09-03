@@ -73,7 +73,7 @@ export default async function BookingsPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-sm">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Bookings</h1>
         <p className="text-sm text-slate-500 font-medium">
           {role === "AGENCY" || role === "STAFF"

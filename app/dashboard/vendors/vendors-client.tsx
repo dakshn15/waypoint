@@ -174,7 +174,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between mb-3">
-                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${catConfig.color}`}>
+                  <div className={`h-10 w-10 rounded-md flex items-center justify-center ${catConfig.color}`}>
                     {catConfig.icon}
                   </div>
 
@@ -274,7 +274,7 @@ export default function VendorsClient({ initialVendors }: VendorsClientProps) {
             <DialogTitle className="text-xl font-bold">Edit Vendor</DialogTitle>
             <DialogDescription className="text-sm text-slate-500">Update the details for this vendor partner.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleEdit} className="space-y-4 mt-3">
+          <form onSubmit={handleEdit} className="space-y-4 mt-2">
             <div className="space-y-2">
               <Label htmlFor="edit-vendor-name" className="text-sm font-semibold text-slate-700">Vendor Name <span className="text-rose-500">*</span></Label>
               <Input

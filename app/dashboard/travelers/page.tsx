@@ -71,7 +71,7 @@ export default async function TravelersPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="space-y-1">
+      <div className="space-y-2 max-w-sm">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Travelers</h1>
         <p className="text-sm text-slate-500 font-medium">
           View and manage all customers who have booked with your agency.

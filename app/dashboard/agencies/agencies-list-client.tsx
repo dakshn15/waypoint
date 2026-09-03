@@ -469,7 +469,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleCreateAgency} className="space-y-4 mt-4">
+          <form onSubmit={handleCreateAgency} className="space-y-4 mt-2">
             <div className="space-y-1.5">
               <Label htmlFor="create-agency-name">Agency Name <span className="text-rose-500">*</span></Label>
               <Input
@@ -570,7 +570,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-4">
+          <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-2">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="edit-agency-name">Agency Name <span className="text-rose-500">*</span></Label>

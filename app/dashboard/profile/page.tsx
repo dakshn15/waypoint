@@ -24,7 +24,7 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-sm">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 font-display">
           Profile Settings
         </h1>

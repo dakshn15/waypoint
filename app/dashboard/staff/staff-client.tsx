@@ -180,8 +180,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <div className="max-w-sm">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Staff Management</h1>
           <p className="text-sm text-slate-500 font-medium mt-1.5">Manage staff roles, status, and permissions for your agency.</p>
         </div>
@@ -198,7 +198,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Invite Staff Member</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleSubmit} className="space-y-4 mt-2">
               <div className="space-y-2">
                 <Label htmlFor="staff-name">Full Name <span className="text-red-500">*</span></Label>
                 <Input
@@ -273,7 +273,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
 
       {/* Staff Stats */}
       {staff.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           {[
             { label: "Total Staff", value: staff.length, color: "text-slate-900", bg: "bg-slate-100" },
             { label: "Active", value: staff.filter(s => s.active).length, color: "text-secondary", bg: "bg-secondary/10" },
@@ -376,7 +376,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Edit Staff Member</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdateSubmit} className="space-y-4 mt-4">
+          <form onSubmit={handleUpdateSubmit} className="space-y-4 mt-2">
             <div className="space-y-2">
               <Label htmlFor="edit-staff-name">Full Name <span className="text-red-500">*</span></Label>
               <Input

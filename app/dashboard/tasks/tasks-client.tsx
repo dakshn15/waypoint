@@ -247,7 +247,7 @@ export default function TasksClient({
     }
 
     return (
-      <div className="grid gap-5 mt-4 md:grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-5 mt-4 md:grid-cols-2">
         {list.map((task) => {
           const isPending = actionId === task.id;
           const assignedUser = task.staff?.user;
@@ -318,7 +318,7 @@ export default function TasksClient({
                 </div>
 
                 <div className="flex flex-col gap-3 pt-4 border-t border-slate-100 mt-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500">
+                  <div className="flex items-center justify-between flex-wrap gap-3 text-xs text-slate-500">
                     <div className="flex items-center gap-4 flex-wrap">
                       <span className="flex items-center gap-1 font-semibold">
                         {getCategoryIcon(task.category)}
@@ -354,11 +354,11 @@ export default function TasksClient({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-dashed border-slate-100">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-dashed border-slate-100">
                     {isManagerOrOwner ? (
-                      <div className="flex items-center gap-1.5">
-                        <User className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-xs text-slate-500 font-medium">Assignee:</span>
+                      <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                        <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="text-xs text-slate-500 font-medium shrink-0">Assignee:</span>
                         {(() => {
                           const matchedStaff = staffList.find(s => s.id === task.staffId || s.userId === task.staffId);
                           const currentAssigneeVal = matchedStaff ? matchedStaff.id : "UNASSIGNED";
@@ -384,14 +384,14 @@ export default function TasksClient({
                                 );
                               }}
                             >
-                              <SelectTrigger className="h-8 min-w-[130px] w-auto bg-white border border-slate-200 rounded-lg text-xs py-0 px-2.5 flex items-center justify-between cursor-pointer font-medium">
+                              <SelectTrigger className="h-8 max-w-[140px] sm:max-w-[160px] min-w-0 bg-white border border-slate-200 rounded-lg text-xs py-0 px-2 flex items-center justify-between cursor-pointer font-medium">
                                 <SelectValue placeholder="Unassigned" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
                                 {staffList.map((s) => (
                                   <SelectItem key={s.id} value={s.id}>
-                                    {s.user.name}
+                                    {s.user.name || s.user.email}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -400,12 +400,12 @@ export default function TasksClient({
                         })()}
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                        <User className="h-3.5 w-3.5 text-slate-400" />
-                        <span>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium min-w-0 max-w-full">
+                        <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">
                           Assigned to:{" "}
                           <strong className="text-slate-800">
-                            {assignedUser ? assignedUser.name : "Unassigned"}
+                            {assignedUser ? (assignedUser.name || assignedUser.email) : "Unassigned"}
                           </strong>
                         </span>
                       </div>
@@ -448,9 +448,9 @@ export default function TasksClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <div className="max-w-sm">
+          <h1 className="sm:text-3xl text-2xl font-bold tracking-tight text-slate-900">
             Task Assignment Board
           </h1>
           <p className="text-sm text-slate-500 mt-1.5">
@@ -468,7 +468,7 @@ export default function TasksClient({
       </div>
       {/* Staff Performance Overview for Managers */}
       {isManagerOrOwner && (
-        <div className="mt-4 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {staffList.map((staff) => {
             const staffTasks = tasks.filter((t) => t.staffId === staff.id);
             const completed = staffTasks.filter((t) => t.status === "COMPLETED").length;
@@ -644,7 +644,7 @@ export default function TasksClient({
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleCreateTask} className="space-y-4 mt-4">
+          <form onSubmit={handleCreateTask} className="space-y-4 mt-2">
             <div className="space-y-2">
               <Label htmlFor="task-title">Task Title <span className="text-red-500">*</span></Label>
               <Input

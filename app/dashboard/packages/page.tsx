@@ -49,7 +49,7 @@ export default async function AgencyPackagesPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="space-y-2">
+        <div className="space-y-2 max-w-sm">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Packages</h1>
           <p className="text-sm text-slate-500 font-medium">
             Create and manage your travel packages.

@@ -86,7 +86,7 @@ export default async function TripsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-wrap gap-3 items-center justify-between">
-        <div className="space-y-2">
+        <div className="space-y-2 max-w-sm">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 font-display">My Trips</h1>
           <p className="text-sm text-slate-500 font-medium">
             View and manage your AI-generated travel plans.
