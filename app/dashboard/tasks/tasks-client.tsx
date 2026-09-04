@@ -101,8 +101,8 @@ export default function TasksClient({
 
   async function handleCreateTask(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.title.trim() || !form.description.trim() || !form.dueDate) {
-      toast.error("Please fill in all required fields.");
+    if (!form.title.trim() || !form.description.trim() || !form.dueDate || !form.staffId) {
+      toast.error("Please fill in all required fields (including Assignee).");
       return;
     }
 
@@ -252,10 +252,12 @@ export default function TasksClient({
           const isPending = actionId === task.id;
           const assignedUser = task.staff?.user;
 
+          const taskOverdue = isOverdue(task);
+
           return (
             <Card
               key={task.id}
-              className={`py-0 glass-card border border-slate-200 hover:shadow-xl transition-all rounded-lg relative overflow-hidden ${task.status === "COMPLETED" ? "opacity-70" : ""} ${getPriorityBorder(task.priority)}`}
+              className={`py-0 glass-card border ${taskOverdue ? "border-rose-300 bg-rose-50/20" : "border-slate-200"} hover:shadow-xl transition-all rounded-lg relative overflow-hidden ${task.status === "COMPLETED" ? "opacity-70" : ""} ${getPriorityBorder(task.priority)}`}
             >
               <CardContent className="sm:p-5 p-4 flex flex-col justify-between h-full min-h-[170px]">
                 <div className="space-y-2">
@@ -333,6 +335,11 @@ export default function TasksClient({
                     </div>
 
                     <div className="flex items-center gap-2">
+                      {isOverdue(task) && (
+                        <Badge className="text-[9px] uppercase font-bold tracking-wider bg-rose-500 text-white border-none shrink-0 animate-pulse">
+                          Overdue
+                        </Badge>
+                      )}
                       <Badge
                         variant="outline"
                         className={`text-[9px] uppercase font-bold tracking-wider ${getPriorityColor(
@@ -360,8 +367,12 @@ export default function TasksClient({
                         <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                         <span className="text-xs text-slate-500 font-medium shrink-0">Assignee:</span>
                         {(() => {
-                          const matchedStaff = staffList.find(s => s.id === task.staffId || s.userId === task.staffId);
-                          const currentAssigneeVal = matchedStaff ? matchedStaff.id : "UNASSIGNED";
+                          const matchedStaff = staffList.find(s => s.id === task.staffId || s.userId === task.staffId || s.user?.id === task.staffId);
+                          const displayStaff = matchedStaff || task.staff;
+                          const currentAssigneeVal = matchedStaff ? matchedStaff.id : (task.staffId ? task.staffId : "UNASSIGNED");
+                          const displayStaffName = displayStaff?.user?.name || displayStaff?.user?.email;
+                          const isCurrentUser = displayStaff?.userId === currentStaffUserId;
+
                           return (
                             <Select
                               value={currentAssigneeVal}
@@ -372,9 +383,10 @@ export default function TasksClient({
                                   {
                                     loading: "Updating assignee...",
                                     success: () => {
+                                      const foundStaff = staffList.find(s => s.id === targetStaffId);
                                       setTasks((prev) =>
                                         prev.map((t) =>
-                                          t.id === task.id ? { ...t, staffId: targetStaffId, staff: staffList.find(s => s.id === targetStaffId) || null } : t
+                                          t.id === task.id ? { ...t, staffId: targetStaffId, staff: foundStaff || null } : t
                                         )
                                       );
                                       return "Assignee updated successfully!";
@@ -385,13 +397,19 @@ export default function TasksClient({
                               }}
                             >
                               <SelectTrigger className="h-8 max-w-[140px] sm:max-w-[160px] min-w-0 bg-white border border-slate-200 rounded-lg text-xs py-0 px-2 flex items-center justify-between cursor-pointer font-medium">
-                                <SelectValue placeholder="Unassigned" />
+                                <SelectValue placeholder="Unassigned">
+                                  {currentAssigneeVal === "UNASSIGNED"
+                                    ? "Unassigned"
+                                    : displayStaffName
+                                      ? `${displayStaffName}${isCurrentUser ? " (You)" : ""}`
+                                      : "Assigned"}
+                                </SelectValue>
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
                                 {staffList.map((s) => (
                                   <SelectItem key={s.id} value={s.id}>
-                                    {s.user.name || s.user.email}
+                                    {s.user.name || s.user.email}{s.userId === currentStaffUserId ? " (You)" : ""}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -484,7 +502,12 @@ export default function TasksClient({
                         {staff.user.name.slice(0, 2)}
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-slate-900">{staff.user.name}</h4>
+                        <h4 className="font-bold text-sm text-slate-900">
+                          {staff.user.name}
+                          {staff.userId === currentStaffUserId && (
+                            <span className="ml-1 text-xs text-primary font-normal">(You)</span>
+                          )}
+                        </h4>
                         <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{staff.role.toLowerCase()}</span>
                       </div>
                     </div>
@@ -588,14 +611,25 @@ export default function TasksClient({
               <Label className="text-xs font-bold text-slate-600">Filter by Staff Member</Label>
               <Select value={filterStaff} onValueChange={(v) => v && setFilterStaff(v)}>
                 <SelectTrigger className="h-10">
-                  <SelectValue />
+                  <SelectValue>
+                    {filterStaff === "ALL"
+                      ? "All Staff"
+                      : filterStaff === "UNASSIGNED"
+                      ? "Unassigned Tasks"
+                      : (() => {
+                          const matched = staffList.find((s) => s.id === filterStaff);
+                          return matched
+                            ? `${matched.user.name} (${matched.role.toLowerCase()})${matched.userId === currentStaffUserId ? " (You)" : ""}`
+                            : undefined;
+                        })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Staff</SelectItem>
                   <SelectItem value="UNASSIGNED">Unassigned Tasks</SelectItem>
                   {staffList.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
-                      {s.user.name} ({s.role.toLowerCase()})
+                      {s.user.name} ({s.role.toLowerCase()}){s.userId === currentStaffUserId ? " (You)" : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -617,6 +651,9 @@ export default function TasksClient({
           <TabsTrigger value="in_progress" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             In Progress ({filteredTasks.filter((t) => t.status === "IN_PROGRESS").length})
           </TabsTrigger>
+          <TabsTrigger value="overdue" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-rose-600 hover:text-rose-700 data-[active]:bg-white data-[active]:text-rose-600 data-[active]:shadow-xs">
+            Overdue ({filteredTasks.filter((t) => isOverdue(t)).length})
+          </TabsTrigger>
           <TabsTrigger value="completed" className="rounded-md px-4 py-1.5 text-xs font-semibold cursor-pointer text-slate-500 hover:text-slate-800 data-[active]:text-slate-950">
             Completed ({filteredTasks.filter((t) => t.status === "COMPLETED").length})
           </TabsTrigger>
@@ -628,6 +665,9 @@ export default function TasksClient({
         </TabsContent>
         <TabsContent value="in_progress">
           {renderTaskList(filteredTasks.filter((t) => t.status === "IN_PROGRESS"))}
+        </TabsContent>
+        <TabsContent value="overdue">
+          {renderTaskList(filteredTasks.filter((t) => isOverdue(t)))}
         </TabsContent>
         <TabsContent value="completed">
           {renderTaskList(filteredTasks.filter((t) => t.status === "COMPLETED"))}
@@ -719,19 +759,24 @@ export default function TasksClient({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="task-assignee">Assignee</Label>
+                <Label htmlFor="task-assignee">Assignee <span className="text-red-500">*</span></Label>
                 <Select
                   value={form.staffId}
                   onValueChange={(v) => setForm({ ...form, staffId: v || "" })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Unassigned" />
+                    <SelectValue placeholder="Select Assignee...">
+                      {(() => {
+                        const matched = staffList.find((s) => s.id === form.staffId);
+                        if (!matched) return undefined;
+                        return `${matched.user.name} (${matched.role.toLowerCase()})${matched.userId === currentStaffUserId ? " (You)" : ""}`;
+                      })()}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Unassigned</SelectItem>
                     {staffList.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
-                        {s.user.name} ({s.role.toLowerCase()})
+                        {s.user.name} ({s.role.toLowerCase()}){s.userId === currentStaffUserId ? " (You)" : ""}
                       </SelectItem>
                     ))}
                   </SelectContent>

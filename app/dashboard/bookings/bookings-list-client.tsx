@@ -252,7 +252,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer",
               activeTab === tab
                 ? "bg-secondary text-white shadow-sm"
                 : "bg-slate-100 text-slate-500 hover:bg-slate-200"
@@ -270,7 +270,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
       </div>
 
       {/* Table */}
-      <div className="border border-slate-200 rounded-xl bg-white overflow-hidden">
+      <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-slate-200 bg-slate-50">
@@ -400,7 +400,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
             </DialogHeader>
 
             {dialogMode === "CANCEL" && (
-              <div className="mt-3 rounded-xl bg-orange-50 border border-orange-200 p-4 space-y-1.5 text-xs text-orange-800">
+              <div className="mt-3 rounded-lg bg-orange-50 border border-orange-200 p-4 space-y-1.5 text-xs text-orange-800">
                 <h4 className="font-semibold text-orange-900 text-sm">Cancellation & Refund Policy</h4>
                 <ul className="list-disc pl-4 space-y-1 leading-relaxed">
                   <li><strong>Free Cancellation:</strong> Full refund within 48 hours of booking.</li>
@@ -410,13 +410,13 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
               </div>
             )}
 
-            <div className="flex justify-end gap-3 mt-5">
-              <Button variant="ghost" disabled={loading} onClick={() => { setSelectedBooking(null); setDialogMode(null); }} className="rounded-xl cursor-pointer">
+            <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-slate-100">
+              <Button variant="outline" disabled={loading} onClick={() => { setSelectedBooking(null); setDialogMode(null); }} className="cursor-pointer">
                 Go Back
               </Button>
               <Button
                 disabled={loading}
-                className={cn("rounded-xl cursor-pointer", dlg.confirmStyle)}
+                className={cn("cursor-pointer", dlg.confirmStyle)}
                 onClick={() => {
                   const action = dialogMode === "REJECT" ? "CANCEL" : dialogMode!;
                   executeAction(selectedBooking.id, action);

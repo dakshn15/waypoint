@@ -133,15 +133,15 @@ function EmptyBookingsList({ message }: { message: string }) {
       <div className="h-14 w-14 rounded-lg bg-slate-100 flex items-center justify-center mb-3">
         <CalendarCheck className="h-7 w-7 text-slate-300" />
       </div>
-      <p className="font-semibold text-sm text-slate-700">No bookings yet</p>
-      <p className="text-xs text-slate-400 mt-0.5 max-w-[200px]">{message}</p>
+      <p className="font-semibold text-base text-slate-700">No bookings yet</p>
+      <p className="text-sm text-slate-400 mt-1 max-w-[200px]">{message}</p>
     </div>
   );
 }
 
 function TopPackagesBox({ packages }: { packages: { title: string; bookings: number; revenue: number; currency: string }[] }) {
   return (
-    <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+    <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
       <CardHeader className="pb-3 border-b border-slate-100">
         <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
           <Package className="h-4 w-4 text-primary" />
@@ -197,7 +197,7 @@ function BookingRow({
 
   return (
     <div className="flex items-center justify-between p-3 bg-slate-50/80 rounded-xl border border-slate-100 group hover:bg-slate-50 transition-colors">
-      <div className="min-w-0 space-y-0.5">
+      <div className="min-w-0 space-y-1">
         <span className="font-semibold text-sm text-slate-800 block truncate">{name}</span>
         <span className="text-xs text-slate-400 block truncate">{detail}</span>
       </div>
@@ -564,7 +564,7 @@ async function AgencyDashboard({
       {/* Row B: Recent Bookings + Top Packages */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -744,7 +744,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
       {/* Row B: Recent Bookings + Platform Summary */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
-        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -777,7 +777,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         </Card>
 
         {/* Platform Overview */}
-        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Users className="h-4 w-4 text-violet-500" />
@@ -787,7 +787,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
           <CardContent className="px-4 sm:px-5 flex flex-col items-center justify-center flex-1 space-y-3">
             <div className="text-center">
               <p className="text-3xl font-bold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
-              <p className="text-xs text-slate-400 mt-0.5 font-medium">Total Platform Volume</p>
+              <p className="text-sm text-slate-400 mt-1 font-medium">Total Platform Volume</p>
             </div>
             <div className="grid grid-cols-3 gap-3 w-full pt-3 border-t border-slate-100 text-center">
               <div>
@@ -882,10 +882,12 @@ async function StaffDashboard({
     }
   };
 
+  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 p-6 md:p-8 text-white">
+      <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 p-5 sm:p-6 lg:p-8 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_60%)]" />
         <div className="absolute top-4 right-4 opacity-10">
           <ListTodo className="h-24 w-24" />
@@ -895,10 +897,24 @@ async function StaffDashboard({
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white">
             Welcome back, {userName}! 👋
           </h1>
-          <p className="text-white/50 text-sm mt-2 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-white/60" />
-            {staff.role} • {staff.agency.name} Operations
+          <p className="text-white/70 text-sm mt-2 flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-white/60 shrink-0" />
+            <span className="font-medium">{staff.role} — {staff.agency.name}</span>
           </p>
+          {totalTasks > 0 && (
+            <div className="mt-4 max-w-xs">
+              <div className="flex items-center justify-between text-xs text-white/70 mb-1.5">
+                <span>Task Completion</span>
+                <span className="font-bold text-white">{completionRate}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-white/80 rounded-full transition-all duration-700"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -938,13 +954,33 @@ async function StaffDashboard({
         />
       </div>
 
+      {/* Quick Action Cards */}
+      <div className="grid gap-5 md:grid-cols-2">
+        <ActionCard
+          href="/dashboard/tasks"
+          icon={ListTodo}
+          title="View Task Board"
+          subtitle="Manage your assigned tasks, update progress, and mark completions"
+          gradient="bg-gradient-to-r from-emerald-500 to-teal-500"
+          iconShadow="shadow-emerald-500/20"
+        />
+        <ActionCard
+          href="/dashboard/bookings"
+          icon={CalendarCheck}
+          title="View All Bookings"
+          subtitle="Monitor client reservations and update booking statuses"
+          gradient="bg-gradient-to-r from-secondary to-slate-600"
+          iconShadow="shadow-secondary/20"
+        />
+      </div>
+
       {/* Tasks + Bookings */}
       <div className="grid gap-5 md:grid-cols-2">
         {/* Active Tasks */}
-        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <ListTodo className="h-4 w-4 text-secondary" />
                   Active Tasks
@@ -959,14 +995,14 @@ async function StaffDashboard({
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-4 flex-1">
+          <CardContent className="sm:px-5 px-4 flex-1">
             {activeTasks.length > 0 ? (
               <div className="space-y-3">
                 {activeTasks.map((t) => (
-                  <div key={t.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-xl space-y-2 hover:bg-slate-50 transition-colors">
+                  <div key={t.id} className="p-3 bg-slate-50/80 border border-slate-100 rounded-lg space-y-2 hover:bg-slate-50 transition-colors">
                     <div className="flex flex-wrap justify-between items-start gap-2">
-                      <span className="font-semibold text-sm text-slate-800 line-clamp-1">{t.title}</span>
-                      <Badge variant="outline" className={`text-[8px] px-1.5 uppercase font-bold shrink-0 ${getPriorityColor(t.priority)}`}>
+                      <span className="font-semibold text-sm text-slate-800 line-clamp-1 min-w-0 flex-1">{t.title}</span>
+                      <Badge variant="outline" className={`text-[8px] px-1.5 uppercase font-bold shrink-0 rounded-md ${getPriorityColor(t.priority)}`}>
                         {t.priority}
                       </Badge>
                     </div>
@@ -983,18 +1019,18 @@ async function StaffDashboard({
                 <div className="h-14 w-14 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-3">
                   <CheckCircle2 className="h-7 w-7 text-emerald-500" />
                 </div>
-                <p className="font-semibold text-sm text-slate-700">All caught up!</p>
-                <p className="text-xs text-slate-400 mt-0.5">No active tasks assigned.</p>
+                <p className="font-semibold text-base text-slate-700">All caught up!</p>
+                <p className="text-sm text-slate-400 mt-1">No active tasks assigned.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Recent Bookings */}
-        <Card className="bg-white border border-slate-200/60 rounded-lg shadow-sm flex flex-col">
+        <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <CalendarCheck className="h-4 w-4 text-secondary" />
                   Recent Bookings
@@ -1009,7 +1045,7 @@ async function StaffDashboard({
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="p-4 flex-1">
+          <CardContent className="sm:px-5 px-4 flex-1">
             {recentBookings.length > 0 ? (
               <div className="space-y-2">
                 {recentBookings.map((b) => (

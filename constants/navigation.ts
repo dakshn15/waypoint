@@ -21,6 +21,7 @@ export const NAV_ITEMS = {
     { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
     { title: "Bookings", href: "/dashboard/bookings", icon: "CalendarCheck" },
     { title: "Tasks", href: "/dashboard/tasks", icon: "ListTodo" },
+    { title: "Profile", href: "/dashboard/profile", icon: "User" },
   ],
   ADMIN: [
     { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },

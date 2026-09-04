@@ -232,350 +232,350 @@ export default function ProfileTabsClient({
   };
 
   return (
-      <Tabs defaultValue="profile" className="flex md:!flex-row items-start gap-6">
-        {/* ── Left Sidebar Tabs Navigation ── */}
-        <TabsList className="flex flex-col h-auto w-full xl:w-64 md:w-60 bg-slate-100/80 p-3 border border-slate-200/80 rounded-lg gap-1 shrink-0">
-          <TabsTrigger
-            value="profile"
-            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
-          >
-            <User className="h-4 w-4" />
-            <span>Account Profile</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="traveler"
-            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
-          >
-            <Compass className="h-4 w-4" />
-            <span>Traveler Details</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="security"
-            className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
-          >
-            <Lock className="h-4 w-4" />
-            <span>Security</span>
-          </TabsTrigger>
-        </TabsList>
+    <Tabs defaultValue="profile" className="flex md:!flex-row items-start gap-6">
+      {/* ── Left Sidebar Tabs Navigation ── */}
+      <TabsList className="flex flex-col h-auto w-full xl:w-64 md:w-60 bg-slate-100/80 p-3 border border-slate-200/80 rounded-lg gap-1 shrink-0">
+        <TabsTrigger
+          value="profile"
+          className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+        >
+          <User className="h-4 w-4" />
+          <span>Account Profile</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="traveler"
+          className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+        >
+          <Compass className="h-4 w-4" />
+          <span>Traveler Details</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="security"
+          className="w-full justify-start px-3 sm:px-4 sm:py-3 py-2.5 text-sm font-semibold rounded-lg gap-3 cursor-pointer transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+        >
+          <Lock className="h-4 w-4" />
+          <span>Security</span>
+        </TabsTrigger>
+      </TabsList>
 
-        {/* ── Right Content Area ── */}
-        <div className="flex-1 w-full space-y-6">
+      {/* ── Right Content Area ── */}
+      <div className="flex-1 w-full space-y-6">
 
-          {/* ═══════════ ACCOUNT PROFILE ═══════════ */}
-          <TabsContent value="profile" className="outline-none space-y-6 mt-0">
-            <form onSubmit={handleUpdateProfile} className="space-y-6">
-              {/* Avatar Header Card */}
-              <Card className="glass-card overflow-hidden">
-                <CardContent className="sm:px-6 px-4 sm:py-2">
-                  <SectionHeading
-                    icon={User}
-                    title="Profile Information"
-                    desc="Your personal details and public avatar shown across the platform."
-                  />
+        {/* ═══════════ ACCOUNT PROFILE ═══════════ */}
+        <TabsContent value="profile" className="outline-none space-y-6 mt-0">
+          <form onSubmit={handleUpdateProfile} className="space-y-6">
+            {/* Avatar Header Card */}
+            <Card className="glass-card overflow-hidden">
+              <CardContent className="sm:p-6 p-4">
+                <SectionHeading
+                  icon={User}
+                  title="Profile Information"
+                  desc="Your personal details and public avatar shown across the platform."
+                />
 
-                  <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
-                    <div className="relative group">
-                      <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
-                        {profileImage ? <AvatarImage src={profileImage} className="object-cover" /> : null}
-                        <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary text-white text-3xl font-bold font-display">
-                          {profileName.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <Label
-                        htmlFor="avatar-file"
-                        className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-secondary hover:bg-secondary text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
-                      >
-                        <Camera className="h-3.5 w-3.5" />
-                      </Label>
-                      <input id="avatar-file" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                    </div>
-
-                    <div className="text-center sm:text-left space-y-1">
-                      <h4 className="text-lg font-bold text-slate-900 font-display">{profileName}</h4>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary">
-                        {user.role || "TRAVELER"}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Details Form Card */}
-              <Card className="glass-card">
-                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="profile-name" className="text-sm font-medium">
-                        Full Name
-                      </Label>
-                      <Input
-                        id="profile-name"
-                        required
-                        value={profileName}
-                        onChange={(e) => setProfileName(e.target.value)}
-                        placeholder="Your display name"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="profile-phone" className="text-sm font-medium">
-                        Phone Number
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                        <Input
-                          id="profile-phone"
-                          value={profilePhone}
-                          onChange={(e) => setProfilePhone(e.target.value)}
-                          placeholder="+91 98765 43210"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="profile-email" className="text-sm font-medium">
-                      Email Address
-                    </Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                      <Input
-                        id="profile-email"
-                        disabled
-                        value={user.email}
-                        className="pl-10 cursor-not-allowed opacity-60"
-                      />
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">Email cannot be changed for security reasons.</p>
-                  </div>
-
-                  <div className="flex justify-end pt-4 border-t border-slate-100">
-                    <Button
-                      type="submit"
-                      disabled={loading}
+                <div className="flex flex-col sm:flex-row items-center gap-6 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
+                  <div className="relative group">
+                    <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
+                      {profileImage ? <AvatarImage src={profileImage} className="object-cover" /> : null}
+                      <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary text-white text-3xl font-bold font-display">
+                        {profileName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Label
+                      htmlFor="avatar-file"
+                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-secondary hover:bg-secondary text-white flex items-center justify-center cursor-pointer shadow-lg transition-colors border-2 border-white"
                     >
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                      Save Changes
-                    </Button>
+                      <Camera className="h-3.5 w-3.5" />
+                    </Label>
+                    <input id="avatar-file" type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                   </div>
-                </CardContent>
-              </Card>
-            </form>
-          </TabsContent>
 
-          {/* ═══════════ TRAVELER PREFERENCES ═══════════ */}
-          <TabsContent value="traveler" className="outline-none space-y-6 mt-0">
-            <form onSubmit={handleTravelerUpdate} className="space-y-6">
-              <Card className="glass-card">
-                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
-                  <SectionHeading
-                    icon={Compass}
-                    title="Traveler Credentials"
-                    desc="Provide date of birth, nationality, and passport details for trip reservations."
-                  />
+                  <div className="text-center sm:text-left space-y-1">
+                    <h4 className="text-lg font-bold text-slate-900 font-display">{profileName}</h4>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary">
+                      {user.role || "TRAVELER"}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="dob" className="text-sm font-medium">
-                        Date of Birth
-                      </Label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
-                        <Input
-                          id="dob"
-                          type="date"
-                          max={new Date().toISOString().split("T")[0]}
-                          value={dob}
-                          onChange={(e) => setDob(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="nationality" className="text-sm font-medium">
-                        Nationality
-                      </Label>
-                      <div className="relative">
-                        <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                        <Input
-                          id="nationality"
-                          value={nationality}
-                          onChange={(e) => setNationality(e.target.value)}
-                          placeholder="e.g. Indian, German"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
+            {/* Details Form Card */}
+            <Card className="glass-card">
+              <CardContent className="sm:p-6 p-4 space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="profile-name" className="text-sm font-medium">
+                      Full Name
+                    </Label>
+                    <Input
+                      id="profile-name"
+                      required
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      placeholder="Your display name"
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="passport" className="text-sm font-medium">
-                      Passport Number
+                    <Label htmlFor="profile-phone" className="text-sm font-medium">
+                      Phone Number
                     </Label>
                     <div className="relative">
-                      <CreditCard className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                       <Input
-                        id="passport"
-                        value={passport}
-                        onChange={(e) => setPassport(e.target.value)}
-                        placeholder="Enter passport number for international travels"
+                        id="profile-phone"
+                        value={profilePhone}
+                        onChange={(e) => setProfilePhone(e.target.value)}
+                        placeholder="+91 98765 43210"
                         className="pl-10"
                       />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <Card className="glass-card">
-                <CardContent className="sm:px-6 px-4 sm:py-2 space-y-5">
-                  <SectionHeading
-                    icon={PhoneCall}
-                    title="Emergency Contact"
-                    desc="Person to reach out to in case of emergencies during your trips."
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="emergency-contact" className="text-sm font-medium">
-                        Contact Person Name
-                      </Label>
-                      <div className="relative">
-                        <UserCheck className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                        <Input
-                          id="emergency-contact"
-                          value={emergencyContact}
-                          onChange={(e) => setEmergencyContact(e.target.value)}
-                          placeholder="Full name of emergency contact"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="emergency-phone" className="text-sm font-medium">
-                        Contact Phone Number
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                        <Input
-                          id="emergency-phone"
-                          value={emergencyPhone}
-                          onChange={(e) => setEmergencyPhone(e.target.value)}
-                          placeholder="+91 98765 43210"
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="profile-email" className="text-sm font-medium">
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input
+                      id="profile-email"
+                      disabled
+                      value={user.email}
+                      className="pl-10 cursor-not-allowed opacity-60"
+                    />
                   </div>
+                  <p className="text-[11px] text-muted-foreground">Email cannot be changed for security reasons.</p>
+                </div>
 
-                  <div className="flex justify-end pt-4 border-t border-slate-100">
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                    >
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                      Save Preferences
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </form>
-          </TabsContent>
+                <div className="flex justify-end pt-4 border-t border-slate-100">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    Save Changes
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </form>
+        </TabsContent>
 
-          {/* ═══════════ SECURITY ═══════════ */}
-          <TabsContent value="security" className="outline-none space-y-6 mt-0">
+        {/* ═══════════ TRAVELER PREFERENCES ═══════════ */}
+        <TabsContent value="traveler" className="outline-none space-y-6 mt-0">
+          <form onSubmit={handleTravelerUpdate} className="space-y-6">
             <Card className="glass-card">
-              <CardContent className="sm:px-6 px-4 sm:py-2">
+              <CardContent className="sm:p-6 p-4 space-y-5">
                 <SectionHeading
-                  icon={KeyRound}
-                  title="Change Password"
-                  desc="Update your password regularly to keep your account secure."
+                  icon={Compass}
+                  title="Traveler Credentials"
+                  desc="Provide date of birth, nationality, and passport details for trip reservations."
                 />
 
-                <form onSubmit={handlePasswordUpdate} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="curr-pass" className="text-sm font-medium">
-                      Current Password
+                    <Label htmlFor="dob" className="text-sm font-medium">
+                      Date of Birth
                     </Label>
                     <div className="relative">
-                      <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Calendar className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
                       <Input
-                        id="curr-pass"
+                        id="dob"
+                        type="date"
+                        max={new Date().toISOString().split("T")[0]}
+                        value={dob}
+                        onChange={(e) => setDob(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="nationality" className="text-sm font-medium">
+                      Nationality
+                    </Label>
+                    <div className="relative">
+                      <Globe className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="nationality"
+                        value={nationality}
+                        onChange={(e) => setNationality(e.target.value)}
+                        placeholder="e.g. Indian, German"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="passport" className="text-sm font-medium">
+                    Passport Number
+                  </Label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input
+                      id="passport"
+                      value={passport}
+                      onChange={(e) => setPassport(e.target.value)}
+                      placeholder="Enter passport number for international travels"
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="glass-card">
+              <CardContent className="sm:p-6 p-4 space-y-5">
+                <SectionHeading
+                  icon={PhoneCall}
+                  title="Emergency Contact"
+                  desc="Person to reach out to in case of emergencies during your trips."
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="emergency-contact" className="text-sm font-medium">
+                      Contact Person Name
+                    </Label>
+                    <div className="relative">
+                      <UserCheck className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="emergency-contact"
+                        value={emergencyContact}
+                        onChange={(e) => setEmergencyContact(e.target.value)}
+                        placeholder="Full name of emergency contact"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="emergency-phone" className="text-sm font-medium">
+                      Contact Phone Number
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="emergency-phone"
+                        value={emergencyPhone}
+                        onChange={(e) => setEmergencyPhone(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-slate-100">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    Save Preferences
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </form>
+        </TabsContent>
+
+        {/* ═══════════ SECURITY ═══════════ */}
+        <TabsContent value="security" className="outline-none space-y-6 mt-0">
+          <Card className="glass-card">
+            <CardContent className="sm:p-6 p-4">
+              <SectionHeading
+                icon={KeyRound}
+                title="Change Password"
+                desc="Update your password regularly to keep your account secure."
+              />
+
+              <form onSubmit={handlePasswordUpdate} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="curr-pass" className="text-sm font-medium">
+                    Current Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                    <Input
+                      id="curr-pass"
+                      required
+                      type={showCurrent ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      className="pl-10 pr-11"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrent(!showCurrent)}
+                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
+                    >
+                      {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-5 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-pass" className="text-sm font-medium">
+                      New Password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="new-pass"
                         required
-                        type={showCurrent ? "text" : "password"}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        placeholder="Enter current password"
-                        className="pl-10 pr-11"
+                        type={showNew ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Minimum 6 characters"
+                        className="pr-11"
                       />
                       <button
                         type="button"
-                        onClick={() => setShowCurrent(!showCurrent)}
+                        onClick={() => setShowNew(!showNew)}
                         className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
                       >
-                        {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="new-pass" className="text-sm font-medium">
-                        New Password
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id="new-pass"
-                          required
-                          type={showNew ? "text" : "password"}
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          placeholder="Minimum 6 characters"
-                          className="pr-11"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowNew(!showNew)}
-                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 cursor-pointer p-0.5"
-                        >
-                          {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="conf-pass" className="text-sm font-medium">
-                        Confirm New Password
-                      </Label>
-                      <Input
-                        id="conf-pass"
-                        required
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-enter new password"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="conf-pass" className="text-sm font-medium">
+                      Confirm New Password
+                    </Label>
+                    <Input
+                      id="conf-pass"
+                      required
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter new password"
+                    />
                   </div>
+                </div>
 
-                  <div className="flex justify-end pt-4 border-t border-slate-100">
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                    >
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-                      Update Password
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="flex justify-end pt-4 border-t border-slate-100">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                    Update Password
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        </div>
-      </Tabs>
+      </div>
+    </Tabs>
   );
 }

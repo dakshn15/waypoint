@@ -40,6 +40,10 @@ export async function createTask(input: CreateTaskInput) {
       return { error: "Task title is required." };
     }
 
+    if (!input.staffId) {
+      return { error: "Please select an assignee for this task." };
+    }
+
     const task = await prisma.task.create({
       data: {
         title: input.title.trim(),

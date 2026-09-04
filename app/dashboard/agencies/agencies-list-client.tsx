@@ -275,7 +275,9 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 variant={filterVerified === "ALL" ? "default" : "ghost"}
                 onClick={() => setFilterVerified("ALL")}
                 size="sm"
-                className="h-7 px-2.5 text-xs rounded-md cursor-pointer"
+                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
+                  filterVerified === "ALL" ? "bg-secondary hover:bg-secondary/90 text-white" : ""
+                }`}
               >
                 All
               </Button>
@@ -283,8 +285,9 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 variant={filterVerified === "VERIFIED" ? "default" : "ghost"}
                 onClick={() => setFilterVerified("VERIFIED")}
                 size="sm"
-                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${filterVerified === "VERIFIED" ? "bg-secondary hover:bg-secondary/90 text-white" : ""
-                  }`}
+                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
+                  filterVerified === "VERIFIED" ? "bg-secondary hover:bg-secondary/90 text-white" : ""
+                }`}
               >
                 Verified
               </Button>
@@ -292,7 +295,9 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 variant={filterVerified === "UNVERIFIED" ? "default" : "ghost"}
                 onClick={() => setFilterVerified("UNVERIFIED")}
                 size="sm"
-                className="h-7 px-2.5 text-xs rounded-md cursor-pointer"
+                className={`h-7 px-2.5 text-xs rounded-md cursor-pointer ${
+                  filterVerified === "UNVERIFIED" ? "bg-secondary hover:bg-secondary/90 text-white" : ""
+                }`}
               >
                 Unverified
               </Button>
@@ -300,7 +305,6 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl flex items-center gap-1.5 h-9 px-4 cursor-pointer"
             >
               <Plus className="h-4 w-4" /> Add Agency
             </Button>
@@ -318,10 +322,10 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
           filteredAgencies.map((agency) => (
             <Card
               key={agency.id}
-              className={`glass-card h-full flex flex-col justify-between overflow-hidden border ${agency.active ? "border-slate-200" : "border-rose-500/20"
+              className={`glass-card sm:py-5 py-4 h-full flex flex-col justify-between overflow-hidden border ${agency.active ? "border-slate-200" : "border-rose-500/20"
                 }`}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="sm:px-5 pb-3">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
                     {agency.logo ? (
@@ -362,7 +366,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 )}
               </CardHeader>
 
-              <CardContent className="space-y-4 flex-1 flex flex-col justify-between">
+              <CardContent className="sm:px-5 space-y-4 flex-1 flex flex-col justify-between">
                 {/* Contacts & Metadata */}
                 <div className="space-y-2 text-sm text-slate-600">
                   {agency.email && (

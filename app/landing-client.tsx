@@ -1301,7 +1301,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 </div>
 
                 <Link href="/trip-builder" className="block">
-                  <Button className="w-full h-9 rounded-xl bg-gradient-to-r from-primary to-[#E8AA9B] text-white font-bold text-xs cursor-pointer gap-1.5 hover:opacity-90 transition-opacity">
+                  <Button className="w-full bg-gradient-to-r from-primary to-[#E8AA9B]">
                     Try It Free <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
