@@ -17,9 +17,13 @@ import {
   Settings,
   ListTodo,
   Building2,
+  ShieldCheck,
+  DollarSign,
   LogOut,
   ChevronLeft,
   X,
+  Wallet,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth-client";
@@ -44,6 +48,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Settings,
   ListTodo,
   Building2,
+  ShieldCheck,
+  DollarSign,
+  Wallet,
+  CreditCard,
 };
 
 interface NavItem {

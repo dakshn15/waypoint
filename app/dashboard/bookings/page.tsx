@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CalendarCheck } from "lucide-react";
 import BookingsListClient from "./bookings-list-client";
 import { serializePrisma } from "@/lib/utils";
+import { getCommissionRate } from "@/lib/commission";
+import { getUserAgencyAccess } from "@/lib/permissions";
 
 export default async function BookingsPage() {
   const session = await auth.api.getSession({
@@ -20,7 +22,9 @@ export default async function BookingsPage() {
   }
 
   const role = session.user.role;
+  const userAccess = await getUserAgencyAccess(session.user.id, role);
   let bookings: any[] = [];
+  let agencyName = "";
 
   if (role === "TRAVELER") {
     bookings = await prisma.booking.findMany({
@@ -28,6 +32,11 @@ export default async function BookingsPage() {
       include: {
         package: true,
         agency: true,
+        payments: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { status: true, gateway: true, createdAt: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -36,11 +45,17 @@ export default async function BookingsPage() {
       where: { ownerId: session.user.id },
     });
     if (agency) {
+      agencyName = agency.name;
       bookings = await prisma.booking.findMany({
         where: { agencyId: agency.id },
         include: {
           package: true,
           user: true,
+          payments: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { status: true, gateway: true, createdAt: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -48,13 +63,20 @@ export default async function BookingsPage() {
   } else if (role === "STAFF") {
     const staff = await prisma.agencyStaff.findUnique({
       where: { userId: session.user.id },
+      include: { agency: true },
     });
     if (staff) {
+      agencyName = staff.agency.name;
       bookings = await prisma.booking.findMany({
         where: { agencyId: staff.agencyId },
         include: {
           package: true,
           user: true,
+          payments: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { status: true, gateway: true, createdAt: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       });
@@ -65,21 +87,80 @@ export default async function BookingsPage() {
         package: true,
         user: true,
         agency: true,
+        payments: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { status: true, gateway: true, createdAt: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
   }
 
+  // Compute revenue stats server-side
+  const totalRevenue = bookings.reduce(
+    (sum, b) => sum + Number(b.totalAmount || 0),
+    0
+  );
+  const confirmedBookings = bookings.filter(
+    (b) => b.status === "CONFIRMED" || b.status === "PROCESSING" || b.status === "COMPLETED"
+  );
+  const confirmedRevenue = confirmedBookings.reduce(
+    (sum, b) => sum + Number(b.totalAmount || 0),
+    0
+  );
+  const pendingRevenue = bookings
+    .filter((b) => b.status === "PENDING")
+    .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+  const completedCount = bookings.filter((b) => b.status === "COMPLETED").length;
+  const avgBookingValue =
+    bookings.length > 0 ? totalRevenue / bookings.length : 0;
+
+  const currency = bookings.length > 0 ? bookings[0].currency : "INR";
+
+  const COMMISSION_RATE = await getCommissionRate(userAccess?.agencyId);
+
+  const stats = {
+    totalRevenue,
+    confirmedRevenue,
+    pendingRevenue,
+    completedCount,
+    avgBookingValue,
+    totalBookings: bookings.length,
+    currency,
+    commissionRate: COMMISSION_RATE,
+    platformEarnings: totalRevenue * COMMISSION_RATE,
+    agencyEarnings: totalRevenue * (1 - COMMISSION_RATE),
+  };
+
+  // For admin: get agencies list for filtering
+  let agencies: { id: string; name: string }[] = [];
+  if (role === "ADMIN") {
+    agencies = await prisma.agency.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    });
+  }
+
+  // Serialize bookings with payment status
+  const serializedBookings = bookings.map((b) => ({
+    ...b,
+    paymentStatus: b.payments?.[0]?.status || "UNPAID",
+    paymentGateway: b.payments?.[0]?.gateway || null,
+  }));
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="space-y-2 max-w-sm">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">Bookings</h1>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+          Bookings
+        </h1>
         <p className="text-sm text-slate-500 font-medium">
           {role === "AGENCY" || role === "STAFF"
-            ? "Manage travel packages bookings received from clients."
+            ? `Manage bookings for ${agencyName || "your agency"}.`
             : role === "ADMIN"
-              ? "View and manage all platform bookings."
+              ? "Platform-wide booking management and analytics."
               : "Manage your bookings and travel reservations."}
         </p>
       </div>
@@ -99,10 +180,13 @@ export default async function BookingsPage() {
           </CardContent>
         </Card>
       ) : (
-        <BookingsListClient initialBookings={serializePrisma(bookings)} role={role || "TRAVELER"} />
+        <BookingsListClient
+          initialBookings={serializePrisma(serializedBookings)}
+          role={role || "TRAVELER"}
+          stats={serializePrisma(stats)}
+          agencies={agencies}
+        />
       )}
     </div>
   );
 }
-
-

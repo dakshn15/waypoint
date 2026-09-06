@@ -1,75 +1,115 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useMemo, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   User as UserIcon, CheckCircle2, XCircle, ShieldAlert,
   PlayCircle, CheckSquare2, RotateCcw, ChevronLeft, ChevronRight,
+  DollarSign, Clock, TrendingUp, CreditCard, Building2, Filter,
 } from "lucide-react";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { cancelBooking, updateBookingStatus } from "@/app/actions/bookings";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const PAGE_SIZE = 10;
 
 const STATUS_TABS = ["ALL", "PENDING", "CONFIRMED", "PROCESSING", "COMPLETED", "CANCELLED"] as const;
 type StatusTab = typeof STATUS_TABS[number];
 
+interface BookingStats {
+  totalRevenue: number;
+  confirmedRevenue: number;
+  pendingRevenue: number;
+  completedCount: number;
+  avgBookingValue: number;
+  totalBookings: number;
+  currency: string;
+  commissionRate: number;
+  platformEarnings: number;
+  agencyEarnings: number;
+}
+
 interface BookingsListClientProps {
   initialBookings: any[];
   role: string;
+  stats: BookingStats;
+  agencies?: { id: string; name: string }[];
 }
 
-export default function BookingsListClient({ initialBookings, role }: BookingsListClientProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+/* ─── Stat Card ──────────────────────── */
+
+function StatCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  iconBg,
+  iconColor,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconBg: string;
+  iconColor: string;
+}) {
+  return (
+    <div className="bg-white border border-slate-200/60 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center gap-3">
+        <div className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
+          <p className="text-lg font-bold text-slate-900 truncate">{value}</p>
+          <p className="text-[11px] text-slate-400">{subtitle}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Payment Badge ──────────────────────── */
+
+function PaymentBadge({ status }: { status: string }) {
+  const config: Record<string, { label: string; className: string }> = {
+    COMPLETED: { label: "Paid", className: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+    PENDING: { label: "Pending", className: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+    PROCESSING: { label: "Processing", className: "bg-sky-500/10 text-sky-600 border-sky-500/20" },
+    FAILED: { label: "Failed", className: "bg-rose-500/10 text-rose-600 border-rose-500/20" },
+    UNPAID: { label: "Unpaid", className: "bg-slate-100 text-slate-500 border-slate-200" },
+  };
+  const c = config[status] || config.UNPAID;
+  return (
+    <Badge variant="outline" className={cn("text-[9px] font-bold tracking-wider", c.className)}>
+      {c.label}
+    </Badge>
+  );
+}
+
+/* ─── Main Component ──────────────────────── */
+
+export default function BookingsListClient({ initialBookings, role, stats, agencies = [] }: BookingsListClientProps) {
   const [bookings, setBookings] = useState(initialBookings);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [dialogMode, setDialogMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<StatusTab>("ALL");
+  const [agencyFilter, setAgencyFilter] = useState<string>("ALL");
 
   const isAgencyOrStaffOrAdmin = ["AGENCY", "STAFF", "ADMIN"].includes(role);
-
-  // Verify Stripe payment on mount
-  useEffect(() => {
-    const payment = searchParams.get("payment");
-    const sessionId = searchParams.get("session_id");
-    const bookingId = searchParams.get("bookingId");
-
-    if (payment === "success" && sessionId && bookingId) {
-      async function verifyStripePayment() {
-        const toastId = toast.loading("Verifying Stripe payment...");
-        try {
-          const res = await fetch("/api/payments/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gateway: "stripe", sessionId, bookingId }),
-          });
-          const data = await res.json();
-          if (data.success) {
-            toast.success("Payment verified! Booking confirmed.", { id: toastId });
-            setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status: "CONFIRMED" } : b)));
-            const params = new URLSearchParams(window.location.search);
-            params.delete("payment"); params.delete("session_id"); params.delete("bookingId");
-            const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
-            window.history.replaceState(null, "", newUrl);
-            router.refresh();
-          } else {
-            toast.error(data.error || "Payment verification failed.", { id: toastId });
-          }
-        } catch {
-          toast.error("Failed to verify Stripe payment.", { id: toastId });
-        }
-      }
-      verifyStripePayment();
-    }
-  }, [searchParams, router]);
+  const isAdmin = role === "ADMIN";
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -83,14 +123,40 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
     }
   };
 
-  // Filter by tab
+  // Filter by tab + agency
   const filteredBookings = useMemo(() => {
-    if (activeTab === "ALL") return bookings;
-    return bookings.filter((b) => b.status === activeTab);
-  }, [bookings, activeTab]);
+    let filtered = bookings;
+    if (activeTab !== "ALL") {
+      filtered = filtered.filter((b: any) => b.status === activeTab);
+    }
+    if (isAdmin && agencyFilter !== "ALL") {
+      filtered = filtered.filter((b: any) => b.agencyId === agencyFilter);
+    }
+    return filtered;
+  }, [bookings, activeTab, agencyFilter, isAdmin]);
 
-  // Reset page when tab changes
-  useEffect(() => { setCurrentPage(1); }, [activeTab]);
+  // Reset page when filters change
+  useEffect(() => { setCurrentPage(1); }, [activeTab, agencyFilter]);
+
+  // Filtered stats (recalculated when agency filter is applied)
+  const filteredStats = useMemo(() => {
+    if (!isAdmin || agencyFilter === "ALL") return stats;
+    const agencyBookings = bookings.filter((b: any) => b.agencyId === agencyFilter);
+    const total = agencyBookings.reduce((sum: number, b: any) => sum + Number(b.totalAmount || 0), 0);
+    const confirmed = agencyBookings.filter((b: any) => ["CONFIRMED", "PROCESSING", "COMPLETED"].includes(b.status));
+    const pending = agencyBookings.filter((b: any) => b.status === "PENDING");
+    return {
+      ...stats,
+      totalRevenue: total,
+      confirmedRevenue: confirmed.reduce((s: number, b: any) => s + Number(b.totalAmount || 0), 0),
+      pendingRevenue: pending.reduce((s: number, b: any) => s + Number(b.totalAmount || 0), 0),
+      completedCount: agencyBookings.filter((b: any) => b.status === "COMPLETED").length,
+      avgBookingValue: agencyBookings.length > 0 ? total / agencyBookings.length : 0,
+      totalBookings: agencyBookings.length,
+      platformEarnings: total * stats.commissionRate,
+      agencyEarnings: total * (1 - stats.commissionRate),
+    };
+  }, [bookings, agencyFilter, isAdmin, stats]);
 
   // Pagination
   const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
@@ -105,7 +171,7 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
       } else {
         updated = await updateBookingStatus(bookingId, action as any);
       }
-      setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, status: updated.status } : b)));
+      setBookings((prev: any[]) => prev.map((b: any) => (b.id === bookingId ? { ...b, status: updated.status } : b)));
       toast.success(`Booking ${action === "CANCEL" ? "cancelled" : `status updated to ${action.toLowerCase()}`}.`);
       setSelectedBooking(null);
       setDialogMode(null);
@@ -123,10 +189,13 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
 
   // Tab counts
   const tabCounts = useMemo(() => {
-    const map: Record<string, number> = { ALL: bookings.length };
-    bookings.forEach((b) => { map[b.status] = (map[b.status] || 0) + 1; });
+    const source = isAdmin && agencyFilter !== "ALL"
+      ? bookings.filter((b: any) => b.agencyId === agencyFilter)
+      : bookings;
+    const map: Record<string, number> = { ALL: source.length };
+    source.forEach((b: any) => { map[b.status] = (map[b.status] || 0) + 1; });
     return map;
-  }, [bookings]);
+  }, [bookings, agencyFilter, isAdmin]);
 
   // Icon action buttons for agency/staff
   function AgencyActions({ booking }: { booking: any }) {
@@ -242,9 +311,103 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
   };
 
   const dlg = dialogMode ? dialogConfig[dialogMode] : null;
+  const cur = filteredStats.currency || "INR";
 
   return (
     <>
+      {/* Revenue Summary Cards — visible to Agency/Staff/Admin */}
+      {isAgencyOrStaffOrAdmin && (
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Total Revenue"
+            value={formatCurrency(filteredStats.totalRevenue, cur)}
+            subtitle={`From ${filteredStats.totalBookings} bookings`}
+            icon={DollarSign}
+            iconBg="bg-emerald-500/10"
+            iconColor="text-emerald-600"
+          />
+          <StatCard
+            title="Confirmed Revenue"
+            value={formatCurrency(filteredStats.confirmedRevenue, cur)}
+            subtitle="Verified payments"
+            icon={CheckCircle2}
+            iconBg="bg-secondary/10"
+            iconColor="text-secondary"
+          />
+          <StatCard
+            title="Pending Revenue"
+            value={formatCurrency(filteredStats.pendingRevenue, cur)}
+            subtitle="Awaiting confirmation"
+            icon={Clock}
+            iconBg="bg-primary/10"
+            iconColor="text-primary"
+          />
+          {isAdmin ? (
+            <StatCard
+              title="Platform Commission"
+              value={formatCurrency(filteredStats.platformEarnings, cur)}
+              subtitle={`${(filteredStats.commissionRate * 100).toFixed(0)}% rate`}
+              icon={TrendingUp}
+              iconBg="bg-violet-500/10"
+              iconColor="text-violet-600"
+            />
+          ) : (
+            <StatCard
+              title="Avg. Booking"
+              value={formatCurrency(filteredStats.avgBookingValue, cur)}
+              subtitle={`${filteredStats.completedCount} completed`}
+              icon={TrendingUp}
+              iconBg="bg-violet-500/10"
+              iconColor="text-violet-600"
+            />
+          )}
+        </div>
+      )}
+
+      {/* Agency Earnings Info — visible to Agency/Staff */}
+      {(role === "AGENCY" || role === "STAFF") && filteredStats.totalRevenue > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200/60 rounded-lg">
+          <DollarSign className="h-4 w-4 text-emerald-600 shrink-0" />
+          <p className="text-xs text-emerald-800 font-medium">
+            Your earnings: <span className="font-bold">{formatCurrency(filteredStats.agencyEarnings, cur)}</span> after {(filteredStats.commissionRate * 100).toFixed(0)}% platform commission ({formatCurrency(filteredStats.platformEarnings, cur)})
+          </p>
+        </div>
+      )}
+
+      {/* Admin: Agency Filter */}
+      {isAdmin && agencies.length > 0 && (
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <Filter className="h-3.5 w-3.5" />
+            Agency:
+          </div>
+          <Select value={agencyFilter} onValueChange={(v: string | null) => v && setAgencyFilter(v)}>
+            <SelectTrigger className="w-[220px] h-9 text-sm bg-white border-slate-200 cursor-pointer">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                <SelectValue placeholder="All Agencies" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-slate-200 shadow-lg" alignItemWithTrigger={false}>
+              <SelectItem value="ALL" className="cursor-pointer text-sm">All Agencies</SelectItem>
+              {agencies.map((a) => (
+                <SelectItem key={a.id} value={a.id} className="cursor-pointer text-sm">
+                  {a.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {agencyFilter !== "ALL" && (
+            <button
+              onClick={() => setAgencyFilter("ALL")}
+              className="text-xs text-primary hover:text-primary/80 font-semibold cursor-pointer"
+            >
+              Clear filter
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Filter Tabs */}
       <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-thin">
         {STATUS_TABS.map((tab) => (
@@ -274,11 +437,15 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
         <Table>
           <TableHeader>
             <TableRow className="border-b border-slate-200 bg-slate-50">
-              <TableHead className="w-[110px] text-xs font-bold text-slate-500 uppercase tracking-wider">Booking ID</TableHead>
+              <TableHead className="w-[100px] text-xs font-bold text-slate-500 uppercase tracking-wider">Booking ID</TableHead>
               <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Package / Trip</TableHead>
+              {isAdmin && (
+                <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Agency</TableHead>
+              )}
               <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">{isAgencyOrStaffOrAdmin ? "Traveler" : "Agency"}</TableHead>
               <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Travel Date</TableHead>
               <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</TableHead>
+              <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Payment</TableHead>
               <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</TableHead>
               <TableHead className="text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</TableHead>
             </TableRow>
@@ -286,12 +453,12 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
           <TableBody>
             {paginatedBookings.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-16 text-slate-400 text-sm">
+                <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-16 text-slate-400 text-sm">
                   No bookings found for this filter.
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedBookings.map((booking) => (
+              paginatedBookings.map((booking: any) => (
                 <TableRow key={booking.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
                   <TableCell className="font-mono text-xs font-semibold text-slate-600">
                     {(booking.bookingNumber || booking.id).substring(0, 8).toUpperCase()}
@@ -304,6 +471,14 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                       {booking.travelers?.length || 0} traveler{(booking.travelers?.length || 0) !== 1 ? "s" : ""}
                     </div>
                   </TableCell>
+                  {isAdmin && (
+                    <TableCell className="text-sm text-slate-600">
+                      <div className="flex items-center gap-1.5">
+                        <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="font-medium truncate max-w-[120px]">{booking.agency?.name || "—"}</span>
+                      </div>
+                    </TableCell>
+                  )}
                   <TableCell className="text-sm text-slate-600">
                     {isAgencyOrStaffOrAdmin ? (
                       <div className="flex items-center gap-1.5">
@@ -317,6 +492,9 @@ export default function BookingsListClient({ initialBookings, role }: BookingsLi
                   <TableCell className="text-sm text-slate-600">{formatDate(booking.travelDate)}</TableCell>
                   <TableCell className="font-bold text-sm text-slate-900">
                     {formatCurrency(Number(booking.totalAmount), booking.currency)}
+                  </TableCell>
+                  <TableCell>
+                    <PaymentBadge status={booking.paymentStatus} />
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={cn("text-[10px] font-bold tracking-wider", getStatusStyle(booking.status))}>

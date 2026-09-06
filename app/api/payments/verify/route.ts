@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { gateway, bookingId } = body;
+    const { bookingId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
 
-    if (!bookingId || !gateway) {
+    if (!bookingId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json(
-        { error: "Booking ID and gateway are required" },
+        { error: "Missing required Razorpay verification details" },
         { status: 400 }
       );
     }
@@ -42,51 +42,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    let isSuccess = false;
-    let gatewayPaymentId = "";
-    let rawData = {};
-
-    if (gateway === "razorpay") {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
-      
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        return NextResponse.json(
-          { error: "Missing Razorpay details" },
-          { status: 400 }
-        );
-      }
-
-      isSuccess = verifyRazorpayPayment(
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-      );
-
-      gatewayPaymentId = razorpay_payment_id;
-      rawData = { razorpay_order_id, razorpay_payment_id, razorpay_signature };
-
-    } else if (gateway === "stripe") {
-      const { sessionId } = body;
-      if (!sessionId) {
-        return NextResponse.json(
-          { error: "Missing Stripe sessionId" },
-          { status: 400 }
-        );
-      }
-
-      const stripe = (await import("stripe")).default;
-      const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY || "");
-      const stripeSession = await stripeClient.checkout.sessions.retrieve(sessionId);
-
-      isSuccess = stripeSession.payment_status === "paid";
-      gatewayPaymentId = stripeSession.payment_intent as string || sessionId;
-      rawData = stripeSession;
-    } else {
-      return NextResponse.json(
-        { error: "Unsupported gateway" },
-        { status: 400 }
-      );
+    const payment = await prisma.payment.findFirst({
+      where: {
+        bookingId: booking.id,
+        gateway: "razorpay",
+        gatewayId: razorpay_order_id,
+        status: { in: ["PENDING", "PROCESSING"] },
+      },
+      select: { id: true },
+    });
+    if (!payment) {
+      return NextResponse.json({ error: "Payment session not found for this booking." }, { status: 409 });
     }
+
+    const isSuccess = verifyRazorpayPayment(
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    );
 
     if (isSuccess) {
       // Update Booking & Payment status
@@ -98,15 +71,12 @@ export async function POST(req: NextRequest) {
             paidAmount: booking.totalAmount,
           },
         }),
-        prisma.payment.updateMany({
-          where: {
-            bookingId: booking.id,
-            gateway,
-          },
+        prisma.payment.update({
+          where: { id: payment.id },
           data: {
             status: "COMPLETED",
-            gatewayId: gatewayPaymentId,
-            gatewayData: rawData as any,
+            providerPaymentId: razorpay_payment_id,
+            gatewayData: { razorpay_order_id, razorpay_payment_id, razorpay_signature } as any,
           },
         }),
       ]);
@@ -137,11 +107,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     } else {
       // Mark Payment as failed
-      await prisma.payment.updateMany({
-        where: {
-          bookingId: booking.id,
-          gateway,
-        },
+      await prisma.payment.update({
+        where: { id: payment.id },
         data: {
           status: "FAILED",
         },

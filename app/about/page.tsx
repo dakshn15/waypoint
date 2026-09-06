@@ -33,7 +33,7 @@ const pillars = [
   {
     icon: Shield,
     title: "Trusted & Secure",
-    description: "Every transaction encrypted via Stripe & Razorpay gateways.",
+    description: "Every transaction encrypted via Razorpay secure gateway.",
   },
   {
     icon: Globe,
@@ -408,7 +408,7 @@ export default function AboutPage() {
             {[
               "AI trip generation via Google Gemini",
               "Verified agency onboarding",
-              "Stripe & Razorpay payments",
+              "Razorpay secure payments",
               "Real-time booking tracking",
               "Multi-role dashboards",
               "Budget validation engine",

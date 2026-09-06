@@ -122,7 +122,7 @@ const FAQS = [
   {
     question: "What payment options and currencies are supported?",
     answer:
-      "We integrate directly with Razorpay and Stripe to offer 100% secure checkouts via UPI, Credit/Debit cards, NetBanking, and international cards. We support multi-currency conversion tracking in INR, USD, EUR, and GBP.",
+      "We integrate directly with Razorpay to offer 100% secure checkouts via UPI, Credit/Debit cards, NetBanking, and wallets. We support multi-currency conversion tracking in INR, USD, EUR, and GBP.",
   },
   {
     question: "How do travel agencies benefit from joining Waypoint?",
@@ -277,7 +277,7 @@ const FEATURES = [
     icon: Shield,
     title: "Secure Booking System",
     description:
-      "Integrated Razorpay and Stripe checkouts offer complete payment security, instant invoice PDFs, and automatic itinerary links.",
+      "Integrated Razorpay checkout offers complete payment security, instant invoice PDFs, and automatic itinerary links.",
     colorClass: "text-primary",
     bgClass: "bg-primary/10",
   },
@@ -1033,7 +1033,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 step: 3,
                 icon: Shield,
                 title: "Book & confirm securely",
-                desc: "Pay via Razorpay or Stripe. Get instant PDF invoices, active ticket IDs, and booking confirmations on your dashboard.",
+                desc: "Pay via Razorpay. Get instant PDF invoices, active ticket IDs, and booking confirmations on your dashboard.",
                 color: "#E46F44",
                 bg: "bg-primary/10",
                 highlight: "Secure Checkout",

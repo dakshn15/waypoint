@@ -40,30 +40,25 @@ export function serializePrisma<T>(data: T): any {
   if (data === null || data === undefined) {
     return data;
   }
-
-  if (Array.isArray(data)) {
-    return data.map(serializePrisma);
-  }
-
-  if (data instanceof Date) {
-    return data;
-  }
-
-  if (typeof data === "object") {
-    if (
-      data.constructor &&
-      (data.constructor.name === "Decimal" || typeof (data as any).toNumber === "function")
-    ) {
-      return (data as any).toNumber();
-    }
-
-    const serialized: any = {};
-    for (const key of Object.keys(data)) {
-      serialized[key] = serializePrisma((data as any)[key]);
-    }
-    return serialized;
-  }
-
-  return data;
+  return JSON.parse(
+    JSON.stringify(data, (key, value) => {
+      if (typeof value === "bigint") {
+        return Number(value);
+      }
+      if (
+        value &&
+        typeof value === "object" &&
+        (value.constructor?.name === "Decimal" ||
+          typeof value.toNumber === "function" ||
+          value._isDecimal ||
+          value.isDecimal ||
+          String(value.constructor?.name || "").toLowerCase().includes("decimal") ||
+          (value.s !== undefined && value.e !== undefined && (value.c !== undefined || value.d !== undefined)))
+      ) {
+        return Number(value);
+      }
+      return value;
+    })
+  );
 }
 

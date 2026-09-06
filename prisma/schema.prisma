@@ -31,6 +31,7 @@ model User {
   notifications Notification[]
   favorites     Favorite[]
   documents     Document[]
+  auditLogs     AuditLog[]
 
   @@map("user")
 }
@@ -118,12 +119,21 @@ model Agency {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Commission & Payout
+  commissionRate    Decimal?  @db.Decimal(5, 4) // null = use platform default
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankIfscCode      String?
+  bankName          String?
+  upiId             String?
+
   owner    User          @relation("AgencyOwner", fields: [ownerId], references: [id])
   staff    AgencyStaff[]
   packages Package[]
   bookings Booking[]
   vendors  Vendor[]
   tasks    Task[]
+  payouts  AgencyPayout[]
 }
 
 // Agency Staff
@@ -381,13 +391,51 @@ model Payment {
   status        PaymentStatus @default(PENDING)
   method        PaymentMethod
   gateway       String        // "razorpay" or "stripe"
-  gatewayId     String?       // External payment ID
+  gatewayId     String?       // Immutable provider order/session ID
+  providerPaymentId String?   @unique // Provider's successful payment/intent ID
   gatewayData   Json?         // Raw response from gateway
   
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   
   booking       Booking       @relation(fields: [bookingId], references: [id])
+
+  @@unique([gateway, gatewayId])
+  @@index([bookingId, status])
+}
+
+// Platform-wide security and operations trail. Snapshot fields intentionally
+// hold only the minimum useful change context, never secrets or card data.
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?
+  action       String
+  resourceType String
+  resourceId   String?
+  before       Json?
+  after        Json?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+  @@index([resourceType, resourceId, createdAt])
+}
+
+// Idempotency record for provider callbacks. Keep a minimal event fingerprint
+// rather than retaining sensitive gateway payloads indefinitely.
+model PaymentEvent {
+  id              String   @id @default(cuid())
+  gateway         String
+  providerEventId String
+  eventType       String
+  receivedAt      DateTime @default(now())
+  processedAt     DateTime?
+
+  @@unique([gateway, providerEventId])
+  @@index([gateway, receivedAt])
 }
 
 enum PaymentStatus {
@@ -547,4 +595,51 @@ enum TaskCategory {
   CUSTOMER
   PACKAGE
   SYSTEM
+}
+
+// Platform-wide configuration. Single-row table (id = "default").
+model PlatformSettings {
+  id                String   @id @default("default")
+  commissionRate    Decimal  @default(0.1000) @db.Decimal(5, 4) // 10%
+  minPayoutAmount   Decimal  @default(500) @db.Decimal(10, 2)
+  payoutHoldDays    Int      @default(7)
+  platformName      String   @default("Waypoint")
+  supportEmail      String   @default("support@waypoint.dev")
+  updatedAt         DateTime @updatedAt
+  updatedBy         String?
+}
+
+// Agency settlement ledger. Tracks how much platform owes each agency.
+model AgencyPayout {
+  id               String       @id @default(cuid())
+  agencyId         String
+  periodStart      DateTime
+  periodEnd        DateTime
+  grossAmount      Decimal      @db.Decimal(10, 2)
+  commissionAmount Decimal      @db.Decimal(10, 2)
+  netAmount        Decimal      @db.Decimal(10, 2)
+  commissionRate   Decimal      @db.Decimal(5, 4)
+  bookingCount     Int
+  bookingIds       String[]     // IDs of bookings included in this payout
+  status           PayoutStatus @default(PENDING)
+
+  settledAt        DateTime?
+  settledBy        String?
+  transactionRef   String?      // NEFT/IMPS/UTR reference
+  notes            String?
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  agency           Agency       @relation(fields: [agencyId], references: [id])
+
+  @@index([agencyId, status])
+  @@index([status, createdAt])
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  SETTLED
+  CANCELLED
 }

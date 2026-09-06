@@ -12,8 +12,9 @@ export async function getUserAgencyAccess(
   userRole: string | null | undefined
 ): Promise<AgencyAccess | null> {
   if (!userId || !userRole) return null;
+
   if (userRole === "AGENCY") {
-    const agency = await prisma.agency.findUnique({
+    const agency = await (prisma as any).agency.findUnique({
       where: { ownerId: userId },
     });
     if (!agency) return null;
@@ -25,7 +26,7 @@ export async function getUserAgencyAccess(
   }
 
   if (userRole === "STAFF") {
-    const staff = await prisma.agencyStaff.findUnique({
+    const staff = await (prisma as any).agencyStaff.findUnique({
       where: { userId },
     });
     if (!staff || !staff.active) return null;
@@ -38,3 +39,4 @@ export async function getUserAgencyAccess(
 
   return null;
 }
+

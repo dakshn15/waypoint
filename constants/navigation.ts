@@ -11,6 +11,7 @@ export const NAV_ITEMS = {
     { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
     { title: "Packages", href: "/dashboard/packages", icon: "Package" },
     { title: "Bookings", href: "/dashboard/bookings", icon: "CalendarCheck" },
+    { title: "Earnings & Payouts", href: "/dashboard/payouts", icon: "Wallet" },
     { title: "Tasks", href: "/dashboard/tasks", icon: "ListTodo" },
     { title: "Travelers", href: "/dashboard/travelers", icon: "Users" },
     { title: "Staff", href: "/dashboard/staff", icon: "UserCog" },
@@ -27,6 +28,10 @@ export const NAV_ITEMS = {
     { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
     { title: "Users", href: "/dashboard/users", icon: "Users" },
     { title: "Agencies", href: "/dashboard/agencies", icon: "Building2" },
+    { title: "Bookings", href: "/dashboard/bookings", icon: "CalendarCheck" },
+    { title: "Payments", href: "/dashboard/payments", icon: "DollarSign" },
+    { title: "Payouts", href: "/dashboard/payouts", icon: "Wallet" },
+    { title: "Audit Logs", href: "/dashboard/audit-logs", icon: "ShieldCheck" },
     { title: "Settings", href: "/dashboard/settings", icon: "Settings" },
   ],
 } as const;

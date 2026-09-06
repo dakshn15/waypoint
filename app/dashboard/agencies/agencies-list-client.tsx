@@ -465,42 +465,48 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Register Agency Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="glass-card max-w-md border-slate-200">
+        <DialogContent className="sm:max-w-xl bg-white border border-slate-200/80 shadow-2xl rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-900">Register New Agency</DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
+            <DialogDescription className="text-xs text-slate-500 mt-1">
               Register a travel agency tenant and create its administrator profile.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleCreateAgency} className="space-y-4 mt-2">
+          <form onSubmit={handleCreateAgency} className="space-y-4 mt-3">
             <div className="space-y-1.5">
-              <Label htmlFor="create-agency-name">Agency Name <span className="text-rose-500">*</span></Label>
+              <Label htmlFor="create-agency-name" className="text-xs font-semibold text-slate-700">
+                Agency Name <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="create-agency-name"
                 required
                 placeholder="Golden Travels Ltd"
                 value={createForm.name}
                 onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                className="bg-white border-slate-200"
+                className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="create-owner-name">Owner Name <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="create-owner-name" className="text-xs font-semibold text-slate-700">
+                  Owner Name <span className="text-rose-500">*</span>
+                </Label>
                 <Input
                   id="create-owner-name"
                   required
                   placeholder="Rahul Kumar"
                   value={createForm.ownerName}
                   onChange={(e) => setCreateForm({ ...createForm, ownerName: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-owner-email">Owner Email <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="create-owner-email" className="text-xs font-semibold text-slate-700">
+                  Owner Email <span className="text-rose-500">*</span>
+                </Label>
                 <Input
                   id="create-owner-email"
                   type="email"
@@ -508,54 +514,53 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                   placeholder="rahul@goldentravels.com"
                   value={createForm.ownerEmail}
                   onChange={(e) => setCreateForm({ ...createForm, ownerEmail: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="create-website">Website URL</Label>
+                <Label htmlFor="create-website" className="text-xs font-semibold text-slate-700">Website URL</Label>
                 <Input
                   id="create-website"
                   placeholder="www.goldentravels.com"
                   value={createForm.website}
                   onChange={(e) => setCreateForm({ ...createForm, website: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-phone">Phone</Label>
+                <Label htmlFor="create-phone" className="text-xs font-semibold text-slate-700">Phone</Label>
                 <Input
                   id="create-phone"
-                  placeholder="+91..."
+                  placeholder="+91 9876543210"
                   value={createForm.phone}
                   onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="create-desc">Description</Label>
+              <Label htmlFor="create-desc" className="text-xs font-semibold text-slate-700">Description</Label>
               <Textarea
                 id="create-desc"
                 placeholder="Enter a brief profile description..."
                 value={createForm.description}
                 onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-                className="bg-white border-slate-200 min-h-[80px]"
+                className="bg-slate-50/50 border-slate-200 focus:bg-white min-h-[90px] text-sm leading-relaxed"
               />
             </div>
 
-            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)} className="border-slate-200">
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-5 flex gap-3 justify-end">
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Registering..." : "Register Agency"}
               </Button>
@@ -566,92 +571,101 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Edit Agency Dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-        <DialogContent className="glass-card max-w-md border-slate-200">
+        <DialogContent className="sm:max-w-xl bg-white border border-slate-200/80 shadow-2xl rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-900">Edit Agency Tenant</DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
-              Modify agency details, brand logo, coordinates, and configuration settings.
+            <DialogDescription className="text-xs text-slate-500 mt-1">
+              Modify agency details, brand logo, contact information, and status settings.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-2">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="edit-agency-name">Agency Name <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="edit-agency-name" className="text-xs font-semibold text-slate-700">
+                  Agency Name <span className="text-rose-500">*</span>
+                </Label>
                 <Input
                   id="edit-agency-name"
                   required
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="edit-logo">Logo URL</Label>
+                <Label htmlFor="edit-logo" className="text-xs font-semibold text-slate-700">Logo URL</Label>
                 <Input
                   id="edit-logo"
+                  placeholder="https://..."
                   value={editForm.logo}
                   onChange={(e) => setEditForm({ ...editForm, logo: e.target.value })}
-                  className="bg-white border-slate-200"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5 col-span-1">
-                <Label htmlFor="edit-website">Website URL</Label>
-                <Input
-                  id="edit-website"
-                  value={editForm.website}
-                  onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                  className="bg-white border-slate-200 text-xs"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-website" className="text-xs font-semibold text-slate-700">Website URL</Label>
+              <Input
+                id="edit-website"
+                placeholder="https://..."
+                value={editForm.website}
+                onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
+              />
+            </div>
 
-              <div className="space-y-1.5 col-span-1">
-                <Label htmlFor="edit-email">Public Email</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-email" className="text-xs font-semibold text-slate-700">Public Email</Label>
                 <Input
                   id="edit-email"
+                  type="email"
+                  placeholder="contact@agency.com"
                   value={editForm.email}
                   onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  className="bg-white border-slate-200 text-xs"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
 
-              <div className="space-y-1.5 col-span-1">
-                <Label htmlFor="edit-phone">Public Phone</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-phone" className="text-xs font-semibold text-slate-700">Public Phone</Label>
                 <Input
                   id="edit-phone"
+                  placeholder="+91 9876543210"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="bg-white border-slate-200 text-xs"
+                  className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="edit-address">Office Address</Label>
+              <Label htmlFor="edit-address" className="text-xs font-semibold text-slate-700">Office Address</Label>
               <Input
                 id="edit-address"
+                placeholder="123 Travel Street, Suite 400..."
                 value={editForm.address}
                 onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                className="bg-white border-slate-200"
+                className="h-10 bg-slate-50/50 border-slate-200 focus:bg-white text-sm"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="edit-desc">Agency Profile Description</Label>
+              <Label htmlFor="edit-desc" className="text-xs font-semibold text-slate-700">Agency Profile Description</Label>
               <Textarea
                 id="edit-desc"
+                placeholder="Enter description..."
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="bg-white border-slate-200 min-h-[80px]"
+                className="bg-slate-50/50 border-slate-200 focus:bg-white min-h-[90px] text-sm leading-relaxed"
               />
             </div>
 
-            <div className="flex gap-4 p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl justify-around">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap gap-4 p-3.5 bg-slate-50/80 border border-slate-200/80 rounded-lg justify-around">
+              <div className="flex items-center space-x-2.5">
                 <Switch
                   id="edit-verified"
                   checked={editForm.verified}
@@ -662,7 +676,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2.5">
                 <Switch
                   id="edit-active"
                   checked={editForm.active}
@@ -674,14 +688,13 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
               </div>
             </div>
 
-            <DialogFooter className="pt-4 border-t border-slate-100 mt-4">
-              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} className="border-slate-200">
+            <DialogFooter className="pt-4 border-t border-slate-100 mt-5 flex gap-3 justify-end">
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving Changes..." : "Save Changes"}
               </Button>
@@ -692,7 +705,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="glass-card border-rose-500/20 max-w-md">
+        <DialogContent className="sm:max-w-md bg-white border border-rose-200 shadow-xl rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-rose-500">Delete Travel Agency</DialogTitle>
             <DialogDescription className="mt-2 text-xs text-slate-500 leading-relaxed">
@@ -703,7 +716,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 flex gap-2 justify-end">
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading} className="border-slate-200">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={loading}>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDeleteAgency} disabled={loading} className="cursor-pointer">

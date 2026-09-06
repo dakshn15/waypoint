@@ -38,15 +38,20 @@ export async function addAgencyStaff(data: {
     throw new Error("A user with this email address already exists.");
   }
 
-  const defaultPassword = data.password || "password123";
-  const passwordHash = await hashPassword(defaultPassword);
+  if (!data.name.trim() || !data.email.trim()) {
+    throw new Error("Name and email are required.");
+  }
+  if (!data.password || data.password.length < 12) {
+    throw new Error("Staff passwords must be at least 12 characters long.");
+  }
+  const passwordHash = await hashPassword(data.password);
 
   const staffUser = await prisma.$transaction(async (tx) => {
     // 1. Create standard User record
     const user = await tx.user.create({
       data: {
-        name: data.name,
-        email: data.email,
+        name: data.name.trim(),
+        email: data.email.trim().toLowerCase(),
         emailVerified: true,
         role: "STAFF",
         accounts: {
@@ -202,6 +207,9 @@ export async function updateAgencyStaff(data: {
 
     // 3. Update password if provided
     if (data.password && data.password.trim() !== "") {
+      if (data.password.length < 12) {
+        throw new Error("Staff passwords must be at least 12 characters long.");
+      }
       const passwordHash = await hashPassword(data.password);
       
       const account = await tx.account.findFirst({

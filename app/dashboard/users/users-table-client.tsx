@@ -581,7 +581,6 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary text-white font-semibold rounded-xl px-5"
               >
                 {loading ? "Saving..." : "Save Changes"}
               </Button>

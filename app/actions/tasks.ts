@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getUserAgencyAccess } from "@/lib/permissions";
 import { TaskStatus, Priority, TaskCategory } from "@prisma/client";
+import { taskStatusSchema } from "@/lib/validation";
 
 interface CreateTaskInput {
   title: string;
@@ -42,6 +43,14 @@ export async function createTask(input: CreateTaskInput) {
 
     if (!input.staffId) {
       return { error: "Please select an assignee for this task." };
+    }
+
+    const assignee = await prisma.agencyStaff.findFirst({
+      where: { id: input.staffId, agencyId: access.agencyId, active: true },
+      select: { id: true },
+    });
+    if (!assignee) {
+      return { error: "The selected staff member does not belong to this agency." };
     }
 
     const task = await prisma.task.create({
@@ -95,9 +104,10 @@ export async function updateTaskStatus(taskId: string, status: TaskStatus) {
       }
     }
 
+    const nextStatus = taskStatusSchema.parse(status);
     const updated = await prisma.task.update({
       where: { id: taskId },
-      data: { status },
+      data: { status: nextStatus },
     });
 
     revalidatePath("/dashboard/tasks");
@@ -175,6 +185,16 @@ export async function reassignTask(taskId: string, staffId: string | null) {
 
     if (!task || task.agencyId !== access.agencyId) {
       return { error: "Task not found." };
+    }
+
+    if (staffId) {
+      const assignee = await prisma.agencyStaff.findFirst({
+        where: { id: staffId, agencyId: access.agencyId, active: true },
+        select: { id: true },
+      });
+      if (!assignee) {
+        return { error: "The selected staff member does not belong to this agency." };
+      }
     }
 
     const updated = await prisma.task.update({

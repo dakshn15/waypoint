@@ -11,9 +11,6 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
     async sendResetPassword({ user, url }) {
-      console.log(`[AUTH] Password reset requested for ${user.email}`);
-      console.log(`[AUTH] Reset Link: ${url}`);
-      
       const template = passwordResetEmail({
         userName: user.name,
         resetUrl: url,
@@ -38,6 +35,7 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         defaultValue: "TRAVELER",
+        input: false,
       },
       phone: {
         type: "string",
@@ -48,18 +46,11 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
-          if (user.role === "AGENCY") {
-            const baseSlug = user.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-            await prisma.agency.create({
-              data: {
-                name: user.name,
-                slug: `${baseSlug}-${user.id.substring(0, 5)}`,
-                ownerId: user.id,
-                email: user.email,
-              },
-            });
-          }
+        before: async (user) => {
+          // Role fields are server-owned. Public registration always starts as
+          // a traveler; the authenticated agency-upgrade action creates an
+          // agency owner explicitly after sign-up.
+          return { data: { ...user, role: "TRAVELER" } };
         },
       },
     },

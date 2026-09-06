@@ -117,8 +117,8 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!formData.name || !formData.email) {
-      toast.error("Name and Email are required.");
+    if (!formData.name || !formData.email || formData.password.length < 12) {
+      toast.error("Name, email, and a password of at least 12 characters are required.");
       return;
     }
     setLoading(true);
@@ -126,7 +126,7 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
       await addAgencyStaff({
         name: formData.name,
         email: formData.email,
-        password: formData.password || "password123",
+        password: formData.password,
         role: formData.role,
       });
 
@@ -223,15 +223,17 @@ export default function StaffClient({ initialStaff }: StaffClientProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="staff-password">Password (Optional)</Label>
+                <Label htmlFor="staff-password">Temporary Password <span className="text-red-500">*</span></Label>
                 <Input
                   id="staff-password"
                   type="password"
-                  placeholder="Defaults to: password123"
+                  placeholder="At least 12 characters"
+                  minLength={12}
+                  required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
-                <p className="text-[10px] text-slate-500 mt-0.5">Staff members will use this password to log in.</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">Give this password to the staff member securely.</p>
               </div>
 
               <div className="space-y-2">

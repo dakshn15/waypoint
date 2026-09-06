@@ -25,7 +25,7 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
   const [travelDate, setTravelDate] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
   const [loading, setLoading] = useState(false);
-  const [gateway, setGateway] = useState<"razorpay" | "stripe">("razorpay");
+
   const [travelers, setTravelers] = useState<Array<{ name: string; age: string }>>([
     { name: "", age: "" },
   ]);
@@ -75,14 +75,11 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
     try {
       const formattedTravelers = travelers.map((t) => ({ name: t.name, age: parseInt(t.age) }));
       const booking = await createBooking({ packageId, travelDate, travelers: formattedTravelers, specialRequests, totalAmount, currency });
-      const paymentResponse = await fetch("/api/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bookingId: booking.id, gateway }) });
+      const paymentResponse = await fetch("/api/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bookingId: booking.id, gateway: "razorpay" }) });
       const paymentData = await paymentResponse.json();
       if (!paymentResponse.ok) throw new Error(paymentData.error || "Payment session initiation failed");
 
-      if (gateway === "stripe") {
-        if (paymentData.sessionUrl) { toast.success("Redirecting to Stripe..."); window.location.href = paymentData.sessionUrl; }
-        else throw new Error("Stripe session URL not returned");
-      } else if (gateway === "razorpay") {
+      {
         const isLoaded = await loadRazorpayScript();
         if (!isLoaded) throw new Error("Failed to load Razorpay SDK.");
         toast.info("Opening Razorpay...");
@@ -251,37 +248,13 @@ export default function BookingForm({ packageId, basePrice, currency, duration, 
 
 
         {/* ── 4. Payment Method ── */}
-        <div className="space-y-3 border-t border-slate-100 pt-5">
-          <label className="text-[13px] font-bold text-slate-800 block">
-            Payment Method
-          </label>
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { key: "razorpay" as const, name: "Razorpay", desc: "UPI • Cards • NetBanking" },
-              { key: "stripe" as const, name: "Stripe", desc: "International Cards" },
-            ].map((g) => (
-              <button
-                key={g.key}
-                type="button"
-                onClick={() => setGateway(g.key)}
-                className={`relative p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer ${gateway === g.key
-                    ? "border-primary bg-primary/5"
-                    : "border-slate-200 bg-[#FAFAF9] hover:border-slate-300"
-                  }`}
-              >
-                {/* Radio indicator */}
-                <div className={`absolute top-3 right-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${gateway === g.key ? "border-primary bg-primary" : "border-slate-300"
-                  }`}>
-                  {gateway === g.key && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                  )}
-                </div>
-                <span className={`text-sm font-bold block ${gateway === g.key ? "text-slate-900" : "text-slate-600"}`}>
-                  {g.name}
-                </span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">{g.desc}</span>
-              </button>
-            ))}
+        <div className="border-t border-slate-100 pt-5">
+          <div className="relative p-3.5 rounded-lg border-2 border-primary bg-primary/5">
+            <div className="absolute top-3 right-3 w-4 h-4 rounded-full border-2 border-primary bg-primary flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+            </div>
+            <span className="text-sm font-bold block text-slate-900">Razorpay</span>
+            <span className="text-[11px] text-slate-400 block mt-0.5">UPI • Cards • NetBanking • Wallets</span>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { z } from "zod";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -63,6 +64,55 @@ export interface GeneratedTrip {
   };
   tips: string[];
   itinerary: GeneratedDay[];
+}
+
+const generatedTripSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  summary: z.string().trim().min(1).max(2_000),
+  totalEstimatedCost: z.number().finite().nonnegative(),
+  costBreakdown: z.object({
+    accommodation: z.number().finite().nonnegative(),
+    transport: z.number().finite().nonnegative(),
+    activities: z.number().finite().nonnegative(),
+    food: z.number().finite().nonnegative(),
+    miscellaneous: z.number().finite().nonnegative(),
+  }),
+  tips: z.array(z.string().trim().min(1).max(500)).max(20),
+  itinerary: z.array(z.object({
+    dayNumber: z.number().int().positive(),
+    title: z.string().trim().min(1).max(200),
+    description: z.string().trim().max(2_000),
+    activities: z.array(z.object({
+      time: z.string().trim().max(50),
+      title: z.string().trim().min(1).max(200),
+      description: z.string().trim().max(2_000),
+      location: z.string().trim().max(300),
+      duration: z.string().trim().max(100),
+      type: z.enum(["SIGHTSEEING", "ADVENTURE", "DINING", "SHOPPING", "RELAXATION", "CULTURAL", "TRANSPORTATION", "CHECK_IN", "CHECK_OUT"]),
+      estimatedCost: z.number().finite().nonnegative(),
+    })).max(20),
+    hotel: z.object({
+      name: z.string().trim().min(1).max(200),
+      area: z.string().trim().max(300),
+      pricePerNight: z.number().finite().nonnegative(),
+      rating: z.number().finite().min(0).max(5),
+    }).nullable(),
+    transport: z.object({
+      type: z.enum(["FLIGHT", "TRAIN", "BUS", "CAR", "FERRY", "WALK"]),
+      from: z.string().trim().min(1).max(300),
+      to: z.string().trim().min(1).max(300),
+      cost: z.number().finite().nonnegative(),
+      duration: z.string().trim().max(100),
+    }).nullable(),
+  })).min(1).max(30),
+});
+
+function validateGeneratedTrip(candidate: unknown, expectedDays: number): GeneratedTrip | null {
+  const parsed = generatedTripSchema.safeParse(candidate);
+  if (!parsed.success) return null;
+  const days = parsed.data.itinerary.map((day) => day.dayNumber).sort((a, b) => a - b);
+  if (days.length !== expectedDays || days.some((day, index) => day !== index + 1)) return null;
+  return parsed.data;
 }
 
 /**
@@ -262,7 +312,11 @@ export async function generateTrip(request: TripRequest): Promise<GeneratedTrip>
     }
     cleaned = cleaned.trim();
 
-    const parsed: GeneratedTrip = JSON.parse(cleaned);
+    const expectedDays = Math.ceil(
+      (new Date(request.endDate).getTime() - new Date(request.startDate).getTime()) / 86_400_000
+    );
+    const parsed = validateGeneratedTrip(JSON.parse(cleaned), expectedDays);
+    if (!parsed) throw new Error("AI response did not match the required itinerary schema.");
     return parsed;
   } catch (error) {
     console.error("[AI] Error generating trip with Gemini API. Falling back to local mock generator.", error);

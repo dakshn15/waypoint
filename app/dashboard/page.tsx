@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import AnalyticsCharts from "./analytics/charts";
+import { getCommissionRate } from "@/lib/commission";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -608,15 +609,19 @@ async function AgencyDashboard({
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 async function AdminDashboard({ userName }: { userName: string }) {
-  const [allBookings, totalUsers, totalAgencies, totalPackages] =
+  const COMMISSION_RATE = await getCommissionRate();
+
+  const [allBookings, totalUsers, totalAgencies, totalPackages, verifiedAgencies, activePackages] =
     await Promise.all([
       prisma.booking.findMany({
-        include: { user: true, package: true },
+        include: { user: true, package: true, agency: true },
         orderBy: { createdAt: "desc" },
       }),
       prisma.user.count(),
       prisma.agency.count(),
       prisma.package.count(),
+      prisma.agency.count({ where: { verified: true } }),
+      prisma.package.count({ where: { status: "PUBLISHED" } }),
     ]);
 
   const recentBookings = allBookings.slice(0, 5);
@@ -624,6 +629,11 @@ async function AdminDashboard({ userName }: { userName: string }) {
     (sum, b) => sum + Number(b.totalAmount),
     0
   );
+  const platformCommission = totalRevenue * COMMISSION_RATE;
+  const completedBookings = allBookings.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED");
+  const conversionRate = allBookings.length > 0
+    ? Math.round((completedBookings.length / allBookings.length) * 100)
+    : 0;
 
   // Monthly revenue (last 6 months)
   const monthlyRevenue: { month: string; revenue: number }[] = [];
@@ -659,6 +669,20 @@ async function AdminDashboard({ userName }: { userName: string }) {
     ([status, count]) => ({ status: status as string, count: count as number })
   );
 
+  // Top performing agencies
+  const agencyMap = new globalThis.Map<string, { name: string; bookings: number; revenue: number }>();
+  allBookings.forEach((b) => {
+    if (b.agency) {
+      const existing = agencyMap.get(b.agency.id) || { name: b.agency.name, bookings: 0, revenue: 0 };
+      existing.bookings += 1;
+      existing.revenue += Number(b.totalAmount);
+      agencyMap.set(b.agency.id, existing);
+    }
+  });
+  const topAgencies = Array.from(agencyMap.values())
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 5);
+
   return (
     <div className="space-y-6">
       {/* Hero */}
@@ -673,8 +697,18 @@ async function AdminDashboard({ userName }: { userName: string }) {
             Admin Dashboard
           </h1>
           <p className="text-white/50 text-sm mt-3 max-w-md">
-            Welcome back, {userName}. Platform-wide analytics, user management, and system controls at your fingertips.
+            Welcome back, {userName}. Platform-wide analytics, revenue tracking, and system controls at your fingertips.
           </p>
+          {totalRevenue > 0 && (
+            <div className="mt-4 flex items-center gap-4 text-xs">
+              <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70 font-semibold">
+                Commission Rate: {(COMMISSION_RATE * 100)}%
+              </span>
+              <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70 font-semibold">
+                Platform Earned: {formatCurrency(platformCommission, "INR")}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -690,8 +724,8 @@ async function AdminDashboard({ userName }: { userName: string }) {
         />
         <StatCard
           title="Active Agencies"
-          value={totalAgencies}
-          subtitle="Registered agencies"
+          value={`${verifiedAgencies}/${totalAgencies}`}
+          subtitle={`${verifiedAgencies} verified`}
           icon={Package}
           gradient="bg-gradient-to-r from-primary to-orange-400"
           iconBg="bg-primary/10 text-primary"
@@ -699,7 +733,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         <StatCard
           title="Total Bookings"
           value={allBookings.length}
-          subtitle="All-time bookings"
+          subtitle={`${conversionRate}% conversion`}
           icon={CalendarCheck}
           gradient="bg-gradient-to-r from-secondary to-slate-600"
           iconBg="bg-secondary/10 text-secondary"
@@ -707,7 +741,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         <StatCard
           title="Platform Revenue"
           value={formatCurrency(totalRevenue, "INR")}
-          subtitle="Total revenue"
+          subtitle={`${activePackages} active packages`}
           icon={DollarSign}
           gradient="bg-gradient-to-r from-emerald-500 to-teal-500"
           iconBg="bg-emerald-500/10 text-emerald-600"
@@ -741,7 +775,7 @@ async function AdminDashboard({ userName }: { userName: string }) {
         isTraveler={false}
       />
 
-      {/* Row B: Recent Bookings + Platform Summary */}
+      {/* Row B: Recent Bookings + Top Agencies */}
       <div className="grid gap-5 grid-cols-1 lg:grid-cols-2">
         {/* Scrollable Recent Bookings */}
         <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
@@ -776,33 +810,41 @@ async function AdminDashboard({ userName }: { userName: string }) {
           </CardContent>
         </Card>
 
-        {/* Platform Overview */}
+        {/* Top Performing Agencies */}
         <Card className="sm:py-5 py-4 bg-white border border-slate-200/60 shadow-sm flex flex-col">
           <CardHeader className="pb-3 border-b border-slate-100">
-            <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Users className="h-4 w-4 text-violet-500" />
-              Platform Stats
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-violet-500" />
+                Top Agencies
+              </CardTitle>
+              <Link href="/dashboard/agencies" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1">
+                View all <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
           </CardHeader>
-          <CardContent className="px-4 sm:px-5 flex flex-col items-center justify-center flex-1 space-y-3">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-slate-900">{formatCurrency(totalRevenue, "INR")}</p>
-              <p className="text-sm text-slate-400 mt-1 font-medium">Total Platform Volume</p>
-            </div>
-            <div className="grid grid-cols-3 gap-3 w-full pt-3 border-t border-slate-100 text-center">
-              <div>
-                <p className="font-bold text-slate-800 text-base">{totalUsers}</p>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase">Users</p>
+          <CardContent className="px-4 sm:px-5 flex-1">
+            {topAgencies.length > 0 ? (
+              <div className="space-y-2.5">
+                {topAgencies.map((agency, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50/80 border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
+                      i === 0 ? "bg-primary/10 text-primary" : i === 1 ? "bg-secondary/10 text-secondary" : "bg-slate-100 text-slate-500"
+                    }`}>{i + 1}</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-800 truncate">{agency.name}</p>
+                      <p className="text-[11px] text-slate-400 font-medium">{agency.bookings} booking{agency.bookings !== 1 ? "s" : ""}</p>
+                    </div>
+                    <span className="text-xs font-bold text-slate-700 shrink-0">{formatCurrency(agency.revenue, "INR")}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <p className="font-bold text-slate-800 text-base">{totalAgencies}</p>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase">Agencies</p>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <Package className="h-8 w-8 text-slate-200 mb-2" />
+                <p className="text-xs text-slate-400">No agency data yet</p>
               </div>
-              <div>
-                <p className="font-bold text-slate-800 text-base">{totalPackages}</p>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase">Packages</p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

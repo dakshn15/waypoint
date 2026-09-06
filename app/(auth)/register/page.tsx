@@ -9,6 +9,7 @@ import { Eye, EyeOff, ArrowRight, Loader2, User, Building2, Check } from "lucide
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createAgencyForCurrentUser } from "@/app/actions/account";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -67,10 +68,12 @@ export default function RegisterPage() {
           name: name.trim(),
           email: email.trim(),
           password,
-          role,
-        } as any,
+        },
         {
           onSuccess: async () => {
+            if (role === "AGENCY") {
+              await createAgencyForCurrentUser();
+            }
             toast.success("Account created successfully! Redirecting...");
             window.location.href = "/dashboard";
           },

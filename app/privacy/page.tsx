@@ -16,13 +16,13 @@ const sections = [
     list: [
       "Create and execute personalized day-by-day itineraries via our AI Planner.",
       "Coordinate booking confirmations, invoice creations, and vouchers between you and registered travel agencies.",
-      "Verify billing transactions and send payment confirmations via our secure integrations (Stripe, Razorpay).",
+      "Verify billing transactions and send payment confirmations via our secure Razorpay integration.",
       "Dispatch transactional emails (booking confirmations, payment success notifications).",
     ],
   },
   {
     title: "3. Data Integrity & Sharing",
-    content: `We do not sell or trade your personal information. To fulfill bookings, we share necessary traveler info (traveler list names, age) with the specific travel operator/agency managing the package. Billing information is processed directly by Stripe/Razorpay without staying on our local servers.`,
+    content: `We do not sell or trade your personal information. To fulfill bookings, we share necessary traveler info (traveler list names, age) with the specific travel operator/agency managing the package. Billing information is processed directly by Razorpay without staying on our local servers.`,
   },
   {
     title: "4. Your Privacy Choices",

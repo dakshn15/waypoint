@@ -4,17 +4,36 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { writeAuditLog } from "@/lib/audit";
+import { z } from "zod";
+
+const roleSchema = z.enum(["TRAVELER", "AGENCY", "STAFF", "ADMIN"]);
+const staffRoleSchema = z.enum(["MANAGER", "AGENT", "SUPPORT"]);
+const agencyIdSchema = z.string().cuid();
 
 async function verifyAdmin() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!session || (session.user as any).role !== "ADMIN") {
+  if (!session || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized: Admin access required");
   }
 
   return session;
+}
+
+async function ensureActiveAgency(agencyId: string) {
+  const agency = await prisma.agency.findFirst({
+    where: { id: agencyId, active: true },
+    select: { id: true },
+  });
+  if (!agency) throw new Error("The selected agency is not active.");
+}
+
+function agencySlug(name: string, userId: string) {
+  const base = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "agency";
+  return `${base}-${userId.substring(0, 5)}`;
 }
 
 export async function changeUserRole(
@@ -26,7 +45,11 @@ export async function changeUserRole(
   try {
     const session = await verifyAdmin();
 
-    // Check current user details
+    const nextRole = roleSchema.parse(role);
+    const nextStaffRole = staffRole ? staffRoleSchema.parse(staffRole) : "AGENT";
+    if (agencyId) agencyIdSchema.parse(agencyId);
+    if (session.user.id === userId && nextRole !== "ADMIN") return { error: "You cannot remove your own platform-admin access." };
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -35,72 +58,32 @@ export async function changeUserRole(
       return { error: "User not found" };
     }
 
-    // Clean up previous roles
-    if (user.role === "STAFF" && role !== "STAFF") {
-      await prisma.agencyStaff.deleteMany({
-        where: { userId },
-      });
+    if (user.role === "AGENCY" && nextRole !== "AGENCY") {
+      return { error: "Agency owners cannot be converted because that could destroy operational data. Suspend the agency or transfer ownership through a dedicated workflow." };
+    }
+    if (nextRole === "STAFF") {
+      if (!agencyId) return { error: "An agency must be assigned when changing a user to staff." };
+      await ensureActiveAgency(agencyId);
     }
 
-    if (user.role === "AGENCY" && role !== "AGENCY") {
-      await prisma.agency.deleteMany({
-        where: { ownerId: userId },
-      });
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { role },
-    });
-
-    // If role changed to AGENCY and agency does not exist, create it
-    if (role === "AGENCY") {
-      const existingAgency = await prisma.agency.findUnique({
-        where: { ownerId: userId },
-      });
-
-      if (!existingAgency) {
-        const baseSlug = updatedUser.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        await prisma.agency.create({
-          data: {
-            name: updatedUser.name,
-            slug: `${baseSlug}-${updatedUser.id.substring(0, 5)}`,
-            ownerId: updatedUser.id,
-            email: updatedUser.email,
-          },
-        });
+    await prisma.$transaction(async (tx) => {
+      if (user.role === "STAFF" && nextRole !== "STAFF") {
+        await tx.agencyStaff.deleteMany({ where: { userId } });
       }
-    }
-
-    // If role changed to STAFF, link to agency
-    if (role === "STAFF") {
-      if (!agencyId) {
-        return { error: "An agency must be assigned when changing user to staff." };
+      const updatedUser = await tx.user.update({ where: { id: userId }, data: { role: nextRole } });
+      if (nextRole === "AGENCY") {
+        const existingAgency = await tx.agency.findUnique({ where: { ownerId: userId } });
+        if (!existingAgency) await tx.agency.create({ data: { name: updatedUser.name, slug: agencySlug(updatedUser.name, updatedUser.id), ownerId: updatedUser.id, email: updatedUser.email } });
       }
-
-      const existingStaff = await prisma.agencyStaff.findUnique({
-        where: { userId },
-      });
-
-      if (existingStaff) {
-        await prisma.agencyStaff.update({
+      if (nextRole === "STAFF" && agencyId) {
+        await tx.agencyStaff.upsert({
           where: { userId },
-          data: {
-            agencyId,
-            role: staffRole || "AGENT",
-          },
-        });
-      } else {
-        await prisma.agencyStaff.create({
-          data: {
-            userId,
-            agencyId,
-            role: staffRole || "AGENT",
-            active: true,
-          },
+          update: { agencyId, role: nextStaffRole, active: true },
+          create: { userId, agencyId, role: nextStaffRole, active: true },
         });
       }
-    }
+    });
+    await writeAuditLog({ actorId: session.user.id, action: "user.role_changed", resourceType: "User", resourceId: userId, before: { role: user.role }, after: { role: nextRole, agencyId: agencyId ?? null, staffRole: nextRole === "STAFF" ? nextStaffRole : null } });
 
     revalidatePath("/dashboard/users");
     return { success: true };
@@ -120,57 +103,10 @@ export async function createUserByAdmin(input: {
 }) {
   try {
     await verifyAdmin();
-
-    if (!input.name.trim() || !input.email.trim()) {
-      return { error: "Name and email are required." };
-    }
-
-    const existing = await prisma.user.findUnique({
-      where: { email: input.email.trim().toLowerCase() },
-    });
-
-    if (existing) {
-      return { error: "A user with this email already exists." };
-    }
-
-    const user = await prisma.user.create({
-      data: {
-        name: input.name.trim(),
-        email: input.email.trim().toLowerCase(),
-        role: input.role,
-        phone: input.phone || null,
-      },
-    });
-
-    if (input.role === "AGENCY") {
-      const baseSlug = user.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      await prisma.agency.create({
-        data: {
-          name: user.name,
-          slug: `${baseSlug}-${user.id.substring(0, 5)}`,
-          ownerId: user.id,
-          email: user.email,
-        },
-      });
-    }
-
-    if (input.role === "STAFF") {
-      if (!input.agencyId) {
-        return { error: "An agency must be assigned for staff members." };
-      }
-
-      await prisma.agencyStaff.create({
-        data: {
-          userId: user.id,
-          agencyId: input.agencyId,
-          role: input.staffRole || "AGENT",
-          active: true,
-        },
-      });
-    }
-
-    revalidatePath("/dashboard/users");
-    return { success: true, userId: user.id };
+    // A bare User row cannot authenticate and would prevent the person from
+    // registering normally. Until a tokenized invitation workflow exists,
+    // registrations must use the audited public/agency onboarding flow.
+    return { error: "Direct account creation is disabled until email invitations are configured. Ask the user to register, then assign their role here." };
   } catch (error: any) {
     console.error("[CREATE_USER_BY_ADMIN_ERROR]", error);
     return { error: error.message || "Failed to create user" };
@@ -184,9 +120,13 @@ export async function deleteUser(userId: string) {
       return { error: "You cannot delete your own account" };
     }
 
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (!user) return { error: "User not found" };
+    if (user.role === "AGENCY") return { error: "Agency owners cannot be deleted from the user directory. Suspend or close the agency through its governed workflow." };
     await prisma.user.delete({
       where: { id: userId },
     });
+    await writeAuditLog({ actorId: session.user.id, action: "user.deleted", resourceType: "User", resourceId: userId, before: { role: user.role } });
 
     revalidatePath("/dashboard/users");
     return { success: true };
@@ -198,7 +138,7 @@ export async function deleteUser(userId: string) {
 
 export async function toggleAgencyVerification(agencyId: string) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
 
     const agency = await prisma.agency.findUnique({
       where: { id: agencyId },
@@ -208,10 +148,11 @@ export async function toggleAgencyVerification(agencyId: string) {
       return { error: "Agency not found" };
     }
 
-    await prisma.agency.update({
+    const updated = await prisma.agency.update({
       where: { id: agencyId },
       data: { verified: !agency.verified },
     });
+    await writeAuditLog({ actorId: session.user.id, action: "agency.verification_changed", resourceType: "Agency", resourceId: agencyId, before: { verified: agency.verified }, after: { verified: updated.verified } });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };
@@ -223,7 +164,7 @@ export async function toggleAgencyVerification(agencyId: string) {
 
 export async function toggleAgencyActive(agencyId: string) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
 
     const agency = await prisma.agency.findUnique({
       where: { id: agencyId },
@@ -233,10 +174,11 @@ export async function toggleAgencyActive(agencyId: string) {
       return { error: "Agency not found" };
     }
 
-    await prisma.agency.update({
+    const updated = await prisma.agency.update({
       where: { id: agencyId },
       data: { active: !agency.active },
     });
+    await writeAuditLog({ actorId: session.user.id, action: "agency.status_changed", resourceType: "Agency", resourceId: agencyId, before: { active: agency.active }, after: { active: updated.active } });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };
@@ -258,7 +200,11 @@ export async function updateUserByAdmin(
   }
 ) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
+    const nextRole = roleSchema.parse(input.role);
+    const nextStaffRole = input.staffRole ? staffRoleSchema.parse(input.staffRole) : "AGENT";
+    if (input.agencyId) agencyIdSchema.parse(input.agencyId);
+    if (session.user.id === userId && nextRole !== "ADMIN") return { error: "You cannot remove your own platform-admin access." };
 
     if (!input.name.trim() || !input.email.trim()) {
       return { error: "Name and email are required." };
@@ -271,6 +217,13 @@ export async function updateUserByAdmin(
     if (!user) {
       return { error: "User not found" };
     }
+    if (user.role === "AGENCY" && nextRole !== "AGENCY") {
+      return { error: "Agency owners cannot be converted because that could destroy operational data. Suspend the agency or transfer ownership through a dedicated workflow." };
+    }
+    if (nextRole === "STAFF") {
+      if (!input.agencyId) return { error: "An agency must be assigned when changing a user to staff." };
+      await ensureActiveAgency(input.agencyId);
+    }
 
     // Check if email changed and is taken
     if (input.email.trim().toLowerCase() !== user.email) {
@@ -282,73 +235,24 @@ export async function updateUserByAdmin(
       }
     }
 
-    // Clean up previous role relations if role changed
-    if (user.role === "STAFF" && input.role !== "STAFF") {
-      await prisma.agencyStaff.deleteMany({ where: { userId } });
-    }
-    if (user.role === "AGENCY" && input.role !== "AGENCY") {
-      await prisma.agency.deleteMany({ where: { ownerId: userId } });
-    }
-
-    // Update user details
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        name: input.name.trim(),
-        email: input.email.trim().toLowerCase(),
-        phone: input.phone || null,
-        role: input.role,
-      },
-    });
-
-    // Handle transition to agency owner
-    if (input.role === "AGENCY") {
-      const existingAgency = await prisma.agency.findUnique({
-        where: { ownerId: userId },
-      });
-
-      if (!existingAgency) {
-        const baseSlug = input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        await prisma.agency.create({
-          data: {
-            name: input.name,
-            slug: `${baseSlug}-${userId.substring(0, 5)}`,
-            ownerId: userId,
-            email: input.email.trim().toLowerCase(),
-          },
-        });
+    const sanitizedName = input.name.trim();
+    const sanitizedEmail = input.email.trim().toLowerCase();
+    await prisma.$transaction(async (tx) => {
+      if (user.role === "STAFF" && nextRole !== "STAFF") await tx.agencyStaff.deleteMany({ where: { userId } });
+      await tx.user.update({ where: { id: userId }, data: { name: sanitizedName, email: sanitizedEmail, phone: input.phone || null, role: nextRole } });
+      if (nextRole === "AGENCY") {
+        const existingAgency = await tx.agency.findUnique({ where: { ownerId: userId } });
+        if (!existingAgency) await tx.agency.create({ data: { name: sanitizedName, slug: agencySlug(sanitizedName, userId), ownerId: userId, email: sanitizedEmail } });
       }
-    }
-
-    // Handle transition to staff member
-    if (input.role === "STAFF") {
-      if (!input.agencyId) {
-        return { error: "An agency must be assigned when changing user to staff." };
-      }
-
-      const existingStaff = await prisma.agencyStaff.findUnique({
-        where: { userId },
-      });
-
-      if (existingStaff) {
-        await prisma.agencyStaff.update({
+      if (nextRole === "STAFF" && input.agencyId) {
+        await tx.agencyStaff.upsert({
           where: { userId },
-          data: {
-            agencyId: input.agencyId,
-            role: input.staffRole || "AGENT",
-          },
-        });
-      } else {
-        await prisma.agencyStaff.create({
-          data: {
-            userId,
-            agencyId: input.agencyId,
-            role: input.staffRole || "AGENT",
-            active: true,
-          },
+          update: { agencyId: input.agencyId, role: nextStaffRole, active: true },
+          create: { userId, agencyId: input.agencyId, role: nextStaffRole, active: true },
         });
       }
-    }
+    });
+    await writeAuditLog({ actorId: session.user.id, action: "user.updated", resourceType: "User", resourceId: userId, before: { name: user.name, email: user.email, role: user.role }, after: { name: sanitizedName, email: sanitizedEmail, role: nextRole, agencyId: input.agencyId ?? null, staffRole: nextRole === "STAFF" ? nextStaffRole : null } });
 
     revalidatePath("/dashboard/users");
     return { success: true };
@@ -367,7 +271,7 @@ export async function createAgencyByAdmin(input: {
   phone?: string | null;
 }) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
 
     if (!input.name.trim() || !input.ownerName.trim() || !input.ownerEmail.trim()) {
       return { error: "Agency name, owner name, and owner email are required." };
@@ -385,34 +289,26 @@ export async function createAgencyByAdmin(input: {
       if (ownsAgency) {
         return { error: `User with email ${input.ownerEmail} already owns agency "${ownsAgency.name}"` };
       }
-      await prisma.user.update({
-        where: { id: ownerUser.id },
-        data: { role: "AGENCY" },
-      });
-    } else {
-      ownerUser = await prisma.user.create({
+      if (ownerUser.role !== "TRAVELER") return { error: "Only traveler accounts can be upgraded to agency owners." };
+    } else return { error: "The owner must register first so their account has valid authentication credentials." };
+
+    const agency = await prisma.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: ownerUser.id }, data: { role: "AGENCY" } });
+      return tx.agency.create({
         data: {
-          name: input.ownerName.trim(),
+          name: input.name.trim(),
+          slug: agencySlug(input.name.trim(), ownerUser.id),
+          ownerId: ownerUser.id,
+          description: input.description || null,
+          website: input.website || null,
+          phone: input.phone || null,
           email: input.ownerEmail.trim().toLowerCase(),
-          role: "AGENCY",
+          verified: false,
+          active: true,
         },
       });
-    }
-
-    const baseSlug = input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    await prisma.agency.create({
-      data: {
-        name: input.name.trim(),
-        slug: `${baseSlug}-${ownerUser.id.substring(0, 5)}`,
-        ownerId: ownerUser.id,
-        description: input.description || null,
-        website: input.website || null,
-        phone: input.phone || null,
-        email: input.ownerEmail.trim().toLowerCase(),
-        verified: true,
-        active: true,
-      },
     });
+    await writeAuditLog({ actorId: session.user.id, action: "agency.created", resourceType: "Agency", resourceId: agency.id, after: { name: agency.name, ownerId: agency.ownerId, verified: agency.verified, active: agency.active } });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };
@@ -437,13 +333,15 @@ export async function updateAgencyByAdmin(
   }
 ) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
 
     if (!input.name.trim()) {
       return { error: "Agency name is required." };
     }
 
-    await prisma.agency.update({
+    const current = await prisma.agency.findUnique({ where: { id: agencyId } });
+    if (!current) return { error: "Agency not found" };
+    const updated = await prisma.agency.update({
       where: { id: agencyId },
       data: {
         name: input.name.trim(),
@@ -457,6 +355,7 @@ export async function updateAgencyByAdmin(
         active: input.active,
       },
     });
+    await writeAuditLog({ actorId: session.user.id, action: "agency.updated", resourceType: "Agency", resourceId: agencyId, before: { name: current.name, verified: current.verified, active: current.active }, after: { name: updated.name, verified: updated.verified, active: updated.active } });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };
@@ -468,7 +367,7 @@ export async function updateAgencyByAdmin(
 
 export async function deleteAgencyByAdmin(agencyId: string) {
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
 
     const agency = await prisma.agency.findUnique({
       where: { id: agencyId },
@@ -478,16 +377,16 @@ export async function deleteAgencyByAdmin(agencyId: string) {
       return { error: "Agency not found" };
     }
 
-    // Delete agency record (cascade handles related objects)
-    await prisma.agency.delete({
-      where: { id: agencyId },
-    });
-
-    // Revert owner's role to TRAVELER
-    await prisma.user.update({
-      where: { id: agency.ownerId },
-      data: { role: "TRAVELER" },
-    });
+    const dependencies = await prisma.agency.findUnique({ where: { id: agencyId }, select: { _count: { select: { packages: true, bookings: true, staff: true } } } });
+    if (!dependencies) return { error: "Agency not found" };
+    if (dependencies._count.packages || dependencies._count.bookings || dependencies._count.staff) {
+      return { error: "Agencies with operational data cannot be deleted. Suspend the agency instead to preserve records." };
+    }
+    await prisma.$transaction([
+      prisma.agency.delete({ where: { id: agencyId } }),
+      prisma.user.update({ where: { id: agency.ownerId }, data: { role: "TRAVELER" } }),
+    ]);
+    await writeAuditLog({ actorId: session.user.id, action: "agency.deleted", resourceType: "Agency", resourceId: agencyId, before: { name: agency.name, ownerId: agency.ownerId } });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };
