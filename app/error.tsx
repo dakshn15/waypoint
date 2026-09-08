@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Compass, AlertTriangle, RefreshCw, ArrowRight } from "lucide-react";
+import { AlertTriangle, RefreshCw, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Error({

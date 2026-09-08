@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Package as PackageIcon } from "lucide-react";
 import Link from "next/link";
 import { serializePrisma } from "@/lib/utils";
+import { getUserAgencyAccess } from "@/lib/permissions";
 import AgencyPackagesListClient from "./packages-client";
 
 export default async function AgencyPackagesPage() {
@@ -21,16 +22,19 @@ export default async function AgencyPackagesPage() {
     );
   }
 
-  // Fetch agency associated with this user
-  const agency = await prisma.agency.findUnique({
-    where: { ownerId: session.user.id },
-  });
+  const userRole = (session.user as any).role || "TRAVELER";
+  const access = await getUserAgencyAccess(session.user.id, userRole);
+  const agencyId = access?.agencyId;
 
-  const dbPackages = agency
+  const dbPackages = userRole === "ADMIN"
     ? await prisma.package.findMany({
-      where: { agencyId: agency.id },
-      orderBy: { createdAt: "desc" },
-    })
+        orderBy: { createdAt: "desc" },
+      })
+    : agencyId
+    ? await prisma.package.findMany({
+        where: { agencyId },
+        orderBy: { createdAt: "desc" },
+      })
     : [];
 
   const packages = dbPackages.map((pkg) => ({

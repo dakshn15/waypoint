@@ -224,18 +224,20 @@ export function DashboardSidebar({
               isCollapsed && !mobileOpen ? "lg:justify-center" : "bg-slate-50/80"
             )}
           >
-            <Avatar className="h-8 w-8 shrink-0 ring-2 ring-white shadow-sm">
+            <Avatar className="h-8 w-8 shrink-0 ring-2 ring-white shadow-sm" title={userEmail ? `${userName} (${userEmail})` : userName}>
               {userImage && <AvatarImage src={userImage} alt={userName} />}
               <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/80 text-white text-xs font-bold font-display">
                 {userName?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             {(!isCollapsed || mobileOpen) && (
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0" title={userEmail || undefined}>
                 <p className="text-sm font-semibold truncate text-slate-800">{userName}</p>
                 <span
                   className={cn(
-                    "text-[11px] text-slate-400 font-medium block mt-1 uppercase tracking-wider")}>
+                    "text-[11px] text-slate-400 font-medium block mt-0.5 uppercase tracking-wider"
+                  )}
+                >
                   {ROLE_LABELS[userRole] || userRole}
                 </span>
               </div>

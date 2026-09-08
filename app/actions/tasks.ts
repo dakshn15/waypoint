@@ -27,14 +27,25 @@ export async function createTask(input: CreateTaskInput) {
       return { error: "Unauthorized. Please log in." };
     }
 
-    const access = await getUserAgencyAccess(session.user.id, session.user.role);
-    if (!access) {
-      return { error: "Unauthorized agency access." };
-    }
-
-    // Only Owner or MANAGER can create/assign tasks
-    if (!access.isOwner && access.staffRole !== "MANAGER") {
-      return { error: "Permission denied. Only managers or owners can assign tasks." };
+    let agencyId: string;
+    if (session.user.role === "ADMIN") {
+      const access = await getUserAgencyAccess(session.user.id, session.user.role);
+      if (access) {
+        agencyId = access.agencyId;
+      } else {
+        const firstAgency = await prisma.agency.findFirst({ select: { id: true } });
+        if (!firstAgency) return { error: "No agency found to attach task to." };
+        agencyId = firstAgency.id;
+      }
+    } else {
+      const access = await getUserAgencyAccess(session.user.id, session.user.role);
+      if (!access) {
+        return { error: "Unauthorized agency access." };
+      }
+      if (!access.isOwner && access.staffRole !== "MANAGER") {
+        return { error: "Permission denied. Only managers or owners can assign tasks." };
+      }
+      agencyId = access.agencyId;
     }
 
     if (!input.title.trim()) {
@@ -46,7 +57,7 @@ export async function createTask(input: CreateTaskInput) {
     }
 
     const assignee = await prisma.agencyStaff.findFirst({
-      where: { id: input.staffId, agencyId: access.agencyId, active: true },
+      where: { id: input.staffId, agencyId, active: true },
       select: { id: true },
     });
     if (!assignee) {
@@ -60,7 +71,7 @@ export async function createTask(input: CreateTaskInput) {
         dueDate: new Date(input.dueDate),
         priority: input.priority,
         category: input.category,
-        agencyId: access.agencyId,
+        agencyId,
         staffId: input.staffId || null,
       },
     });
@@ -83,24 +94,26 @@ export async function updateTaskStatus(taskId: string, status: TaskStatus) {
       return { error: "Unauthorized. Please log in." };
     }
 
-    const access = await getUserAgencyAccess(session.user.id, session.user.role);
-    if (!access) {
-      return { error: "Unauthorized agency access." };
-    }
-
     const task = await prisma.task.findUnique({
       where: { id: taskId },
       include: { staff: true },
     });
 
-    if (!task || task.agencyId !== access.agencyId) {
+    if (!task) {
       return { error: "Task not found." };
     }
 
-    // If staff is NOT manager, they must only edit tasks assigned to them
-    if (!access.isOwner && access.staffRole !== "MANAGER") {
-      if (!task.staff || task.staff.userId !== session.user.id) {
-        return { error: "Permission denied. You can only update tasks assigned to you." };
+    if (session.user.role !== "ADMIN") {
+      const access = await getUserAgencyAccess(session.user.id, session.user.role);
+      if (!access || task.agencyId !== access.agencyId) {
+        return { error: "Unauthorized agency access." };
+      }
+
+      // If staff is NOT manager, they must only edit tasks assigned to them
+      if (!access.isOwner && access.staffRole !== "MANAGER") {
+        if (!task.staff || task.staff.userId !== session.user.id) {
+          return { error: "Permission denied. You can only update tasks assigned to you." };
+        }
       }
     }
 
@@ -129,22 +142,19 @@ export async function deleteTask(taskId: string) {
       return { error: "Unauthorized. Please log in." };
     }
 
-    const access = await getUserAgencyAccess(session.user.id, session.user.role);
-    if (!access) {
-      return { error: "Unauthorized agency access." };
-    }
-
-    // Only Owner or MANAGER can delete tasks
-    if (!access.isOwner && access.staffRole !== "MANAGER") {
-      return { error: "Permission denied. Only managers or owners can delete tasks." };
-    }
-
     const task = await prisma.task.findUnique({
       where: { id: taskId },
     });
 
-    if (!task || task.agencyId !== access.agencyId) {
+    if (!task) {
       return { error: "Task not found." };
+    }
+
+    if (session.user.role !== "ADMIN") {
+      const access = await getUserAgencyAccess(session.user.id, session.user.role);
+      if (!access || (!access.isOwner && access.staffRole !== "MANAGER") || task.agencyId !== access.agencyId) {
+        return { error: "Permission denied. Only managers or owners can delete tasks." };
+      }
     }
 
     await prisma.task.delete({
@@ -169,27 +179,24 @@ export async function reassignTask(taskId: string, staffId: string | null) {
       return { error: "Unauthorized. Please log in." };
     }
 
-    const access = await getUserAgencyAccess(session.user.id, session.user.role);
-    if (!access) {
-      return { error: "Unauthorized agency access." };
-    }
-
-    // Only Owner or MANAGER can reassign tasks
-    if (!access.isOwner && access.staffRole !== "MANAGER") {
-      return { error: "Permission denied. Only managers or owners can reassign tasks." };
-    }
-
     const task = await prisma.task.findUnique({
       where: { id: taskId },
     });
 
-    if (!task || task.agencyId !== access.agencyId) {
+    if (!task) {
       return { error: "Task not found." };
+    }
+
+    if (session.user.role !== "ADMIN") {
+      const access = await getUserAgencyAccess(session.user.id, session.user.role);
+      if (!access || (!access.isOwner && access.staffRole !== "MANAGER") || task.agencyId !== access.agencyId) {
+        return { error: "Permission denied. Only managers or owners can reassign tasks." };
+      }
     }
 
     if (staffId) {
       const assignee = await prisma.agencyStaff.findFirst({
-        where: { id: staffId, agencyId: access.agencyId, active: true },
+        where: { id: staffId, agencyId: task.agencyId, active: true },
         select: { id: true },
       });
       if (!assignee) {

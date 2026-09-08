@@ -25,16 +25,26 @@ export default async function TravelersPage() {
     );
   }
 
-  const agency = await prisma.agency.findUnique({
-    where: { ownerId: session.user.id },
-  });
+  let agencyId: string | null = null;
+  if (role === "AGENCY") {
+    const agency = await prisma.agency.findUnique({
+      where: { ownerId: session.user.id },
+      select: { id: true },
+    });
+    agencyId = agency?.id || null;
+  }
 
-  const bookings = agency
+  const bookings = role === "ADMIN"
     ? await prisma.booking.findMany({
-      where: { agencyId: agency.id },
-      include: { user: true, package: true },
-      orderBy: { createdAt: "desc" },
-    })
+        include: { user: true, package: true },
+        orderBy: { createdAt: "desc" },
+      })
+    : agencyId
+    ? await prisma.booking.findMany({
+        where: { agencyId },
+        include: { user: true, package: true },
+        orderBy: { createdAt: "desc" },
+      })
     : [];
 
   // Build enriched traveler map

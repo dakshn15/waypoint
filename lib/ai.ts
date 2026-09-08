@@ -207,7 +207,7 @@ ${Object.entries(cityRanges).map(([c, nums]) => `   - Days ${nums.join(", ")} MU
 - **Destination${isMultiCity ? "s" : ""}:** ${isMultiCity ? destList.join(" → ") : request.destination}
 - **Duration:** ${days} Days (${days - 1} Nights) — ${request.startDate} to ${request.endDate}
 - **Travelers:** ${request.travelers} Person(s)
-- **Total Budget:** ${request.currency} ${request.budget.toLocaleString()} (${request.currency} ${perPersonPerDayBudget.toLocaleString()} / person / day)
+- **Total Budget:** ${request.currency} ${request.budget.toLocaleString()} (${request.currency} ${totalPerPerson.toLocaleString()} per person, ~${request.currency} ${perPersonPerDayBudget.toLocaleString()} / person / day)
 - **Travel Style:** ${request.travelStyle}
 - **Interests:** ${request.interests.join(", ") || "Sightseeing, Local Food, Culture"}
 - **Stay Preference:** ${request.stayPreference}

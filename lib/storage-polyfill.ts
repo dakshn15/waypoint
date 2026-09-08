@@ -17,7 +17,7 @@ if (typeof window !== "undefined") {
     const testKey = "__storage_test__";
     window.sessionStorage.setItem(testKey, testKey);
     window.sessionStorage.removeItem(testKey);
-  } catch (e) {
+  } catch {
     try {
       Object.defineProperty(window, "sessionStorage", {
         value: mockStorage(),
@@ -25,7 +25,7 @@ if (typeof window !== "undefined") {
         configurable: true,
       });
       console.warn("sessionStorage is polyfilled due to SecurityError.");
-    } catch (_) {}
+    } catch {}
   }
 
   // Polyfill localStorage
@@ -33,7 +33,7 @@ if (typeof window !== "undefined") {
     const testKey = "__storage_test__";
     window.localStorage.setItem(testKey, testKey);
     window.localStorage.removeItem(testKey);
-  } catch (e) {
+  } catch {
     try {
       Object.defineProperty(window, "localStorage", {
         value: mockStorage(),
@@ -41,6 +41,6 @@ if (typeof window !== "undefined") {
         configurable: true,
       });
       console.warn("localStorage is polyfilled due to SecurityError.");
-    } catch (_) {}
+    } catch {}
   }
 }

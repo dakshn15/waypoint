@@ -42,9 +42,17 @@ export async function createPackage(data: {
     throw new Error("Unauthorized. Please log in.");
   }
 
-  const access = await getUserAgencyAccess(session.user.id, session.user.role);
-  if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
-    throw new Error("Unauthorized. Only agencies or managers can create packages.");
+  let agencyId: string;
+  if (session.user.role === "ADMIN") {
+    const firstAgency = await prisma.agency.findFirst({ select: { id: true } });
+    if (!firstAgency) throw new Error("No agency found to attach this package to.");
+    agencyId = firstAgency.id;
+  } else {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+      throw new Error("Unauthorized. Only agencies or managers can create packages.");
+    }
+    agencyId = access.agencyId;
   }
 
   const duration = typeof data.duration === "string" ? parseInt(data.duration) : data.duration;
@@ -63,7 +71,7 @@ export async function createPackage(data: {
 
   const createdPackage = await prisma.package.create({
     data: {
-      agencyId: access.agencyId,
+      agencyId,
       title: data.title,
       slug,
       description: data.description,
@@ -128,18 +136,22 @@ export async function deletePackage(packageId: string) {
     throw new Error("Unauthorized. Please log in.");
   }
 
-  const access = await getUserAgencyAccess(session.user.id, session.user.role);
-  if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
-    throw new Error("Unauthorized. Only agencies or managers can delete packages.");
-  }
-
-  // Ensure the package belongs to this agency
   const pkg = await prisma.package.findUnique({
     where: { id: packageId },
   });
 
-  if (!pkg || pkg.agencyId !== access.agencyId) {
-    throw new Error("Unauthorized or package not found.");
+  if (!pkg) {
+    throw new Error("Package not found.");
+  }
+
+  if (session.user.role !== "ADMIN") {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+      throw new Error("Unauthorized. Only agencies or managers can delete packages.");
+    }
+    if (pkg.agencyId !== access.agencyId) {
+      throw new Error("Unauthorized or package belongs to another agency.");
+    }
   }
 
   await prisma.package.delete({
@@ -160,18 +172,23 @@ export async function togglePackageStatus(packageId: string) {
     throw new Error("Unauthorized. Please log in.");
   }
 
-  const access = await getUserAgencyAccess(session.user.id, session.user.role);
-  // Owner, MANAGER, and AGENT roles can publish/draft packages
-  if (!access || (!access.isOwner && access.staffRole !== "MANAGER" && access.staffRole !== "AGENT")) {
-    throw new Error("Unauthorized. Only managers, agents, or owners can change status.");
-  }
-
   const pkg = await prisma.package.findUnique({
     where: { id: packageId },
   });
 
-  if (!pkg || pkg.agencyId !== access.agencyId) {
-    throw new Error("Unauthorized or package not found.");
+  if (!pkg) {
+    throw new Error("Package not found.");
+  }
+
+  if (session.user.role !== "ADMIN") {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    // Owner, MANAGER, and AGENT roles can publish/draft packages
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER" && access.staffRole !== "AGENT")) {
+      throw new Error("Unauthorized. Only managers, agents, or owners can change status.");
+    }
+    if (pkg.agencyId !== access.agencyId) {
+      throw new Error("Unauthorized or package belongs to another agency.");
+    }
   }
 
   const newStatus = pkg.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
@@ -228,14 +245,19 @@ export async function updatePackage(
     throw new Error("Unauthorized. Please log in.");
   }
 
-  const access = await getUserAgencyAccess(session.user.id, session.user.role);
-  if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
-    throw new Error("Unauthorized. Only agencies or managers can update packages.");
+  const pkg = await prisma.package.findUnique({ where: { id: packageId } });
+  if (!pkg) {
+    throw new Error("Package not found.");
   }
 
-  const pkg = await prisma.package.findUnique({ where: { id: packageId } });
-  if (!pkg || pkg.agencyId !== access.agencyId) {
-    throw new Error("Package not found or unauthorized.");
+  if (session.user.role !== "ADMIN") {
+    const access = await getUserAgencyAccess(session.user.id, session.user.role);
+    if (!access || (!access.isOwner && access.staffRole !== "MANAGER")) {
+      throw new Error("Unauthorized. Only agencies or managers can update packages.");
+    }
+    if (pkg.agencyId !== access.agencyId) {
+      throw new Error("Package not found or unauthorized.");
+    }
   }
 
   const duration = typeof data.duration === "string" ? parseInt(data.duration) : data.duration;

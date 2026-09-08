@@ -17,7 +17,7 @@ if (globalForPrisma.prisma) {
   if (!hasAgencyPayout || !hasPlatformSettings || !hasBankField) {
     try {
       p.$disconnect();
-    } catch (e) {
+    } catch {
       // Ignore error
     }
     globalForPrisma.prisma = undefined;

@@ -217,13 +217,10 @@ export default function TripBuilderPage() {
   const isSeverelyUnderfunded = userBudgetNum > 0 && userBudgetNum < absoluteMinBudget;
 
   useEffect(() => {
-    let interval: any;
-    if (generating) {
-      setGenStage(0);
-      interval = setInterval(() => {
-        setGenStage((prev) => (prev < 4 ? prev + 1 : prev));
-      }, 3000);
-    }
+    if (!generating) return;
+    const interval = setInterval(() => {
+      setGenStage((prev) => (prev < 4 ? prev + 1 : prev));
+    }, 3000);
     return () => clearInterval(interval);
   }, [generating]);
 
@@ -300,7 +297,9 @@ export default function TripBuilderPage() {
       return;
     }
 
-    setGenerating(true); setError("");
+    setGenerating(true);
+    setGenStage(0);
+    setError("");
     try {
       const res = await fetch("/api/trips/generate", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -315,9 +314,10 @@ export default function TripBuilderPage() {
       if (!res.ok) throw new Error(data.error || "Failed to generate trip");
       toast.success("Trip generated successfully!");
       router.push(`/trip-builder/${data.tripId}`);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
-      toast.error(err.message || "Failed to generate trip");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Something went wrong.";
+      setError(msg);
+      toast.error(msg || "Failed to generate trip");
     } finally { setGenerating(false); }
   };
 

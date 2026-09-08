@@ -23,7 +23,7 @@ export function formatCurrency(amount: number, currency: string = "INR") {
       currency: code,
       maximumFractionDigits: 0,
     }).format(amount);
-  } catch (e) {
+  } catch {
     return `${code} ${amount.toLocaleString()}`;
   }
 }

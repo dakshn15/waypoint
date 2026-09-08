@@ -8,12 +8,11 @@ const DEFAULT_COMMISSION_RATE = 0.10;
  */
 export async function getCommissionRate(agencyId?: string | null): Promise<number> {
   try {
-    const db = prisma as any;
-
     // 1. Check agency-specific override
-    if (agencyId && db.agency) {
-      const agency = await db.agency.findUnique({
+    if (agencyId) {
+      const agency = await prisma.agency.findUnique({
         where: { id: agencyId },
+        select: { commissionRate: true },
       });
       if (agency?.commissionRate !== null && agency?.commissionRate !== undefined) {
         return Number(agency.commissionRate);
@@ -21,14 +20,13 @@ export async function getCommissionRate(agencyId?: string | null): Promise<numbe
     }
 
     // 2. Fall back to platform settings
-    if (db.platformSettings) {
-      const settings = await db.platformSettings.findUnique({
-        where: { id: "global" },
-      });
+    const settings = await prisma.platformSettings.findUnique({
+      where: { id: "global" },
+      select: { commissionRate: true },
+    });
 
-      if (settings?.commissionRate !== null && settings?.commissionRate !== undefined) {
-        return Number(settings.commissionRate);
-      }
+    if (settings?.commissionRate !== null && settings?.commissionRate !== undefined) {
+      return Number(settings.commissionRate);
     }
   } catch (e) {
     console.error("Error fetching commission rate, using default:", e);
@@ -51,17 +49,12 @@ export async function getPlatformSettings() {
   };
 
   try {
-    const db = prisma as any;
-    if (!db.platformSettings) {
-      return defaultSettings;
-    }
-
-    let settings = await db.platformSettings.findUnique({
+    let settings = await prisma.platformSettings.findUnique({
       where: { id: "global" },
     });
 
     if (!settings) {
-      settings = await db.platformSettings.create({
+      settings = await prisma.platformSettings.create({
         data: {
           id: "global",
           commissionRate: 0.10,

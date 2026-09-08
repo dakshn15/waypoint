@@ -72,15 +72,24 @@ export default async function VendorsPage() {
     );
   }
 
-  const agency = await prisma.agency.findUnique({
-    where: { ownerId: session.user.id },
-  });
+  let agency = null;
+  if (role === "AGENCY") {
+    agency = await prisma.agency.findUnique({
+      where: { ownerId: session.user.id },
+    });
+  } else if (role === "ADMIN") {
+    agency = await prisma.agency.findFirst();
+  }
 
-  const vendors = agency
+  const vendors = role === "ADMIN"
     ? await prisma.vendor.findMany({
-      where: { agencyId: agency.id },
-      orderBy: { createdAt: "desc" },
-    })
+        orderBy: { createdAt: "desc" },
+      })
+    : agency
+    ? await prisma.vendor.findMany({
+        where: { agencyId: agency.id },
+        orderBy: { createdAt: "desc" },
+      })
     : [];
 
   const categoryCounts = vendors.reduce(

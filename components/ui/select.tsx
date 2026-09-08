@@ -27,10 +27,10 @@ function SelectValue({ className, children, ...props }: SelectPrimitive.Value.Pr
     >
       {typeof children === "function"
         ? children
-        : children || ((val: any) => (
+        : children || ((val: unknown) => (
             typeof val === "string" && val === val.toUpperCase() && /[A-Z]/.test(val)
               ? val.split("_").map((w) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")
-              : val
+              : String(val ?? "")
           ))
       }
     </SelectPrimitive.Value>

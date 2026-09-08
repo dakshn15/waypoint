@@ -53,7 +53,7 @@ export function FavoriteButton({
           toast.info("Package removed from favorites.");
         }
         router.refresh();
-      } catch (err: any) {
+      } catch {
         toast.error("Could not update favorites. Try again.");
       }
     });

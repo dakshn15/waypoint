@@ -14,7 +14,7 @@ import {
 
 interface SiteHeaderProps {
   /** Pass session object (or null) to control CTA state */
-  userSession?: any;
+  userSession?: { user?: { id?: string; name?: string; email?: string; role?: string | null; image?: string | null }; session?: unknown } | null;
   /** Currently active route, used to highlight nav link */
   activeRoute?: string;
 }

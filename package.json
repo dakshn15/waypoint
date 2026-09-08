@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/booking-rules.test.ts"
+    "test": "tsx --test tests/booking-rules.test.ts tests/currency.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
