@@ -5,7 +5,10 @@ export const currencySchema = z.enum(["INR", "USD", "EUR", "GBP", "AED", "THB", 
 export const travelerSchema = z.object({
   name: z.string().trim().min(1).max(120),
   age: z.coerce.number().int().min(1).max(120),
+  gender: z.string().trim().optional(),
   document: z.string().trim().max(200).optional(),
+  email: z.string().trim().optional(),
+  phone: z.string().trim().max(30).optional(),
 });
 
 export const createBookingSchema = z

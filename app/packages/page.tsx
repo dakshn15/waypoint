@@ -16,6 +16,10 @@ interface PackageItem {
   difficulty: string;
   image: string | null;
   isFavorited: boolean;
+  createdAt: string;
+  bookingsCount: number;
+  agencyName: string;
+  agencyVerified: boolean;
 }
 
 export default async function PackagesPage() {
@@ -37,7 +41,7 @@ export default async function PackagesPage() {
     }
   }
 
-  // Query database packages strictly from database
+  // Query database packages strictly from database - newly added packages on top
   let dbPackages: any[] = [];
   try {
     dbPackages = await prisma.package.findMany({
@@ -45,17 +49,24 @@ export default async function PackagesPage() {
       include: {
         agency: true,
         reviews: true,
+        _count: {
+          select: {
+            bookings: true,
+            reviews: true,
+          },
+        },
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
   } catch (e) {
     console.error("DB Query failed in /packages:", e);
   }
 
   const allPackages: PackageItem[] = dbPackages.map((pkg) => {
-    const avgRating = pkg.reviews?.length
+    const hasReviews = pkg.reviews && pkg.reviews.length > 0;
+    const avgRating = hasReviews
       ? pkg.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / pkg.reviews.length
-      : 4.8;
+      : 0;
 
     let pkgImage = pkg.images?.[0] || null;
     if (!pkgImage) {
@@ -88,11 +99,15 @@ export default async function PackagesPage() {
       duration: pkg.duration,
       basePrice: Number(pkg.basePrice),
       currency: pkg.currency || "INR",
-      rating: parseFloat(avgRating.toFixed(1)),
-      reviews: pkg.reviews?.length || 15,
+      rating: hasReviews ? parseFloat(avgRating.toFixed(1)) : 0,
+      reviews: pkg.reviews?.length ?? 0,
       difficulty: pkg.difficulty || "EASY",
       image: pkgImage,
       isFavorited: favoritedSet.has(pkg.id),
+      createdAt: pkg.createdAt ? pkg.createdAt.toISOString() : new Date().toISOString(),
+      bookingsCount: pkg._count?.bookings ?? 0,
+      agencyName: pkg.agency?.name || "Waypoint Verified Agency",
+      agencyVerified: Boolean(pkg.agency?.verified),
     };
   });
 

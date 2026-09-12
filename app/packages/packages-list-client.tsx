@@ -18,7 +18,18 @@ import {
   ArrowRight,
   Clock,
   ChevronDown,
+  Sparkles,
+  Flame,
+  ArrowUpDown,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Package {
   id: string;
@@ -33,7 +44,13 @@ interface Package {
   difficulty: string;
   image: string | null;
   isFavorited: boolean;
+  createdAt: string;
+  bookingsCount: number;
+  agencyName: string;
+  agencyVerified: boolean;
 }
+
+type SortOption = "newest" | "popular" | "rating" | "price_asc" | "price_desc" | "duration_asc";
 
 interface PackagesListClientProps {
   initialPackages: Package[];
@@ -49,6 +66,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
   const [difficulty, setDifficulty] = useState<"ALL" | "EASY" | "MODERATE" | "CHALLENGING">("ALL");
   const [duration, setDuration] = useState<"ALL" | "SHORT" | "MEDIUM" | "LONG">("ALL");
   const [maxPrice, setMaxPrice] = useState<number>(50000);
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -71,6 +89,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
     setDifficulty("ALL");
     setDuration("ALL");
     setMaxPrice(50000);
+    setSortBy("newest");
     router.push("/packages");
   };
 
@@ -91,7 +110,8 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
   ];
   const getFallbackImage = (idx: number) => FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length];
 
-  const hasActiveFilters = searchQuery || difficulty !== "ALL" || duration !== "ALL" || maxPrice < 50000;
+  const hasActiveFilters =
+    searchQuery || difficulty !== "ALL" || duration !== "ALL" || maxPrice < 50000 || sortBy !== "newest";
 
   const filteredPackages = initialPackages.filter((pkg) => {
     const query = searchQuery.toLowerCase().trim();
@@ -116,6 +136,30 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
     const matchesPrice = pkg.basePrice <= maxPrice;
 
     return matchesSearch && matchesDifficulty && matchesDuration && matchesPrice;
+  });
+
+  const sortedPackages = [...filteredPackages].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "popular": {
+        const scoreA = (a.bookingsCount || 0) * 3 + (a.reviews || 0);
+        const scoreB = (b.bookingsCount || 0) * 3 + (b.reviews || 0);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        return b.rating - a.rating;
+      }
+      case "rating":
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        return (b.reviews || 0) - (a.reviews || 0);
+      case "price_asc":
+        return a.basePrice - b.basePrice;
+      case "price_desc":
+        return b.basePrice - a.basePrice;
+      case "duration_asc":
+        return a.duration - b.duration;
+      default:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
   });
 
   const difficultyColor = (d: string) => {
@@ -202,39 +246,88 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* ── Controls Bar ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
             <div>
               <h2 className="text-2xl font-bold font-display text-slate-900">
-                {filteredPackages.length} package{filteredPackages.length !== 1 ? "s" : ""} found
+                {sortedPackages.length} package{sortedPackages.length !== 1 ? "s" : ""} found
               </h2>
-              <p className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 mt-1">
                 Browse our curated selection of verified travel experiences
               </p>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Sort Selector Dropdown */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 hidden sm:inline">Sort:</span>
+                <Select value={sortBy} onValueChange={(val) => val && setSortBy(val as SortOption)}>
+                  <SelectTrigger className="h-9 w-[180px] bg-white border-slate-200 text-xs font-semibold rounded-xl cursor-pointer">
+                    <SelectValue placeholder="Sort packages" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border border-slate-200 shadow-xl bg-white p-1 z-50">
+                    <SelectItem value="newest" className="text-xs cursor-pointer">✨ Newly Added</SelectItem>
+                    <SelectItem value="popular" className="text-xs cursor-pointer">🔥 Most Popular</SelectItem>
+                    <SelectItem value="rating" className="text-xs cursor-pointer">⭐ Highest Rated</SelectItem>
+                    <SelectItem value="price_asc" className="text-xs cursor-pointer">💸 Price: Low to High</SelectItem>
+                    <SelectItem value="price_desc" className="text-xs cursor-pointer">💎 Price: High to Low</SelectItem>
+                    <SelectItem value="duration_asc" className="text-xs cursor-pointer">⏱️ Duration: Shortest</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {hasActiveFilters && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5 cursor-pointer"
+                  className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5 cursor-pointer rounded-xl"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
-                  Reset All
+                  Reset
                 </Button>
               )}
+
               {/* Mobile filter toggle */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`lg:hidden text-xs h-9 gap-1.5 rounded-full cursor-pointer ${showFilters ? "border-primary text-primary bg-primary/5" : "border-slate-200"}`}
+                className={`lg:hidden text-xs h-9 gap-1.5 rounded-xl cursor-pointer ${showFilters ? "border-primary text-primary bg-primary/5" : "border-slate-200"}`}
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 Filters
                 <ChevronDown className={`h-3 w-3 transition-transform ${showFilters ? "rotate-180" : ""}`} />
               </Button>
             </div>
+          </div>
+
+          {/* Quick Filter Pills Row */}
+          <div className="flex flex-wrap items-center gap-2 mb-8 pb-3 border-b border-slate-200/60">
+            <span className="text-[11px] font-semibold text-slate-400 mr-1">Quick Sort:</span>
+            {[
+              { key: "newest", label: "Newly Added", icon: Sparkles },
+              { key: "popular", label: "Most Popular", icon: Flame },
+              { key: "rating", label: "Highest Rated", icon: Star },
+              { key: "price_asc", label: "Budget Friendly", icon: ArrowUpDown },
+            ].map((pill) => {
+              const Icon = pill.icon;
+              const isActive = sortBy === pill.key;
+              return (
+                <button
+                  key={pill.key}
+                  type="button"
+                  onClick={() => setSortBy(pill.key as SortOption)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-white border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:text-slate-900 hover:bg-slate-50"
+                  }`}
+                >
+                  <Icon className={`h-3 w-3 ${isActive ? "text-amber-400" : "text-slate-400"}`} />
+                  <span>{pill.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-start">
@@ -362,27 +455,22 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
 
             {/* ═══ PACKAGE GRID ═══ */}
             <div>
-              {filteredPackages.length > 0 ? (
+              {sortedPackages.length > 0 ? (
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredPackages.map((pkg) => (
+                  {sortedPackages.map((pkg) => (
                     <Link key={pkg.id} href={`/packages/${pkg.id}`} className="group">
                       <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
 
                         {/* Image */}
                         <div className="relative h-48 overflow-hidden">
                           <img
-                            src={pkg.image || getFallbackImage(filteredPackages.indexOf(pkg))}
+                            src={pkg.image || getFallbackImage(sortedPackages.indexOf(pkg))}
                             alt={pkg.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = getFallbackImage(filteredPackages.indexOf(pkg));
+                              (e.target as HTMLImageElement).src = getFallbackImage(sortedPackages.indexOf(pkg));
                             }}
                           />
-                          {false && (
-                            <div className="w-full h-full bg-gradient-to-br from-secondary/20 via-primary/10 to-secondary/30 flex items-center justify-center">
-                              <MapPin className="h-10 w-10 text-secondary/40" />
-                            </div>
-                          )}
                           {/* Gradient overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
@@ -407,16 +495,36 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                           </div>
 
                           {/* Rating bottom-right */}
-                          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-bold text-slate-900">
-                            <Star className="h-3 w-3 fill-primary text-primary" />
-                            <span>{pkg.rating}</span>
-                            <span className="text-slate-400 font-normal text-[10px]">({pkg.reviews})</span>
+                          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full text-xs font-bold text-slate-900 shadow-xs">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+                            <span>{pkg.rating > 0 ? pkg.rating : "New"}</span>
+                            {pkg.reviews > 0 && (
+                              <span className="text-slate-400 font-normal text-[10px]">({pkg.reviews})</span>
+                            )}
                           </div>
                         </div>
 
                         {/* Content */}
                         <div className="sm:p-5 p-4 space-y-3">
                           <div>
+                            {/* Agency header & verification */}
+                            <div className="flex items-center justify-between gap-1 mb-1.5">
+                              <span className="text-[11px] font-semibold text-slate-500 truncate max-w-[170px]">
+                                {pkg.agencyName}
+                              </span>
+                              {pkg.agencyVerified ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-full shrink-0">
+                                  <VerifiedBadge size="xs" />
+                                  Verified
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200/70 px-1.5 py-0.5 rounded-full shrink-0">
+                                  <Clock className="h-2.5 w-2.5 text-amber-600" />
+                                  Pending
+                                </span>
+                              )}
+                            </div>
+
                             <h3 className="capitalize font-bold text-base text-slate-900 group-hover:text-primary transition-colors line-clamp-1 font-display">
                               {pkg.title}
                             </h3>

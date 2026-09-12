@@ -203,7 +203,7 @@ export function DashboardHeader({ onToggleSidebar, collapsed }: DashboardHeaderP
           <DropdownMenuContent
             align="end"
             sideOffset={8}
-            className="w-[calc(100vw-32px)] sm:w-80 max-w-[360px] p-2 bg-white/98 backdrop-blur-xl border border-slate-200/90 shadow-xl shadow-slate-900/10 rounded-lg overflow-hidden"
+            className="w-[calc(100vw-32px)] sm:w-80 max-w-[360px] p-2 bg-white/98 backdrop-blur-xl border border-slate-200/90 shadow-xl shadow-slate-900/10 rounded-lg overflow-visible z-[60]"
           >
             <div className="flex items-center justify-between px-2 py-1.5">
               <div className="flex items-center gap-2">
@@ -230,7 +230,7 @@ export function DashboardHeader({ onToggleSidebar, collapsed }: DashboardHeaderP
                 <p className="text-xs text-slate-400 font-medium">No notifications yet</p>
               </div>
             ) : (
-              <div className="max-h-80 overflow-y-auto space-y-1.5 p-0.5 scrollbar-thin">
+              <div className="max-h-80 overflow-y-auto space-y-1.5 p-0.5 pb-3 pr-1 scrollbar-thin">
                 {notifications.map((notif) => (
                   <DropdownMenuItem
                     key={notif.id}

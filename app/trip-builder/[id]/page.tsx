@@ -36,6 +36,7 @@ import { formatCurrency } from "@/lib/utils";
 import type { GeneratedTrip } from "@/lib/ai";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { getHeroImageForDestination } from "@/lib/trip-images";
 
 const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
   SIGHTSEEING: <Camera className="h-4 w-4" />,
@@ -70,49 +71,7 @@ const ACTIVITY_COLORS: Record<string, string> = {
   CHECK_OUT: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
-/* ─── Local High-Res Image Mapping ─── */
-const DESTINATION_LOCAL_MAP: Record<string, string> = {
-  goa: "/images/packages/goa-beach.jpg",
-  kerala: "/images/packages/kerala-backwaters.jpg",
-  munnar: "/images/packages/kerala-backwaters.jpg",
-  alleppey: "/images/packages/kerala-backwaters.jpg",
-  kochi: "/images/packages/kerala-backwaters.jpg",
-  rajasthan: "/images/packages/rajasthan-heritage.jpg",
-  udaipur: "/images/packages/rajasthan-heritage.jpg",
-  jodhpur: "/images/packages/rajasthan-heritage.jpg",
-  jaisalmer: "/images/packages/rajasthan-heritage.jpg",
-  manali: "/images/packages/himalayan-adventure.jpg",
-  leh: "/images/packages/himalayan-adventure.jpg",
-  ladakh: "/images/packages/himalayan-adventure.jpg",
-  himalaya: "/images/packages/himalayan-adventure.jpg",
-  kashmir: "/images/packages/kashmir-valley.jpg",
-  srinagar: "/images/packages/kashmir-valley.jpg",
-  gulmarg: "/images/packages/kashmir-valley.jpg",
-  pahalgam: "/images/packages/kashmir-valley.jpg",
-  varanasi: "/images/packages/varanasi-ganges.jpg",
-  ganges: "/images/packages/varanasi-ganges.jpg",
-  delhi: "/images/packages/golden-triangle.jpg",
-  agra: "/images/packages/golden-triangle.jpg",
-  jaipur: "/images/packages/golden-triangle.jpg",
-  northeast: "/images/packages/northeast-explorer.jpg",
-  shillong: "/images/packages/northeast-explorer.jpg",
-};
 
-/* ─── Dynamic Unsplash Image Resolver for Global Custom Places ─── */
-function getHeroImage(destStr: string): string {
-  const lower = destStr.toLowerCase().trim();
-
-  // 1. Check local Ultra-HD image library
-  for (const [key, path] of Object.entries(DESTINATION_LOCAL_MAP)) {
-    if (lower.includes(key)) return path;
-  }
-
-  // 2. Dynamic Unsplash image generator for any custom destination globally
-  const primaryWord = destStr.split(",")[0].trim();
-  const sanitizedQuery = encodeURIComponent(primaryWord || "landscape");
-
-  return `https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2560&q=80&q=${sanitizedQuery}`;
-}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -158,7 +117,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
     Math.ceil(
       (trip.endDate.getTime() - trip.startDate.getTime()) /
       (1000 * 60 * 60 * 24)
-    )
+    ) + 1
   );
 
   const totalCost =
@@ -168,7 +127,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
       0
     );
 
-  const heroImage = getHeroImage(destStr);
+  const heroImage = getHeroImageForDestination(destStr);
 
   const rawTitle = aiData?.title || trip.title || "";
   const isGenericTitle = !rawTitle || rawTitle.includes("STANDARD") || rawTitle.includes("LUXURY") || rawTitle.includes("BUDGET") || rawTitle.includes("PREMIUM");
@@ -367,7 +326,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
           {/* ═══════════════ DAY BY DAY ITINERARY ═══════════════ */}
           <div className="space-y-6 pt-4">
             <div className="flex items-center gap-3 border-b border-slate-200 pb-4">
-              <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
                 <CalendarDays className="h-5 w-5" />
               </div>
               <div>
@@ -392,7 +351,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                     <div className="bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
                       <div className="flex sm:flex-row flex-col sm:items-center items-start gap-3.5">
                         {/* Non-squished Day Badge */}
-                        <div className="px-4 py-2.5 rounded-md bg-slate-900 text-white flex items-center justify-center font-bold text-sm tracking-tight shrink-0 shadow-sm">
+                        <div className="px-4 py-2.5 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm tracking-tight shrink-0 shadow-sm">
                           Day {day.dayNumber}
                         </div>
 
@@ -414,7 +373,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                       {/* Intercity Transport Banner */}
                       {day.transport && (
                         <div className="flex sm:flex-row flex-col sm:items-center items-start gap-3.5 bg-sky-50/80 border border-sky-200/80 rounded-xl p-4 text-xs text-sky-950">
-                          <div className="w-9 h-9 rounded-md bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-xs">
+                          <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-xs">
                             {TRANSPORT_ICONS[day.transport.type] || <CarFront className="h-4.5 w-4.5" />}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -437,7 +396,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                           {day.activities.map((activity) => (
                             <div key={activity.id} className="flex gap-4 items-start relative">
                               {/* Icon Circle on Timeline */}
-                              <div className={`sm:w-10 sm:h-10 w-8 h-8 rounded-md border flex items-center justify-center shrink-0 mt-0.5 z-10 shadow-2xs ${ACTIVITY_COLORS[activity.type] || "bg-white text-slate-600 border-slate-200"}`}>
+                              <div className={`sm:w-10 sm:h-10 w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 z-10 shadow-2xs ${ACTIVITY_COLORS[activity.type] || "bg-white text-slate-600 border-slate-200"}`}>
                                 {ACTIVITY_ICONS[activity.type] || <Clock className="h-4 w-4" />}
                               </div>
 
@@ -446,16 +405,16 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                   <div className="flex flex-wrap items-center gap-2">
                                     {activity.time && (
-                                      <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-md">
+                                      <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg">
                                         {activity.time}
                                       </span>
                                     )}
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg border ${ACTIVITY_COLORS[activity.type] || "bg-slate-100 text-slate-600 border-slate-200"}`}>
                                       {activity.type}
                                     </span>
                                   </div>
                                   {activity.cost && Number(activity.cost) > 0 && (
-                                    <span className="text-xs font-bold text-slate-900 bg-white border border-slate-200 px-2.5 py-1 rounded-md">
+                                    <span className="text-xs font-bold text-slate-900 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
                                       {formatCurrency(Number(activity.cost), trip.currency)}
                                     </span>
                                   )}
@@ -487,7 +446,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
                       {/* Hotel Accommodation Card */}
                       {day.hotel && (
                         <div className="flex items-center gap-3.5 bg-amber-50/80 border border-amber-200/80 rounded-xl p-4 text-xs text-amber-950 mt-2">
-                          <div className="w-9 h-9 rounded-md bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 shadow-xs">
+                          <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 shadow-xs">
                             <Hotel className="h-4.5 w-4.5" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -507,7 +466,7 @@ export default async function GeneratedTripPage({ params }: PageProps) {
 
           {/* Bottom CTA Bar */}
           <div className="bg-white border border-slate-200/90 rounded-2xl md:p-8 sm:p-6 p-4 text-center space-y-4 shadow-sm">
-            <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
               <Sparkles className="h-6 w-6" />
             </div>
             <div>

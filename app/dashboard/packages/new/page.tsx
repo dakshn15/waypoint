@@ -82,7 +82,9 @@ export default function NewPackagePage() {
     description: "",
     imageUrl: "",
     duration: "",
-    maxGroupSize: "",
+    maxGroupSize: "15",
+    departureDates: [] as string[],
+    newDepartureDate: "",
     difficulty: "EASY",
     destinations: [] as string[],
     newDestination: "",
@@ -120,6 +122,7 @@ export default function NewPackagePage() {
         imageUrl: formData.imageUrl,
         duration: formData.duration,
         maxGroupSize: formData.maxGroupSize || undefined,
+        departureDates: formData.departureDates,
         difficulty: formData.difficulty as any,
         destinations: formData.destinations,
         inclusions: formData.inclusions,
@@ -698,10 +701,10 @@ export default function NewPackagePage() {
             </div>
           )}
 
-          {/* Step 3: Pricing */}
+          {/* Step 3: Pricing & Batches */}
           {step === 3 && (
-            <div className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-slate-700">Base Price (per person) <span className="text-rose-500">*</span></Label>
                   <Input type="number" min={0} placeholder="0" value={formData.basePrice} onChange={(e) => setFormData({ ...formData, basePrice: e.target.value })} />
@@ -717,6 +720,81 @@ export default function NewPackagePage() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-slate-700">Max Slots / Batch Capacity</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={100}
+                    placeholder="15"
+                    value={formData.maxGroupSize}
+                    onChange={(e) => setFormData({ ...formData, maxGroupSize: e.target.value })}
+                  />
+                  <p className="text-[11px] text-slate-400">Total traveler slots per batch.</p>
+                </div>
+              </div>
+
+              {/* Scheduled Batch Dates */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div>
+                  <Label className="text-sm font-semibold text-slate-800 block">Scheduled Batch Departure Dates (Optional)</Label>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Add specific departure dates if this package operates on fixed group batches. If left empty, travelers will book on flexible/private dates.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    value={formData.newDepartureDate}
+                    onChange={(e) => setFormData({ ...formData, newDepartureDate: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (!formData.newDepartureDate) return;
+                      if (formData.departureDates.includes(formData.newDepartureDate)) {
+                        toast.error("This departure date has already been added.");
+                        return;
+                      }
+                      setFormData({
+                        ...formData,
+                        departureDates: [...formData.departureDates, formData.newDepartureDate].sort(),
+                        newDepartureDate: "",
+                      });
+                    }}
+                    className="px-4 bg-secondary text-white hover:bg-secondary/90 rounded-md font-semibold cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4 mr-1" /> Add Batch Date
+                  </Button>
+                </div>
+
+                {formData.departureDates.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.departureDates.map((dateStr, idx) => (
+                      <Badge key={idx} variant="outline" className="gap-1.5 py-1.5 px-3 bg-slate-50 text-slate-800 border-slate-200 text-xs font-semibold">
+                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                        <span>{dateStr}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              departureDates: formData.departureDates.filter((_, i) => i !== idx),
+                            })
+                          }
+                          className="ml-1 text-slate-400 hover:text-rose-500 cursor-pointer"
+                          title="Remove batch date"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">No batch dates added. This tour will be listed as a flexible / private departure tour where travelers choose their own dates.</p>
+                )}
               </div>
             </div>
           )}
@@ -731,6 +809,14 @@ export default function NewPackagePage() {
                   { label: "Cover Image", value: formData.imageUrl ? "Custom image selected" : "Default destination image" },
                   { label: "Duration", value: formData.duration ? `${formData.duration} days` : "—" },
                   { label: "Difficulty", value: formData.difficulty || "—" },
+                  { label: "Max Slots", value: formData.maxGroupSize ? `${formData.maxGroupSize} travelers / batch` : "15 travelers" },
+                  {
+                    label: "Batch Dates",
+                    value:
+                      formData.departureDates.length > 0
+                        ? `${formData.departureDates.length} scheduled batch(es) (${formData.departureDates.join(", ")})`
+                        : "Flexible / Private Departure (No fixed batches)",
+                  },
                   { label: "Destinations", value: formData.destinations.join(", ") || "—" },
                   { label: "Itinerary Days", value: formData.itineraries.length ? `${formData.itineraries.length} day plan(s) added` : "Generated dynamically" },
                   { label: "Price", value: formData.basePrice ? `${formData.currency} ${formData.basePrice}` : "—" },

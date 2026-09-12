@@ -9,6 +9,8 @@ import { headers } from "next/headers";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { PackageReviews } from "./package-reviews";
 
 /* ═══════════════════════════════════════════════════════
    DESTINATION IMAGES
@@ -211,7 +213,22 @@ export default async function PackageDetailPage({ params }: PageProps) {
       },
       include: {
         agency: true,
-        reviews: true,
+        reviews: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+        bookings: {
+          where: { status: { notIn: ["CANCELLED"] } },
+          select: { travelDate: true, travelers: true, status: true },
+        },
         itineraries: {
           include: { activities: true, hotel: true, transport: true },
           orderBy: { dayNumber: "asc" },
@@ -222,8 +239,27 @@ export default async function PackageDetailPage({ params }: PageProps) {
     if (!targetPkg && !isNaN(Number(id))) {
       const allDbPkgs = await prisma.package.findMany({
         where: { status: "PUBLISHED" },
-        include: { agency: true, reviews: true, itineraries: { include: { activities: true } } },
-        orderBy: { createdAt: "asc" },
+        include: {
+          agency: true,
+          reviews: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+            orderBy: { createdAt: "desc" },
+          },
+          bookings: {
+            where: { status: { notIn: ["CANCELLED"] } },
+            select: { travelDate: true, travelers: true, status: true },
+          },
+          itineraries: { include: { activities: true, hotel: true, transport: true } },
+        },
+        orderBy: { createdAt: "desc" },
       });
       targetPkg = allDbPkgs[Number(id) - 1] || allDbPkgs[0] || null;
     }
@@ -246,7 +282,40 @@ export default async function PackageDetailPage({ params }: PageProps) {
   }
 
   const dArr = Array.isArray(targetPkg.destinations) ? (targetPkg.destinations as any[]).map((d) => d.name || d) : [];
-  const avg = targetPkg.reviews?.length > 0 ? targetPkg.reviews.reduce((s: number, r: any) => s + r.rating, 0) / targetPkg.reviews.length : 4.8;
+  const hasReviews = targetPkg.reviews && targetPkg.reviews.length > 0;
+  const avg = hasReviews ? targetPkg.reviews.reduce((s: number, r: any) => s + r.rating, 0) / targetPkg.reviews.length : 0;
+
+  // Real batch departure slots calculation — no fake demo dates!
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const rawDepartureDates: Date[] = (targetPkg.departureDates || [])
+    .map((d: any) => new Date(d))
+    .filter((d: Date) => !isNaN(d.getTime()) && d >= todayStart)
+    .sort((a: Date, b: Date) => a.getTime() - b.getTime());
+
+  const maxGroupSize = targetPkg.maxGroupSize || 15;
+
+  const departureBatches = rawDepartureDates.map((d: Date) => {
+    const dIso = d.toISOString().split("T")[0];
+    const bookedCount = (targetPkg.bookings || [])
+      .filter((b: any) => {
+        if (!b.travelDate) return false;
+        const bIso = new Date(b.travelDate).toISOString().split("T")[0];
+        return bIso === dIso && ["PENDING", "CONFIRMED", "PROCESSING"].includes(b.status);
+      })
+      .reduce((sum: number, b: any) => sum + (Array.isArray(b.travelers) ? b.travelers.length : 1), 0);
+
+    const remainingSlots = Math.max(0, maxGroupSize - bookedCount);
+    return {
+      date: d.toISOString(),
+      dateString: dIso,
+      remainingSlots,
+      totalSlots: maxGroupSize,
+      bookedCount,
+      isSoldOut: remainingSlots <= 0,
+    };
+  });
 
   const pkg = {
     id: targetPkg.id,
@@ -261,12 +330,28 @@ export default async function PackageDetailPage({ params }: PageProps) {
     basePrice: Number(targetPkg.basePrice),
     currency: targetPkg.currency || "INR",
     difficulty: targetPkg.difficulty || "EASY",
-    rating: parseFloat(avg.toFixed(1)),
-    reviews: targetPkg.reviews?.length || 15,
+    maxGroupSize,
+    rating: hasReviews ? parseFloat(avg.toFixed(1)) : 0,
+    reviews: targetPkg.reviews?.length ?? 0,
     agencyName: targetPkg.agency?.name || "Waypoint Verified Agency",
+    agencyVerified: Boolean(targetPkg.agency?.verified),
+    reviewsList: (targetPkg.reviews || []).map((r: any) => ({
+      id: r.id,
+      rating: r.rating,
+      title: r.title,
+      comment: r.comment,
+      createdAt: r.createdAt ? r.createdAt.toISOString() : new Date().toISOString(),
+      userId: r.userId,
+      user: {
+        id: r.user?.id || r.userId,
+        name: r.user?.name || "Verified Traveler",
+        image: r.user?.image || null,
+      },
+    })),
     image: targetPkg.images?.[0] || null,
     itineraries: targetPkg.itineraries?.length ? targetPkg.itineraries : getDemoItineraries(targetPkg.id, targetPkg.duration, dArr),
-    departureDates: targetPkg.departureDates?.length ? targetPkg.departureDates : [new Date(Date.now() + 864e5 * 10), new Date(Date.now() + 864e5 * 20), new Date(Date.now() + 864e5 * 30), new Date(Date.now() + 864e5 * 45)],
+    departureBatches,
+    departureDates: rawDepartureDates,
     isFavorited,
   };
 
@@ -329,7 +414,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
             <FavoriteButton
               packageId={id}
               initialFavorited={pkg.isFavorited}
-              className="bg-black/40 backdrop-blur-md border border-white/20 rounded-full p-1.5 sm:p-3 hover:bg-black/60 transition-all text-white shadow-lg"
+              className="bg-black/40 backdrop-blur-md border border-white/20 rounded-full p-1.5 sm:p-2 hover:bg-black/60 transition-all text-white shadow-lg"
             />
           </div>
         </div>
@@ -372,7 +457,10 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">Rating</p>
                   <p className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-display truncate">
-                    {pkg.rating} <span className="text-slate-400 font-normal text-xs">({pkg.reviews || 12})</span>
+                    {pkg.rating > 0 ? pkg.rating : "New"}{" "}
+                    {pkg.reviews > 0 && (
+                      <span className="text-slate-400 font-normal text-xs">({pkg.reviews})</span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -580,15 +668,45 @@ export default async function PackageDetailPage({ params }: PageProps) {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Organized By</p>
-                      <h4 className="text-base font-bold text-slate-900 font-display">{pkg.agencyName}</h4>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <h4 className="text-base font-bold text-slate-900 font-display">{pkg.agencyName}</h4>
+                        {pkg.agencyVerified && <VerifiedBadge size="sm" />}
+                      </div>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
-                    <ShieldCheck className="h-3 w-3" />
-                    Verified Partner
-                  </span>
+                  {pkg.agencyVerified ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-[11px] font-bold tracking-wide text-blue-700 shadow-xs">
+                      <VerifiedBadge size="sm" />
+                      Verified Partner
+                    </span>
+                  ) : (
+                    <div className="flex flex-col items-start sm:items-end gap-1">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[11px] font-semibold tracking-wide text-amber-800 shadow-xs">
+                        <Clock className="h-3.5 w-3.5 text-amber-600" />
+                        Verification Pending
+                      </span>
+                      <span className="text-[10px] text-slate-400">Under Waypoint Admin Review</span>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* ── TRAVELER REVIEWS & RATINGS ── */}
+              <PackageReviews
+                packageId={pkg.id}
+                packageTitle={pkg.title}
+                reviews={pkg.reviewsList}
+                currentUser={
+                  session?.user
+                    ? {
+                        id: session.user.id,
+                        name: session.user.name,
+                        email: session.user.email,
+                        role: (session.user as any).role || "TRAVELER",
+                      }
+                    : null
+                }
+              />
 
             </div>
 
@@ -601,6 +719,9 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 currency={pkg.currency}
                 duration={pkg.duration}
                 departureDates={pkg.departureDates || []}
+                departureBatches={pkg.departureBatches || []}
+                maxGroupSize={pkg.maxGroupSize}
+                agencyVerified={pkg.agencyVerified}
               />
             </div>
 
@@ -626,7 +747,9 @@ export default async function PackageDetailPage({ params }: PageProps) {
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">
               <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
-              <span className="text-[11px] font-bold text-slate-500">{pkg.rating}</span>
+              <span className="text-[11px] font-bold text-slate-500">
+                {pkg.rating > 0 ? pkg.rating : "New"}
+              </span>
               <span className="text-[9px] text-slate-300">•</span>
               <span className="text-[11px] text-slate-400">{pkg.duration}D</span>
             </div>

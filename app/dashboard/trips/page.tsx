@@ -7,43 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 
-const DESTINATION_IMAGES: Record<string, string> = {
-  kashmir: "/images/packages/kashmir-valley.jpg",
-  srinagar: "/images/packages/kashmir-valley.jpg",
-  gulmarg: "/images/packages/kashmir-valley.jpg",
-  pahalgam: "/images/packages/kashmir-valley.jpg",
-  delhi: "/images/packages/golden-triangle.jpg",
-  agra: "/images/packages/golden-triangle.jpg",
-  jaipur: "/images/packages/golden-triangle.jpg",
-  kochi: "/images/packages/kerala-backwaters.jpg",
-  munnar: "/images/packages/kerala-backwaters.jpg",
-  alleppey: "/images/packages/kerala-backwaters.jpg",
-  kerala: "/images/packages/kerala-backwaters.jpg",
-  manali: "/images/packages/himalayan-adventure.jpg",
-  shimla: "/images/packages/himalayan-adventure.jpg",
-  leh: "/images/packages/himalayan-adventure.jpg",
-  ladakh: "/images/packages/himalayan-adventure.jpg",
-  goa: "/images/packages/goa-beach.jpg",
-  "north goa": "/images/packages/goa-beach.jpg",
-  "south goa": "/images/packages/goa-beach.jpg",
-  udaipur: "/images/packages/rajasthan-heritage.jpg",
-  jodhpur: "/images/packages/rajasthan-heritage.jpg",
-  jaisalmer: "/images/packages/rajasthan-heritage.jpg",
-  rajasthan: "/images/packages/rajasthan-heritage.jpg",
-  shillong: "/images/packages/northeast-explorer.jpg",
-  kaziranga: "/images/packages/northeast-explorer.jpg",
-  northeast: "/images/packages/northeast-explorer.jpg",
-  varanasi: "/images/packages/varanasi-ganges.jpg",
-};
-
-const FALLBACK_IMAGES = [
-  "/images/packages/himalayan-adventure.jpg",
-  "/images/packages/goa-beach.jpg",
-  "/images/packages/golden-triangle.jpg",
-  "/images/packages/kerala-backwaters.jpg",
-  "/images/packages/rajasthan-heritage.jpg",
-  "/images/packages/kashmir-valley.jpg",
-];
+import { resolveDestinationImage } from "@/lib/trip-images";
 
 const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   PLANNING: { label: "Planning", className: "bg-amber-500/90 text-white border-amber-400/30" },
@@ -54,14 +18,13 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   CANCELLED: { label: "Cancelled", className: "bg-rose-500/90 text-white border-rose-400/30" },
 };
 
-function getTripImage(destinations: any[], index: number): string {
-  const destNames = destinations.map((d) => (typeof d === "string" ? d : d.name || "").toLowerCase());
-  for (const name of destNames) {
-    for (const [key, img] of Object.entries(DESTINATION_IMAGES)) {
-      if (name.includes(key)) return img;
-    }
-  }
-  return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+function getTripImage(destinations: any[], index: number, title?: string): string {
+  const destNames = destinations.map((d) => (typeof d === "string" ? d : d.name || ""));
+  return resolveDestinationImage({
+    destinations: destNames,
+    title: title || "",
+    index,
+  });
 }
 
 export default async function TripsPage() {
@@ -129,9 +92,9 @@ export default async function TripsPage() {
               Math.ceil(
                 (trip.endDate.getTime() - trip.startDate.getTime()) /
                 (1000 * 60 * 60 * 24)
-              )
+              ) + 1
             );
-            const imageSrc = getTripImage(rawDest, idx);
+            const imageSrc = getTripImage(rawDest, idx, trip.title);
             const aiData = trip.aiResponse as any;
             const summary = aiData?.summary || `Custom ${days}-day trip to ${destArray.slice(0, 2).join(", ")}${destArray.length > 2 ? " & more" : ""}.`;
             const statusConfig = STATUS_BADGES[trip.status] || { label: trip.status, className: "bg-slate-700/90 text-white" };

@@ -7,62 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 
-const DESTINATION_IMAGES: Record<string, string> = {
-  kashmir: "/images/packages/kashmir-valley.jpg",
-  srinagar: "/images/packages/kashmir-valley.jpg",
-  gulmarg: "/images/packages/kashmir-valley.jpg",
-  pahalgam: "/images/packages/kashmir-valley.jpg",
-  delhi: "/images/packages/golden-triangle.jpg",
-  agra: "/images/packages/golden-triangle.jpg",
-  jaipur: "/images/packages/golden-triangle.jpg",
-  kochi: "/images/packages/kerala-backwaters.jpg",
-  munnar: "/images/packages/kerala-backwaters.jpg",
-  alleppey: "/images/packages/kerala-backwaters.jpg",
-  kerala: "/images/packages/kerala-backwaters.jpg",
-  manali: "/images/packages/himalayan-adventure.jpg",
-  shimla: "/images/packages/himalayan-adventure.jpg",
-  leh: "/images/packages/himalayan-adventure.jpg",
-  ladakh: "/images/packages/himalayan-adventure.jpg",
-  goa: "/images/packages/goa-beach.jpg",
-  "north goa": "/images/packages/goa-beach.jpg",
-  "south goa": "/images/packages/goa-beach.jpg",
-  udaipur: "/images/packages/rajasthan-heritage.jpg",
-  jodhpur: "/images/packages/rajasthan-heritage.jpg",
-  jaisalmer: "/images/packages/rajasthan-heritage.jpg",
-  rajasthan: "/images/packages/rajasthan-heritage.jpg",
-  shillong: "/images/packages/northeast-explorer.jpg",
-  kaziranga: "/images/packages/northeast-explorer.jpg",
-  northeast: "/images/packages/northeast-explorer.jpg",
-  varanasi: "/images/packages/varanasi-ganges.jpg",
-};
-
-const FALLBACK_IMAGES = [
-  "/images/packages/kashmir-valley.jpg",
-  "/images/packages/golden-triangle.jpg",
-  "/images/packages/kerala-backwaters.jpg",
-  "/images/packages/himalayan-adventure.jpg",
-  "/images/packages/goa-beach.jpg",
-  "/images/packages/rajasthan-heritage.jpg",
-];
-
-function getPackageImage(pkg: any, index: number): string {
-  if (Array.isArray(pkg.images) && pkg.images.length > 0 && pkg.images[0]) {
-    return pkg.images[0];
-  }
-  const dests = Array.isArray(pkg.destinations)
-    ? pkg.destinations.map((d: any) => (typeof d === "string" ? d : d.name || "").toLowerCase())
-    : [];
-  for (const name of dests) {
-    for (const [key, img] of Object.entries(DESTINATION_IMAGES)) {
-      if (name.includes(key)) return img;
-    }
-  }
-  const title = (pkg.title || "").toLowerCase();
-  for (const [key, img] of Object.entries(DESTINATION_IMAGES)) {
-    if (title.includes(key)) return img;
-  }
-  return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
-}
+import { resolveDestinationImage } from "@/lib/trip-images";
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   EASY: "bg-emerald-500/90 text-white border-emerald-400/30",
@@ -136,11 +81,16 @@ export default async function FavoritesPage() {
                 pkg.reviews.length
                 : 4.8;
             const reviewCount = pkg.reviews.length || 12;
-            const imageSrc = getPackageImage(pkg, idx);
+            const imageSrc = resolveDestinationImage({
+              images: Array.isArray(pkg.images) ? pkg.images as string[] : [],
+              destinations: destinations,
+              title: pkg.title,
+              index: idx,
+            });
             const difficultyBadge = DIFFICULTY_COLORS[pkg.difficulty || "EASY"] || "bg-slate-700/90 text-white";
 
             return (
-              <Link key={fav.id} href={`/packages/${pkg.id}`} className="group">
+              <Link key={fav.id} href={`/packages/${pkg.slug || pkg.id}`} className="group">
                 <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
 
                   {/* Top Image Section */}

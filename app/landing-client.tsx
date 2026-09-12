@@ -52,6 +52,7 @@ const DESTINATIONS = [
     id: "manali",
     title: "Solang Valley & Manali",
     state: "Himachal Pradesh",
+    packageSlug: "himalayan-adventure-trek",
     image: "/images/packages/himalayan-adventure.jpg",
     duration: "5 Days / 4 Nights",
     rating: 4.9,
@@ -65,6 +66,7 @@ const DESTINATIONS = [
     id: "kerala",
     title: "Munnar & Alleppey",
     state: "Kerala",
+    packageSlug: "kerala-backwaters-bliss",
     image: "/images/packages/kerala-backwaters.jpg",
     duration: "6 Days / 5 Nights",
     rating: 4.95,
@@ -78,6 +80,7 @@ const DESTINATIONS = [
     id: "rajasthan",
     title: "Jaipur & Udaipur",
     state: "Rajasthan",
+    packageSlug: "rajasthan-royal-heritage",
     image: "/images/packages/rajasthan-heritage.jpg",
     duration: "5 Days / 4 Nights",
     rating: 4.88,
@@ -91,6 +94,7 @@ const DESTINATIONS = [
     id: "goa",
     title: "North & South Beaches",
     state: "Goa",
+    packageSlug: "goa-beach-paradise",
     image: "/images/packages/goa-beach.jpg",
     duration: "4 Days / 3 Nights",
     rating: 4.85,
@@ -807,8 +811,8 @@ export default function LandingClient({ userSession }: LandingClientProps) {
             {DESTINATIONS.map((item) => (
               <div
                 key={item.id}
-                onClick={() => handlePillClick(item.prompt)}
-                className="group relative rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-primary transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer"
+                onClick={() => router.push(`/packages/${item.packageSlug}`)}
+                className="group relative rounded-xl overflow-hidden bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-primary transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer"
               >
                 {/* Visual Image Container with Hover Zoom */}
                 <div className="h-52 w-full overflow-hidden relative">
@@ -844,17 +848,33 @@ export default function LandingClient({ userSession }: LandingClientProps) {
                 <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-secondary" /> {item.duration}</span>
-                    <span className="text-[11px] font-semibold text-slate-400">AI Guided</span>
+                    <span className="text-[11px] font-semibold text-slate-400">Verified Agency</span>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <div>
-                      <span className="text-xs text-slate-500 block font-semibold">Starting from</span>
-                      <span className="text-lg font-bold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
+                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">From</span>
+                      <span className="text-base font-bold text-slate-900 font-display">₹{item.startingPrice.toLocaleString("en-IN")}</span>
                     </div>
-                    <span className="h-8 px-3 rounded-md bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 group-hover:bg-primary group-hover:text-white transition-all">
-                      Build Trip <Sparkles className="h-3 w-3" />
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={`/packages/${item.packageSlug}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-8 px-2.5 rounded-md border border-slate-200 hover:border-primary text-slate-700 hover:text-primary text-[11px] font-bold flex items-center transition-all"
+                      >
+                        View
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePillClick(item.prompt);
+                        }}
+                        className="h-8 px-2.5 rounded-md bg-primary/10 text-primary text-[11px] font-bold flex items-center gap-1 hover:bg-primary hover:text-white transition-all cursor-pointer"
+                      >
+                        AI Plan <Sparkles className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -871,7 +891,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <Sparkles className="h-3.5 w-3.5" /> AI Custom Outputs
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display">
-              See what Gemini AI plans in <span className="text-primary">30 seconds</span>.
+              See what Gemini AI plans in <span className="text-primary">10 seconds</span>.
             </h2>
             <p className="text-slate-500 lg:text-base text-sm max-w-xl mx-auto lg:leading-relaxed">
               Explore dynamic itineraries built based on traveler tags, local guide feeds, and budget coordinates.

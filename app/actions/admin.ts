@@ -155,6 +155,7 @@ export async function toggleAgencyVerification(agencyId: string) {
     await writeAuditLog({ actorId: session.user.id, action: "agency.verification_changed", resourceType: "Agency", resourceId: agencyId, before: { verified: agency.verified }, after: { verified: updated.verified } });
 
     revalidatePath("/dashboard/agencies");
+    revalidatePath("/packages");
     return { success: true };
   } catch (error: any) {
     console.error("[TOGGLE_AGENCY_VERIFICATION_ERROR]", error);

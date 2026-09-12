@@ -50,14 +50,13 @@ export async function createBooking(data: {
     if (!pkg || pkg.status !== "PUBLISHED" || !pkg.agency.active || !pkg.agency.verified) {
       throw new Error("This package is not currently available for booking.");
     }
-    if (pkg.availableFrom && input.travelDate < pkg.availableFrom) {
-      throw new Error("The selected departure date is not available.");
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    if (input.travelDate < todayStart) {
+      throw new Error("Cannot book a tour for a date in the past. Please select an upcoming departure date.");
     }
     if (pkg.availableTo && input.travelDate > pkg.availableTo) {
-      throw new Error("The selected departure date is not available.");
-    }
-    if (pkg.departureDates.length > 0 && !pkg.departureDates.some((date) => date.toISOString().slice(0, 10) === input.travelDate.toISOString().slice(0, 10))) {
-      throw new Error("The selected departure date is not available.");
+      throw new Error("The selected departure date is beyond the package availability window.");
     }
     if (pkg.maxGroupSize && input.travelers.length > pkg.maxGroupSize) {
       throw new Error("The number of travelers exceeds this package's group limit.");
@@ -107,14 +106,23 @@ export async function createBooking(data: {
           (count, existing) => count + (Array.isArray(existing.travelers) ? existing.travelers.length : 0),
           0
         );
-        if (reservedPlaces + input.travelers.length > pkg.maxGroupSize) {
-          throw new Error("There are not enough places left for this departure date.");
+        const remainingSlots = Math.max(0, pkg.maxGroupSize - reservedPlaces);
+        if (input.travelers.length > remainingSlots) {
+          throw new Error(
+            remainingSlots === 0
+              ? "This departure date is completely sold out. Please select another date."
+              : `Only ${remainingSlots} slot${remainingSlots === 1 ? "" : "s"} remaining for this departure date. Cannot book for ${input.travelers.length} traveler${input.travelers.length === 1 ? "" : "s"}.`
+          );
         }
       }
     }
 
+    const randomCode = Math.floor(10000 + Math.random() * 90000);
+    const bookingNumber = `WP-${randomCode}`;
+
     return tx.booking.create({
       data: {
+        bookingNumber,
         userId: session.user.id,
         agencyId,
         packageId,

@@ -19,6 +19,7 @@ export async function createPackage(data: {
   basePrice: string | number;
   currency: string;
   imageUrl?: string;
+  departureDates?: (string | Date)[];
   itineraries?: Array<{
     dayNumber: number;
     title: string;
@@ -84,6 +85,9 @@ export async function createPackage(data: {
       images: data.imageUrl ? [data.imageUrl] : [],
       basePrice: basePrice || 0,
       currency: data.currency || "INR",
+      departureDates: (data.departureDates || [])
+        .map((d) => new Date(d))
+        .filter((d) => !isNaN(d.getTime())),
       status: "PUBLISHED", // Auto-publish for usability
     },
   });

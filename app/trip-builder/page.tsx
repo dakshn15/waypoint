@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -53,7 +53,7 @@ import {
   TRANSPORT_PREFERENCES,
   TRAVEL_STYLES,
 } from "@/constants/config";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -131,7 +131,8 @@ function calculateDays(startDate: string, endDate: string): number {
   const start = new Date(startDate);
   const end = new Date(endDate);
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return 1;
-  return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+  // Inclusive count: 17th→20th = 4 days (17,18,19,20), 3 nights
+  return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
 }
 
 function getRecommendedBudgetPerDay(style: string): number {
@@ -148,8 +149,9 @@ function getAbsoluteMinBudget(days: number, travelers: number): number {
   return days * travelers * 600;
 }
 
-export default function TripBuilderPage() {
+function TripBuilderContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
   const [genStage, setGenStage] = useState(0);
@@ -215,6 +217,121 @@ export default function TripBuilderPage() {
 
   const isUnderfundedForStyle = userBudgetNum > 0 && userBudgetNum < suggestedTotalBudget * 0.6;
   const isSeverelyUnderfunded = userBudgetNum > 0 && userBudgetNum < absoluteMinBudget;
+
+  // Consume ?prompt= or ?destination= from URL (e.g. landing page hero search or pill click)
+  useEffect(() => {
+    const promptParam = searchParams.get("prompt");
+    const destParam = searchParams.get("destination");
+    const rawInput = (destParam || promptParam || "").trim();
+
+    if (!rawInput || formData.destinations.length > 0) return;
+
+    const lower = rawInput.toLowerCase();
+    const detectedDestinations: string[] = [];
+    const detectedInterests: string[] = [];
+
+    // 1. Direct match for known popular places
+    const KNOWN_PLACES: Record<string, string> = {
+      "solang valley": "Solang Valley",
+      "solang": "Solang Valley",
+      "manali": "Manali",
+      "kerala backwaters": "Kerala Backwaters",
+      "kerala": "Kerala Backwaters",
+      "munnar": "Munnar",
+      "alleppey": "Alleppey",
+      "kochi": "Kochi",
+      "rajasthan": "Rajasthan",
+      "jaipur": "Jaipur",
+      "udaipur": "Udaipur",
+      "jodhpur": "Jodhpur",
+      "jaisalmer": "Jaisalmer",
+      "goa": "Goa",
+      "kashmir": "Kashmir Valley",
+      "srinagar": "Srinagar",
+      "gulmarg": "Gulmarg",
+      "varanasi": "Varanasi Ganges",
+      "ganges": "Varanasi Ganges",
+      "andaman": "Andaman Islands",
+      "havelock": "Havelock Island",
+      "leh": "Leh Ladakh",
+      "ladakh": "Leh Ladakh",
+      "rishikesh": "Rishikesh",
+      "darjeeling": "Darjeeling",
+      "ooty": "Ooty",
+      "shimla": "Shimla",
+      "delhi": "Delhi",
+      "agra": "Agra",
+      "shillong": "Shillong",
+      "meghalaya": "Meghalaya",
+    };
+
+    for (const [key, formatted] of Object.entries(KNOWN_PLACES)) {
+      if (lower.includes(key)) {
+        if (!detectedDestinations.includes(formatted)) {
+          detectedDestinations.push(formatted);
+        }
+      }
+    }
+
+    // 2. If no known place matched, extract via regex or fallback
+    if (detectedDestinations.length === 0) {
+      const destMatch = rawInput.match(/(?:trip to|tour of|travel to|visit to|to|in|of)\s+([^,]+?)(?:\s+with|\s+and\s+enjoy|\s+for|\s+including|$)/i);
+      if (destMatch && destMatch[1]) {
+        const cleaned = destMatch[1].trim().replace(/\b\w/g, (c) => c.toUpperCase());
+        if (cleaned.length > 2) detectedDestinations.push(cleaned);
+      } else if (rawInput.length <= 40 && !rawInput.includes("?")) {
+        const cleaned = rawInput.replace(/\b\w/g, (c) => c.toUpperCase());
+        detectedDestinations.push(cleaned);
+      }
+    }
+
+    // 3. Extract duration e.g. "5-day", "6 day", "4 days"
+    let newStartDate = formData.startDate;
+    let newEndDate = formData.endDate;
+    const dayMatch = rawInput.match(/(\d+)\s*(?:-| )?\s*day/i);
+    if (dayMatch && dayMatch[1]) {
+      const numDays = Math.min(14, Math.max(2, parseInt(dayMatch[1])));
+      const start = new Date();
+      start.setDate(start.getDate() + 7);
+      const end = new Date(start);
+      end.setDate(end.getDate() + (numDays - 1)); // Inclusive days
+      newStartDate = start.toISOString().split("T")[0];
+      newEndDate = end.toISOString().split("T")[0];
+    }
+
+    // 4. Extract interests from keywords
+    if (/trek|hiking|climb|snow|paragliding|adventure/i.test(rawInput)) {
+      detectedInterests.push("Adventure", "Mountains");
+    }
+    if (/beach|coast|ocean|water sports|shack/i.test(rawInput)) {
+      detectedInterests.push("Beaches");
+    }
+    if (/nature|tea|garden|houseboat|backwater|forest|lake/i.test(rawInput)) {
+      detectedInterests.push("Nature");
+    }
+    if (/palace|fort|heritage|culture|temple|monument|ghat|spiritual/i.test(rawInput)) {
+      detectedInterests.push("Historical Places", "Culture");
+    }
+    if (/food|cuisine|thali|dining|culinary|trout/i.test(rawInput)) {
+      detectedInterests.push("Food");
+    }
+
+    if (detectedDestinations.length > 0 || detectedInterests.length > 0 || dayMatch) {
+      setFormData((prev) => ({
+        ...prev,
+        destinations: detectedDestinations.length > 0 ? detectedDestinations : prev.destinations,
+        startDate: newStartDate || prev.startDate,
+        endDate: newEndDate || prev.endDate,
+        interests: detectedInterests.length > 0 ? Array.from(new Set([...prev.interests, ...detectedInterests])) : prev.interests,
+      }));
+
+      const destSummary = detectedDestinations.join(" → ");
+      toast.success("Loaded trip parameters from your search!", {
+        description: destSummary ? `Destination: ${destSummary}` : undefined,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     if (!generating) return;
@@ -1108,5 +1225,22 @@ export default function TripBuilderPage() {
 
       <SiteFooter />
     </div>
+  );
+}
+
+export default function TripBuilderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#FAFAF9]">
+          <div className="flex flex-col items-center gap-3">
+            <Sparkles className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm font-semibold text-slate-500">Loading Trip Builder...</p>
+          </div>
+        </div>
+      }
+    >
+      <TripBuilderContent />
+    </Suspense>
   );
 }

@@ -259,6 +259,10 @@ async function TravelerDashboard({
   ]);
 
   const bookingsCount = bookings.length;
+  const totalSpent = bookings.reduce(
+    (sum, b) => sum + Number(b.totalAmount),
+    0
+  );
 
   // Calculate monthly spending (last 6 months)
   const monthlyRevenue: { month: string; revenue: number }[] = [];
@@ -340,10 +344,10 @@ async function TravelerDashboard({
           iconBg="bg-rose-500/10 text-rose-500"
         />
         <StatCard
-          title="Destinations"
-          value="50+"
-          subtitle="To explore"
-          icon={Globe}
+          title="Total Spent"
+          value={formatCurrency(totalSpent, "INR")}
+          subtitle={totalSpent > 0 ? "Lifetime spending" : "No spending yet"}
+          icon={DollarSign}
           gradient="bg-gradient-to-r from-emerald-500 to-teal-500"
           iconBg="bg-emerald-500/10 text-emerald-600"
         />
