@@ -419,9 +419,6 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
       {/* ═══════════════ HERO SECTION — Centered Content + Preview Below ═══════════════ */}
       <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 lg:pt-40 overflow-hidden bg-[#FAFAF9]">
-        {/* Aurora Ambient Glow Orbs */}
-        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute top-40 right-1/4 w-[500px] h-[500px] bg-secondary/8 rounded-full blur-[160px] pointer-events-none" />
         {/* Dot pattern */}
         <div className="absolute inset-0 dot-pattern opacity-[0.05]" />
 
@@ -449,7 +446,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
 
           {/* AI Prompt Input + CTA */}
           <form onSubmit={handlePromptSubmit} className="flex flex-col items-center gap-4 mb-8">
-            <div className="relative w-full max-w-2xl flex items-center bg-white border border-slate-200 rounded-xl shadow-lg focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+            <div className="relative w-full max-w-2xl flex items-center bg-white border border-slate-200 rounded-xl shadow-md focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
               <Sparkles className="sm:block hidden absolute left-4 h-5 w-5 text-primary pointer-events-none shrink-0" />
               <Input
                 value={customPrompt}
@@ -512,7 +509,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
         <div className="relative z-10 container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
           {/* Browser-frame mockup — actual Waypoint dashboard */}
-          <div className="w-full bg-white border border-slate-200/80 rounded-2xl shadow-[0_-8px_60px_rgba(0,0,0,0.10)] overflow-hidden">
+          <div className="w-full bg-white border border-slate-200/80 rounded-2xl shadow-md overflow-hidden">
 
             {/* Browser chrome */}
             <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200/60 flex items-center gap-3">
@@ -1222,11 +1219,6 @@ export default function LandingClient({ userSession }: LandingClientProps) {
           <div className="relative overflow-hidden rounded-3xl sm:p-8 p-5 lg:p-12"
             style={{ background: "linear-gradient(135deg, #1A3B5A 0%, #0f2540 60%, #1a2e3f 100%)" }}
           >
-            {/* Glows */}
-            <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/12 rounded-full blur-[90px] pointer-events-none" />
-            <div className="absolute -bottom-10 left-1/3 w-64 h-64 bg-secondary/10 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute inset-0 dot-pattern opacity-[0.03] pointer-events-none" />
-
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
               {/* Left column */}

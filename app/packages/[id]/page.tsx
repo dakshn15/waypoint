@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { PackageReviews } from "./package-reviews";
+import { formatLocalDate } from "@/lib/utils";
 
 /* ═══════════════════════════════════════════════════════
    DESTINATION IMAGES
@@ -286,22 +287,21 @@ export default async function PackageDetailPage({ params }: PageProps) {
   const avg = hasReviews ? targetPkg.reviews.reduce((s: number, r: any) => s + r.rating, 0) / targetPkg.reviews.length : 0;
 
   // Real batch departure slots calculation — no fake demo dates!
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+  const todayIso = formatLocalDate(new Date());
 
   const rawDepartureDates: Date[] = (targetPkg.departureDates || [])
     .map((d: any) => new Date(d))
-    .filter((d: Date) => !isNaN(d.getTime()) && d >= todayStart)
+    .filter((d: Date) => !isNaN(d.getTime()) && formatLocalDate(d) >= todayIso)
     .sort((a: Date, b: Date) => a.getTime() - b.getTime());
 
   const maxGroupSize = targetPkg.maxGroupSize || 15;
 
   const departureBatches = rawDepartureDates.map((d: Date) => {
-    const dIso = d.toISOString().split("T")[0];
+    const dIso = formatLocalDate(d);
     const bookedCount = (targetPkg.bookings || [])
       .filter((b: any) => {
         if (!b.travelDate) return false;
-        const bIso = new Date(b.travelDate).toISOString().split("T")[0];
+        const bIso = formatLocalDate(b.travelDate);
         return bIso === dIso && ["PENDING", "CONFIRMED", "PROCESSING"].includes(b.status);
       })
       .reduce((sum: number, b: any) => sum + (Array.isArray(b.travelers) ? b.travelers.length : 1), 0);

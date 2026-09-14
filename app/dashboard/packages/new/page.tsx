@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createPackage } from "@/app/actions/packages";
+import { formatLocalDate } from "@/lib/utils";
 
 interface ItineraryActivity {
   time: string;
@@ -745,7 +746,7 @@ export default function NewPackagePage() {
                 <div className="flex gap-2">
                   <Input
                     type="date"
-                    min={new Date().toISOString().split("T")[0]}
+                    min={formatLocalDate(new Date())}
                     value={formData.newDepartureDate}
                     onChange={(e) => setFormData({ ...formData, newDepartureDate: e.target.value })}
                     className="flex-1"

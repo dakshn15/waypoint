@@ -21,6 +21,10 @@ import {
   Sparkles,
   Flame,
   ArrowUpDown,
+  TrendingUp,
+  DollarSign,
+  Timer,
+  Gem,
 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import {
@@ -51,6 +55,15 @@ interface Package {
 }
 
 type SortOption = "newest" | "popular" | "rating" | "price_asc" | "price_desc" | "duration_asc";
+
+const SORT_LABELS: Record<SortOption, string> = {
+  newest: "Newly Added",
+  popular: "Most Popular",
+  rating: "Highest Rated",
+  price_asc: "Price: Low to High",
+  price_desc: "Price: High to Low",
+  duration_asc: "Duration: Shortest",
+};
 
 interface PackagesListClientProps {
   initialPackages: Package[];
@@ -206,7 +219,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
           </p>
 
           {/* Search */}
-          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl mx-auto flex items-center bg-white border border-slate-200 rounded-xl shadow-lg focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-2xl mx-auto flex items-center bg-white border border-slate-200 rounded-xl shadow-md focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
             <Search className="absolute left-3.5 sm:left-4 h-4 sm:h-5 w-4 sm:w-5 text-slate-400 pointer-events-none shrink-0" />
             <Input
               value={searchQuery}
@@ -261,16 +274,30 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400 hidden sm:inline">Sort:</span>
                 <Select value={sortBy} onValueChange={(val) => val && setSortBy(val as SortOption)}>
-                  <SelectTrigger className="h-9 w-[180px] bg-white border-slate-200 text-xs font-semibold rounded-xl cursor-pointer">
-                    <SelectValue placeholder="Sort packages" />
+                  <SelectTrigger className="h-9 w-[200px] bg-white border-slate-200 text-xs font-semibold rounded-lg cursor-pointer">
+                    <SelectValue placeholder="Sort packages">
+                      {SORT_LABELS[sortBy]}
+                    </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border border-slate-200 shadow-xl bg-white p-1 z-50">
-                    <SelectItem value="newest" className="text-xs cursor-pointer">✨ Newly Added</SelectItem>
-                    <SelectItem value="popular" className="text-xs cursor-pointer">🔥 Most Popular</SelectItem>
-                    <SelectItem value="rating" className="text-xs cursor-pointer">⭐ Highest Rated</SelectItem>
-                    <SelectItem value="price_asc" className="text-xs cursor-pointer">💸 Price: Low to High</SelectItem>
-                    <SelectItem value="price_desc" className="text-xs cursor-pointer">💎 Price: High to Low</SelectItem>
-                    <SelectItem value="duration_asc" className="text-xs cursor-pointer">⏱️ Duration: Shortest</SelectItem>
+                  <SelectContent className="rounded-lg border border-slate-200 shadow-xl bg-white p-1 z-50">
+                    <SelectItem value="newest" className="text-xs cursor-pointer rounded-md">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" /> Newly Added
+                    </SelectItem>
+                    <SelectItem value="popular" className="text-xs cursor-pointer rounded-md">
+                      <Flame className="h-3.5 w-3.5 text-orange-500" /> Most Popular
+                    </SelectItem>
+                    <SelectItem value="rating" className="text-xs cursor-pointer rounded-md">
+                      <Star className="h-3.5 w-3.5 text-amber-500" /> Highest Rated
+                    </SelectItem>
+                    <SelectItem value="price_asc" className="text-xs cursor-pointer rounded-md">
+                      <ArrowUpDown className="h-3.5 w-3.5 text-emerald-500" /> Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price_desc" className="text-xs cursor-pointer rounded-md">
+                      <Gem className="h-3.5 w-3.5 text-violet-500" /> Price: High to Low
+                    </SelectItem>
+                    <SelectItem value="duration_asc" className="text-xs cursor-pointer rounded-md">
+                      <Timer className="h-3.5 w-3.5 text-secondary" /> Duration: Shortest
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -280,7 +307,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5 cursor-pointer rounded-xl"
+                  className="text-xs text-slate-500 hover:text-slate-900 h-9 gap-1.5 cursor-pointer rounded-lg"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Reset
@@ -292,7 +319,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                 variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`lg:hidden text-xs h-9 gap-1.5 rounded-xl cursor-pointer ${showFilters ? "border-primary text-primary bg-primary/5" : "border-slate-200"}`}
+                className={`lg:hidden text-xs h-9 gap-1.5 rounded-lg cursor-pointer ${showFilters ? "border-primary text-primary bg-primary/5" : "border-slate-200"}`}
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 Filters
@@ -301,46 +328,19 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
             </div>
           </div>
 
-          {/* Quick Filter Pills Row */}
-          <div className="flex flex-wrap items-center gap-2 mb-8 pb-3 border-b border-slate-200/60">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1">Quick Sort:</span>
-            {[
-              { key: "newest", label: "Newly Added", icon: Sparkles },
-              { key: "popular", label: "Most Popular", icon: Flame },
-              { key: "rating", label: "Highest Rated", icon: Star },
-              { key: "price_asc", label: "Budget Friendly", icon: ArrowUpDown },
-            ].map((pill) => {
-              const Icon = pill.icon;
-              const isActive = sortBy === pill.key;
-              return (
-                <button
-                  key={pill.key}
-                  type="button"
-                  onClick={() => setSortBy(pill.key as SortOption)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "bg-white border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  <Icon className={`h-3 w-3 ${isActive ? "text-amber-400" : "text-slate-400"}`} />
-                  <span>{pill.label}</span>
-                </button>
-              );
-            })}
-          </div>
 
-          <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-start">
+
+          <div className="grid lg:grid-cols-[260px_1fr] gap-8 items-start">
 
             {/* ═══ FILTER SIDEBAR ═══ */}
             <aside className={`${showFilters ? "block" : "hidden"} lg:block lg:sticky lg:top-28`}>
-              <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
 
                 {/* Sidebar Header */}
-                <div className="sm:px-5 sm:py-4 p-4 border-b border-slate-100 flex items-center justify-between">
+                <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Filter className="h-3.5 w-3.5 text-primary" />
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Filter className="h-3 w-3 text-primary" />
                     </div>
                     <span className="text-sm font-bold text-slate-900">Filters</span>
                   </div>
@@ -354,15 +354,15 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   )}
                 </div>
 
-                <div className="sm:p-5 p-4 space-y-6">
+                <div className="p-4 space-y-5">
 
                   {/* ── Price Range ── */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                       Budget Range
                     </label>
-                    <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                      <div className="flex justify-between text-sm font-semibold text-slate-800">
+                    <div className="bg-slate-50/80 rounded-lg p-3 space-y-2.5">
+                      <div className="flex justify-between text-[13px] font-semibold text-slate-800">
                         <span>₹5,000</span>
                         <span className="text-primary font-bold">₹{maxPrice.toLocaleString("en-IN")}</span>
                       </div>
@@ -376,7 +376,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         className="range-filled"
                         style={{ "--range-progress": `${rangeProgress}%` } as React.CSSProperties}
                       />
-                      <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                      <div className="flex justify-between text-[10px] text-slate-400 font-medium">
                         <span>Budget</span>
                         <span>Premium</span>
                       </div>
@@ -384,31 +384,31 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   </div>
 
                   {/* ── Difficulty ── */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                       Difficulty Level
                     </label>
-                    <div className="space-y-3">
+                    <div className="space-y-1.5">
                       {[
-                        { key: "ALL", label: "All Levels", desc: "Show everything", icon: "◎" },
-                        { key: "EASY", label: "Easy", desc: "Family friendly", icon: "🟢" },
-                        { key: "MODERATE", label: "Moderate", desc: "Some fitness needed", icon: "🟡" },
-                        { key: "CHALLENGING", label: "Challenging", desc: "Adventure seekers", icon: "🔴" },
+                        { key: "ALL", label: "All Levels", desc: "Show everything", color: "bg-slate-400" },
+                        { key: "EASY", label: "Easy", desc: "Family friendly", color: "bg-emerald-500" },
+                        { key: "MODERATE", label: "Moderate", desc: "Some fitness needed", color: "bg-amber-500" },
+                        { key: "CHALLENGING", label: "Challenging", desc: "Adventure seekers", color: "bg-rose-500" },
                       ].map((diff) => (
                         <button
                           key={diff.key}
                           onClick={() => setDifficulty(diff.key as any)}
-                          className={`w-full text-left px-3.5 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${difficulty === diff.key
+                          className={`w-full text-left px-3 py-2 rounded-lg border transition-all cursor-pointer flex items-center gap-2.5 ${difficulty === diff.key
                             ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
                             : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
                             }`}
                         >
-                          <span className="text-sm">{diff.icon}</span>
-                          <div className="flex-1 flex flex-col gap-0.5">
-                            <span className={`text-sm font-semibold block ${difficulty === diff.key ? "text-primary" : "text-slate-800"}`}>
+                          <span className={`w-2 h-2 rounded-full ${diff.color} shrink-0`} />
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-[13px] font-semibold block leading-tight ${difficulty === diff.key ? "text-primary" : "text-slate-800"}`}>
                               {diff.label}
                             </span>
-                            <span className="text-xs text-slate-500">{diff.desc}</span>
+                            <span className="text-[11px] text-slate-400 leading-tight">{diff.desc}</span>
                           </div>
                           {difficulty === diff.key && (
                             <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center shrink-0">
@@ -421,13 +421,13 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                   </div>
 
                   {/* ── Duration ── */}
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                       Trip Duration
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       {[
-                        { key: "ALL", label: "Any", sub: "All durations" },
+                        { key: "ALL", label: "Any", sub: "All" },
                         { key: "SHORT", label: "Short", sub: "1–5 days" },
                         { key: "MEDIUM", label: "Medium", sub: "6–8 days" },
                         { key: "LONG", label: "Long", sub: "9+ days" },
@@ -435,15 +435,15 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         <button
                           key={dur.key}
                           onClick={() => setDuration(dur.key as any)}
-                          className={`text-center px-3 py-3 rounded-xl border transition-all cursor-pointer ${duration === dur.key
+                          className={`text-center px-2.5 py-2.5 rounded-lg border transition-all cursor-pointer ${duration === dur.key
                             ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20"
                             : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
                             }`}
                         >
-                          <span className={`text-sm font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
+                          <span className={`text-[13px] font-bold block ${duration === dur.key ? "text-primary" : "text-slate-800"}`}>
                             {dur.label}
                           </span>
-                          <span className="text-xs text-slate-400 font-medium">{dur.sub}</span>
+                          <span className="text-[10px] text-slate-400 font-medium">{dur.sub}</span>
                         </button>
                       ))}
                     </div>
@@ -459,7 +459,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                   {sortedPackages.map((pkg) => (
                     <Link key={pkg.id} href={`/packages/${pkg.id}`} className="group">
-                      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
 
                         {/* Image */}
                         <div className="relative h-48 overflow-hidden">
@@ -559,7 +559,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                 </div>
               ) : (
                 /* ── Empty state ── */
-                <div className="py-20 text-center space-y-4 bg-white border border-slate-200/80 rounded-2xl">
+                <div className="py-20 text-center space-y-4 bg-white border border-slate-200/80 rounded-xl">
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
                     <Search className="h-7 w-7 text-primary" />
                   </div>

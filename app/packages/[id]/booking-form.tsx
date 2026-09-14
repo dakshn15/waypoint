@@ -27,7 +27,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createBooking } from "@/app/actions/bookings";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatLocalDate } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -95,22 +95,18 @@ export default function BookingForm({
     Array<{ name: string; age: string; gender: "Male" | "Female" | "Other" }>
   >([{ name: "", age: "", gender: "Male" }]);
 
-  // Filter departure dates to strictly FUTURE dates (>= today)
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
-  const todayIso = useMemo(() => today.toISOString().split("T")[0], [today]);
+  // Calculate today's date strictly in the user's local timezone (YYYY-MM-DD)
+  // This prevents UTC offset bugs (e.g. UTC+5:30 IST rolling backward into yesterday via toISOString)
+  const todayIso = useMemo(() => formatLocalDate(new Date()), []);
+  const today = useMemo(() => new Date(todayIso + "T00:00:00"), [todayIso]);
 
   const batches = useMemo(() => {
     if (!departureBatches || departureBatches.length === 0) return [];
     return departureBatches.filter((b) => {
-      const d = new Date(b.date);
-      return !isNaN(d.getTime()) && d >= today;
+      const bLocalDate = formatLocalDate(b.date);
+      return bLocalDate >= todayIso;
     });
-  }, [departureBatches, today]);
+  }, [departureBatches, todayIso]);
 
   const selectedBatch = useMemo(() => {
     if (dateMode !== "scheduled" || !travelDate) return null;
@@ -196,9 +192,9 @@ export default function BookingForm({
       return;
     }
 
-    const selectedDateTime = new Date(finalDate);
-    if (selectedDateTime < today) {
-      toast.error("Departure date must be today or in the future.");
+    const selectedLocalDate = formatLocalDate(finalDate);
+    if (selectedLocalDate < todayIso) {
+      toast.error("Cannot book a departure date in the past. Please select an upcoming date.");
       return;
     }
 

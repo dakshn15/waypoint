@@ -36,6 +36,23 @@ export function formatDate(date: string | Date) {
   }).format(new Date(date));
 }
 
+/**
+ * Formats a Date object or date string into a local 'YYYY-MM-DD' string.
+ * Uses local calendar year/month/day rather than UTC to prevent timezone shifts
+ * (e.g. UTC+5:30 IST rolling back into yesterday when toISOString() is called).
+ */
+export function formatLocalDate(date: Date | string = new Date()): string {
+  const d =
+    typeof date === "string" && date.includes("-") && date.length === 10
+      ? new Date(date + "T00:00:00")
+      : new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function serializePrisma<T>(data: T): any {
   if (data === null || data === undefined) {
     return data;
