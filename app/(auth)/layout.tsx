@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, MapPin, Shield, Sparkles } from "lucide-react";
+import { MapPin, Shield, Sparkles } from "lucide-react";
 
 export default function AuthLayout({
   children,
@@ -17,19 +17,18 @@ export default function AuthLayout({
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1400&auto=format&fit=crop&q=80')" }}
         />
         {/* Dark Overlay Gradient — uses brand navy */}
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/85 to-secondary/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#09111b] to-secondary/90" />
         {/* Ambient Glow — brand coral */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary/20 rounded-full blur-[160px] pointer-events-none" />
 
         {/* Top Logo Area */}
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Compass className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Way<span className="text-primary">point</span>
-            </span>
+          <Link href="/" className="inline-flex items-center gap-2.5 group">
+            <img
+              src="/images/logo-light.png"
+              alt="Waypoint"
+              className="h-9 w-auto object-contain"
+            />
           </Link>
         </div>
 
@@ -87,12 +86,11 @@ export default function AuthLayout({
         {/* Mobile Logo (shows only below lg) */}
         <div className="lg:hidden flex items-center justify-center pt-10">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
-              <Compass className="h-4.5 w-4.5 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-secondary">
-              Way<span className="text-primary">point</span>
-            </span>
+            <img
+              src="/images/logo-dark.png"
+              alt="Waypoint"
+              className="h-9 w-auto object-contain"
+            />
           </Link>
         </div>
 

@@ -149,18 +149,23 @@ export function DashboardSidebar({
         {/* Logo Header */}
         <div
           className={cn(
-            "flex items-center px-4 py-4.5 border-b border-slate-100",
-            isCollapsed ? "lg:justify-center justify-between" : "justify-between"
+            "flex items-center py-4.5 border-b border-slate-100",
+            isCollapsed && !mobileOpen ? "lg:justify-center lg:px-2 px-4 justify-between" : "justify-between px-4"
           )}
         >
           <Link href="/" className="flex items-center gap-2.5 group" onClick={onCloseMobile}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm shadow-primary/20 group-hover:shadow-md group-hover:shadow-primary/30 transition-all">
-              <span className="text-white font-bold text-sm">W</span>
-            </div>
-            {(!isCollapsed || mobileOpen) && (
-              <span className="text-lg font-bold tracking-tight text-secondary font-display">
-                Waypoint
-              </span>
+            {isCollapsed && !mobileOpen ? (
+              <img
+                src="/images/favicon.png"
+                alt="Waypoint"
+                className="h-7 w-7 object-contain transition-transform duration-200 group-hover:scale-105"
+              />
+            ) : (
+              <img
+                src="/images/logo-dark.png"
+                alt="Waypoint"
+                className="h-8 w-auto object-contain transition-all"
+              />
             )}
           </Link>
 

@@ -418,9 +418,35 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       <SiteHeader userSession={userSession} />
 
       {/* ═══════════════ HERO SECTION — Centered Content + Preview Below ═══════════════ */}
-      <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 lg:pt-40 overflow-hidden bg-[#FAFAF9]">
-        {/* Dot pattern */}
-        <div className="absolute inset-0 dot-pattern opacity-[0.05]" />
+      <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 lg:pt-40 overflow-hidden bg-gradient-to-b from-[#FDF8F5] via-[#FAF7F4] to-[#FAFAF9]">
+
+        {/* ── Premium Background Layers ── */}
+
+        {/* Warm ambient glow — top-left */}
+        <div className="absolute -top-32 -left-40 w-[600px] h-[600px] bg-gradient-to-br from-primary/[0.08] via-[#E8AA9B]/[0.06] to-transparent rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Cool ambient glow — top-right */}
+        <div className="absolute -top-20 -right-32 w-[500px] h-[500px] bg-gradient-to-bl from-secondary/[0.06] via-[#769ABC]/[0.04] to-transparent rounded-full blur-[140px] pointer-events-none" />
+
+        {/* Center soft spotlight */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full blur-[100px] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, rgba(228,111,68,0.03), transparent 70%)' }} />
+
+        {/* Bottom fade-out glow */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[300px] bg-gradient-to-t from-[#FAFAF9] via-[#FAFAF9]/80 to-transparent pointer-events-none z-[1]" />
+
+        {/* Subtle grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(26,59,90,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(26,59,90,0.3) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+
+        {/* Decorative geometric accent rings */}
+        <div className="absolute top-24 right-[12%] w-48 h-48 rounded-full border border-primary/[0.07] pointer-events-none hidden lg:block" />
+        <div className="absolute top-32 right-[14%] w-32 h-32 rounded-full border border-dashed border-secondary/[0.06] pointer-events-none hidden lg:block" />
+        <div className="absolute bottom-40 left-[8%] w-40 h-40 rounded-full border border-[#E8AA9B]/[0.08] pointer-events-none hidden lg:block" />
+        <div className="absolute bottom-52 left-[10%] w-24 h-24 rounded-full border border-dashed border-primary/[0.05] pointer-events-none hidden lg:block" />
+
+        {/* Floating dot accents */}
+        <div className="absolute top-44 left-[18%] w-2 h-2 rounded-full bg-primary/[0.12] pointer-events-none hidden lg:block" />
+        <div className="absolute top-60 right-[20%] w-1.5 h-1.5 rounded-full bg-secondary/[0.15] pointer-events-none hidden lg:block" />
+        <div className="absolute bottom-60 right-[15%] w-2.5 h-2.5 rounded-full bg-[#E8AA9B]/[0.12] pointer-events-none hidden lg:block" />
 
         {/* ── CENTERED HERO COPY ── */}
         <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -531,10 +557,11 @@ export default function LandingClient({ userSession }: LandingClientProps) {
               <div className="hidden lg:flex flex-col w-44 shrink-0 border-r border-slate-100 bg-white relative">
                 {/* Logo */}
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
-                  <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                    <Compass className="h-3.5 w-3.5 text-white" />
-                  </div>
-                  <span className="text-[12px] font-bold text-slate-900">Way<span className="text-primary">point</span></span>
+                  <img
+                    src="/images/logo-dark.png"
+                    alt="Waypoint"
+                    className="h-6 w-auto object-contain"
+                  />
                 </div>
 
                 {/* Nav items */}

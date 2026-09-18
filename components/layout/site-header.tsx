@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
-  Compass,
   Sparkles,
   Menu,
   X,
@@ -42,10 +41,11 @@ export function SiteHeader({ userSession, activeRoute }: SiteHeaderProps) {
         <div className="bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-full flex items-center justify-between md:p-3 p-2.5 shadow-md relative">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-              <Compass className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-bold tracking-tight text-slate-900 text-[15px]">Way<span className="text-primary">point</span></span>
+            <img
+              src="/images/logo-dark.png"
+              alt="Waypoint"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Nav Links (lg and above) */}

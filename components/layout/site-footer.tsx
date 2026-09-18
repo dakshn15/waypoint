@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Compass, ArrowRight, Mail, Send } from "lucide-react";
+import { ArrowRight, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -58,12 +58,11 @@ export function SiteFooter({ children }: SiteFooterProps) {
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 lg:pt-16 pt-10 lg:pb-12 pb-8 border-b border-white/[0.06]">
           <div className="max-w-md mx-auto text-center sm:mx-0 sm:text-start">
             <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/15 group-hover:shadow-primary/30 transition-shadow">
-                <Compass className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-2xl font-bold font-display text-white tracking-tight">
-                Way<span className="text-primary">point</span>
-              </span>
+              <img
+                src="/images/logo-light.png"
+                alt="Waypoint"
+                className="h-9 w-auto object-contain"
+              />
             </Link>
             <p className="text-[15px] sm:leading-relaxed">
               AI-powered travel platform that turns your ideas into{" "}

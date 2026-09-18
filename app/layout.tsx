@@ -22,6 +22,15 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Waypoint | AI-Powered Travel Planning & Booking",
   description: "Plan your perfect trip with Waypoint's AI trip builder, or book pre-designed packages from top travel agencies.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/images/favicon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/images/favicon.png" },
+    ],
+  },
 };
 
 export default function RootLayout({
