@@ -459,7 +459,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                   {sortedPackages.map((pkg) => (
                     <Link key={pkg.id} href={`/packages/${pkg.id}`} className="group">
-                      <div className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="h-full flex flex-col bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
 
                         {/* Image */}
                         <div className="relative h-48 overflow-hidden">
@@ -505,7 +505,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
                         </div>
 
                         {/* Content */}
-                        <div className="sm:p-5 p-4 space-y-3">
+                        <div className="flex-1 sm:p-5 p-4 space-y-3">
                           <div>
                             {/* Agency header & verification */}
                             <div className="flex items-center justify-between gap-1 mb-1.5">

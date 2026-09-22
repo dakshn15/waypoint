@@ -187,6 +187,88 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
     setDialogMode(mode);
   }
 
+  // Razorpay SDK loader
+  function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) { resolve(true); return; }
+      const s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.onload = () => resolve(true);
+      s.onerror = () => resolve(false);
+      document.body.appendChild(s);
+    });
+  }
+
+  // Retry payment for PENDING + UNPAID bookings
+  async function handleRetryPayment(booking: any) {
+    setLoading(true);
+    try {
+      const paymentResponse = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId: booking.id, gateway: "razorpay" }),
+      });
+      const paymentData = await paymentResponse.json();
+      if (!paymentResponse.ok) throw new Error(paymentData.error || "Payment session initiation failed");
+
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) throw new Error("Failed to load Razorpay SDK.");
+
+      toast.info("Opening Razorpay secure checkout...");
+
+      const options = {
+        key: paymentData.key,
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        name: "Waypoint Travel",
+        description: `Booking #${booking.bookingNumber || booking.id.substring(0, 8)}`,
+        order_id: paymentData.orderId,
+        handler: async function (response: any) {
+          setLoading(true);
+          try {
+            const verifyResponse = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                gateway: "razorpay",
+                bookingId: booking.id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const verifyData = await verifyResponse.json();
+            if (verifyData.success) {
+              toast.success("Payment verified! Booking confirmed.");
+              // Update local state to reflect payment
+              setBookings((prev: any[]) =>
+                prev.map((b: any) =>
+                  b.id === booking.id
+                    ? { ...b, status: "CONFIRMED", paymentStatus: "COMPLETED" }
+                    : b
+                )
+              );
+            } else {
+              toast.error(verifyData.error || "Payment verification failed.");
+            }
+          } catch {
+            toast.error("Failed to verify payment.");
+          } finally {
+            setLoading(false);
+          }
+        },
+        theme: { color: "#E46F44" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+      setLoading(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to initiate payment.");
+      setLoading(false);
+    }
+  }
+
   // Tab counts
   const tabCounts = useMemo(() => {
     const source = isAdmin && agencyFilter !== "ALL"
@@ -265,15 +347,32 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
 
   function TravelerActions({ booking }: { booking: any }) {
     const canCancel = ["PENDING", "CONFIRMED"].includes(booking.status);
-    if (!canCancel) return <span className="text-xs text-slate-400 italic">No actions</span>;
+    const canPay = booking.status === "PENDING" && (!booking.paymentStatus || booking.paymentStatus === "UNPAID" || booking.paymentStatus === "FAILED");
+
+    if (!canCancel && !canPay) return <span className="text-xs text-slate-400 italic">No actions</span>;
     return (
-      <button
-        title="Cancel Booking"
-        onClick={() => openDialog(booking, "CANCEL")}
-        className="h-8 w-8 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
-      >
-        <XCircle className="h-4 w-4" />
-      </button>
+      <div className="flex items-center gap-1">
+        {canPay && (
+          <button
+            title="Complete Payment"
+            onClick={() => handleRetryPayment(booking)}
+            disabled={loading}
+            className="h-8 px-2.5 rounded-lg flex items-center gap-1 text-xs font-bold text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <CreditCard className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Pay Now</span>
+          </button>
+        )}
+        {canCancel && (
+          <button
+            title="Cancel Booking"
+            onClick={() => openDialog(booking, "CANCEL")}
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+          >
+            <XCircle className="h-4 w-4" />
+          </button>
+        )}
+      </div>
     );
   }
 

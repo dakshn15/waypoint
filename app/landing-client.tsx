@@ -418,7 +418,7 @@ export default function LandingClient({ userSession }: LandingClientProps) {
       <SiteHeader userSession={userSession} />
 
       {/* ═══════════════ HERO SECTION — Centered Content + Preview Below ═══════════════ */}
-      <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 lg:pt-40 overflow-hidden bg-gradient-to-b from-[#FDF8F5] via-[#FAF7F4] to-[#FAFAF9]">
+      <section className="hero-sec relative md:pt-36 sm:pt-32 pt-28 lg:pb-16 pb-10 overflow-hidden bg-gradient-to-b from-[#FDF8F5] via-[#FAF7F4] to-[#FAFAF9]">
 
         {/* ── Premium Background Layers ── */}
 

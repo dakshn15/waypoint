@@ -140,7 +140,11 @@ export async function createBooking(data: {
 
   revalidatePath("/dashboard/bookings");
   revalidatePath("/dashboard");
-  return booking;
+  return {
+    ...booking,
+    totalAmount: Number(booking.totalAmount),
+    paidAmount: Number(booking.paidAmount),
+  };
 }
 
 export async function cancelBooking(bookingId: string) {

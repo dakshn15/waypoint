@@ -314,7 +314,7 @@ export async function generateTrip(request: TripRequest): Promise<GeneratedTrip>
 
     const expectedDays = Math.ceil(
       (new Date(request.endDate).getTime() - new Date(request.startDate).getTime()) / 86_400_000
-    );
+    ) + 1;
     const parsed = validateGeneratedTrip(JSON.parse(cleaned), expectedDays);
     if (!parsed) throw new Error("AI response did not match the required itinerary schema.");
     return parsed;

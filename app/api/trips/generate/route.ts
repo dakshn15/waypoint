@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     const days = Math.max(
       1,
-      Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+      Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
     );
 
     if (days > 30) {

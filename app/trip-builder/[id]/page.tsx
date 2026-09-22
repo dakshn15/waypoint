@@ -36,7 +36,7 @@ import { formatCurrency } from "@/lib/utils";
 import type { GeneratedTrip } from "@/lib/ai";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { getHeroImageForDestination } from "@/lib/trip-images";
+
 
 const ACTIVITY_ICONS: Record<string, React.ReactNode> = {
   SIGHTSEEING: <Camera className="h-4 w-4" />,
@@ -127,7 +127,9 @@ export default async function GeneratedTripPage({ params }: PageProps) {
       0
     );
 
-  const heroImage = getHeroImageForDestination(destStr);
+  // Use a fixed neutral hero image for all AI-generated trips to avoid
+  // misleading destination matches (e.g. "jaipur" matching a Taj Mahal image).
+  const heroImage = "/images/packages/default-package.jpg";
 
   const rawTitle = aiData?.title || trip.title || "";
   const isGenericTitle = !rawTitle || rawTitle.includes("STANDARD") || rawTitle.includes("LUXURY") || rawTitle.includes("BUDGET") || rawTitle.includes("PREMIUM");

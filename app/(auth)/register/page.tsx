@@ -92,7 +92,7 @@ export default function RegisterPage() {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
-      await signIn.social({ provider: "google" });
+      await signIn.social({ provider: "google", callbackURL: "/dashboard" });
     } catch (err: any) {
       toast.error(err?.message || "Failed to initiate Google sign in.");
       setGoogleLoading(false);
