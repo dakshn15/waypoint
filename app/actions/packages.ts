@@ -60,6 +60,10 @@ export async function createPackage(data: {
   const maxGroupSize = data.maxGroupSize ? (typeof data.maxGroupSize === "string" ? parseInt(data.maxGroupSize) : data.maxGroupSize) : null;
   const basePrice = typeof data.basePrice === "string" ? parseFloat(data.basePrice) : data.basePrice;
 
+  if (!data.destinations || data.destinations.length === 0) {
+    throw new Error("At least one destination is required.");
+  }
+
   // Format destinations array of strings as array of JSON objects [{name, country, lat, lng}]
   const formattedDestinations = data.destinations.map((dest) => {
     const parts = dest.split(",");

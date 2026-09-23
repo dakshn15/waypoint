@@ -109,7 +109,31 @@ export default function NewPackagePage() {
     setFormData({ ...formData, [field]: formData[field].filter((_, i) => i !== index) });
   };
 
+  // Auto-flush any text sitting in "new*" inputs into their respective arrays
+  // so users don't lose typed-but-unsubmitted destinations/inclusions/exclusions.
+  const flushPendingInputs = () => {
+    setFormData((prev) => {
+      const updates: any = {};
+      const pairs: [string, string, string][] = [
+        ["destinations", "newDestination", prev.newDestination],
+        ["inclusions", "newInclusion", prev.newInclusion],
+        ["exclusions", "newExclusion", prev.newExclusion],
+      ];
+      for (const [listKey, inputKey, val] of pairs) {
+        const trimmed = val.trim();
+        if (trimmed) {
+          updates[listKey] = [...(prev as any)[listKey], trimmed];
+          updates[inputKey] = "";
+        }
+      }
+      return Object.keys(updates).length ? { ...prev, ...updates } : prev;
+    });
+  };
+
   const handleCreate = async () => {
+    // Flush any pending text before validation
+    flushPendingInputs();
+
     if (!formData.title || !formData.duration || !formData.basePrice) {
       toast.error("Please fill in the title, duration, and price.");
       return;
@@ -257,7 +281,7 @@ export default function NewPackagePage() {
                           variant="destructive"
                           size="sm"
                           onClick={() => setFormData({ ...formData, imageUrl: "" })}
-                          className="rounded-xl font-semibold gap-1.5 cursor-pointer"
+                          className="text-white font-semibold gap-1.5 cursor-pointer"
                         >
                           <X className="h-4 w-4" /> Remove
                         </Button>
@@ -839,7 +863,20 @@ export default function NewPackagePage() {
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button onClick={() => setStep(step + 1)}>
+              <Button onClick={() => {
+                flushPendingInputs();
+                // Validate destinations step before advancing
+                if (step === 1) {
+                  // Check current state + any pending input that was just flushed
+                  const hasPending = formData.newDestination.trim().length > 0;
+                  const hasExisting = formData.destinations.length > 0;
+                  if (!hasExisting && !hasPending) {
+                    toast.error("Please add at least one destination before continuing.");
+                    return;
+                  }
+                }
+                setStep(step + 1);
+              }}>
                 Next <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (

@@ -50,6 +50,10 @@ export async function createPayoutRequestAction(input: { grossAmount: number }) 
     throw new Error("Please configure your agency bank account or UPI ID in settings before requesting a payout.");
   }
 
+  if (!input.grossAmount || input.grossAmount <= 0) {
+    throw new Error("Payout amount must be greater than zero.");
+  }
+
   const platformSettings = await getPlatformSettings();
   if (input.grossAmount < platformSettings.minPayoutAmount) {
     throw new Error(`Minimum payout request amount is ₹${platformSettings.minPayoutAmount}`);

@@ -160,7 +160,10 @@ export async function updateAgencyCommissionOverrideAction(agencyId: string, com
   revalidatePath("/dashboard/agencies");
   revalidatePath("/dashboard/payouts");
 
-  return updatedAgency;
+  return {
+    ...updatedAgency,
+    commissionRate: updatedAgency?.commissionRate != null ? Number(updatedAgency.commissionRate) : null,
+  };
 }
 
 export async function updateAgencyBankDetailsAction(
@@ -237,7 +240,10 @@ export async function updateAgencyBankDetailsAction(
   revalidatePath("/dashboard/agency");
   revalidatePath("/dashboard/payouts");
 
-  return updatedAgency;
+  return {
+    ...updatedAgency,
+    commissionRate: updatedAgency?.commissionRate != null ? Number(updatedAgency.commissionRate) : null,
+  };
 }
 
 

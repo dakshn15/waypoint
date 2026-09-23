@@ -46,6 +46,7 @@ export default async function AgencyPackagesPage() {
     currency: pkg.currency,
     duration: pkg.duration,
     destinations: pkg.destinations,
+    images: pkg.images,
     createdAt: pkg.createdAt,
   }));
 

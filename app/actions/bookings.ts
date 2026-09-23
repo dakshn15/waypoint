@@ -202,7 +202,11 @@ export async function cancelBooking(bookingId: string) {
 
   revalidatePath("/dashboard/bookings");
   revalidatePath("/dashboard");
-  return updated;
+  return {
+    ...updated,
+    totalAmount: Number(updated.totalAmount),
+    paidAmount: Number(updated.paidAmount),
+  };
 }
 
 export async function updateBookingStatus(
@@ -275,5 +279,9 @@ export async function updateBookingStatus(
 
   revalidatePath("/dashboard/bookings");
   revalidatePath("/dashboard");
-  return updated;
+  return {
+    ...updated,
+    totalAmount: Number(updated.totalAmount),
+    paidAmount: Number(updated.paidAmount),
+  };
 }

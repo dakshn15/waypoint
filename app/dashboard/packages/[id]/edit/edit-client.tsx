@@ -139,7 +139,30 @@ export default function EditPackageClient({ packageId, initialData }: EditPackag
     setFormData({ ...formData, [field]: formData[field].filter((_, i) => i !== index) });
   };
 
+  // Auto-flush any text sitting in "new*" inputs into their respective arrays
+  const flushPendingInputs = () => {
+    setFormData((prev) => {
+      const updates: any = {};
+      const pairs: [string, string, string][] = [
+        ["destinations", "newDestination", prev.newDestination],
+        ["inclusions", "newInclusion", prev.newInclusion],
+        ["exclusions", "newExclusion", prev.newExclusion],
+      ];
+      for (const [listKey, inputKey, val] of pairs) {
+        const trimmed = val.trim();
+        if (trimmed) {
+          updates[listKey] = [...(prev as any)[listKey], trimmed];
+          updates[inputKey] = "";
+        }
+      }
+      return Object.keys(updates).length ? { ...prev, ...updates } : prev;
+    });
+  };
+
   const handleUpdate = async () => {
+    // Flush any pending text before validation
+    flushPendingInputs();
+
     if (!formData.title || !formData.duration || !formData.basePrice) {
       toast.error("Please fill in the title, duration, and price.");
       return;
@@ -247,7 +270,7 @@ export default function EditPackageClient({ packageId, initialData }: EditPackag
                         <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl font-semibold gap-1.5 cursor-pointer bg-white text-slate-900 hover:bg-slate-100">
                           <Upload className="h-4 w-4" /> Change Image
                         </Button>
-                        <Button type="button" variant="destructive" size="sm" onClick={() => setFormData({ ...formData, imageUrl: "" })} className="rounded-xl font-semibold gap-1.5 cursor-pointer">
+                        <Button type="button" variant="destructive" size="sm" onClick={() => setFormData({ ...formData, imageUrl: "" })} className="text-white font-semibold gap-1.5 cursor-pointer">
                           <X className="h-4 w-4" /> Remove
                         </Button>
                       </div>
@@ -610,7 +633,7 @@ export default function EditPackageClient({ packageId, initialData }: EditPackag
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button onClick={() => setStep(step + 1)}>
+              <Button onClick={() => { flushPendingInputs(); setStep(step + 1); }}>
                 Next <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (

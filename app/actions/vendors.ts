@@ -46,6 +46,10 @@ export async function addVendor(input: AddVendorInput) {
       return { error: "Vendor name is required" };
     }
 
+    if (!input.category || !input.category.trim()) {
+      return { error: "Vendor category is required" };
+    }
+
     const vendor = await prisma.vendor.create({
       data: {
         agencyId,
@@ -58,6 +62,9 @@ export async function addVendor(input: AddVendorInput) {
         active: true,
       },
     });
+
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/dashboard/vendors");
 
     return { success: true, vendorId: vendor.id };
   } catch (error: any) {

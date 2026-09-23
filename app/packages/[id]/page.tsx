@@ -211,6 +211,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
           { id },
           { slug: id },
         ],
+        status: "PUBLISHED",
       },
       include: {
         agency: true,
