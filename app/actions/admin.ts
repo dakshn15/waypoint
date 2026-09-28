@@ -181,7 +181,33 @@ export async function toggleAgencyActive(agencyId: string) {
     });
     await writeAuditLog({ actorId: session.user.id, action: "agency.status_changed", resourceType: "Agency", resourceId: agencyId, before: { active: agency.active }, after: { active: updated.active } });
 
+    // Send notification to agency owner about suspension/reactivation
+    try {
+      if (updated.active) {
+        await prisma.notification.create({
+          data: {
+            userId: agency.ownerId,
+            title: "Agency Reactivated ✅",
+            message: `Your agency "${agency.name}" has been reactivated by the platform administrator. All operations have been restored — you can now manage packages, accept bookings, and request payouts.`,
+            type: "SYSTEM",
+          },
+        });
+      } else {
+        await prisma.notification.create({
+          data: {
+            userId: agency.ownerId,
+            title: "Agency Suspended ⚠️",
+            message: `Your agency "${agency.name}" has been suspended by the platform administrator. During suspension, you cannot create or edit packages, accept new bookings, or request payouts. Please contact the admin for more information.`,
+            type: "SYSTEM",
+          },
+        });
+      }
+    } catch (notifErr) {
+      console.warn("Could not create suspension notification:", notifErr);
+    }
+
     revalidatePath("/dashboard/agencies");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error: any) {
     console.error("[TOGGLE_AGENCY_ACTIVE_ERROR]", error);

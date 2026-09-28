@@ -8,6 +8,19 @@ import { getCommissionRate, getPlatformSettings } from "@/lib/commission";
 import { getUserAgencyAccess } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 
+/** Convert Prisma Decimal fields to plain Numbers for Next.js serialization */
+function serializePayout(p: any) {
+  if (!p) return p;
+  return {
+    ...p,
+    grossAmount: p.grossAmount != null ? Number(p.grossAmount) : 0,
+    commissionAmount: p.commissionAmount != null ? Number(p.commissionAmount) : 0,
+    netAmount: p.netAmount != null ? Number(p.netAmount) : 0,
+    commissionRate: p.commissionRate != null ? Number(p.commissionRate) : 0,
+    bookingCount: p.bookingCount != null ? Number(p.bookingCount) : 0,
+  };
+}
+
 /**
  * Agency user creates a payout request for their available earnings.
  */
@@ -48,6 +61,11 @@ export async function createPayoutRequestAction(input: { grossAmount: number }) 
 
   if (!bankAccount && !upiId) {
     throw new Error("Please configure your agency bank account or UPI ID in settings before requesting a payout.");
+  }
+
+  // Block suspended agencies from creating payout requests
+  if (agency && agency.active === false) {
+    throw new Error("Your agency account is currently suspended. Payout requests are not available during suspension. Please contact the platform administrator.");
   }
 
   if (!input.grossAmount || input.grossAmount <= 0) {
@@ -169,7 +187,7 @@ export async function createPayoutRequestAction(input: { grossAmount: number }) 
   });
 
   revalidatePath("/dashboard/payouts");
-  return payout;
+  return serializePayout(payout);
 }
 
 /**
@@ -224,7 +242,7 @@ export async function approvePayoutAction(payoutId: string) {
   });
 
   revalidatePath("/dashboard/payouts");
-  return updated;
+  return serializePayout(updated);
 }
 
 /**
@@ -306,7 +324,7 @@ export async function settlePayoutAction(payoutId: string, utrNumber: string, no
   });
 
   revalidatePath("/dashboard/payouts");
-  return updated;
+  return serializePayout(updated);
 }
 
 /**
@@ -379,7 +397,7 @@ export async function cancelPayoutAction(payoutId: string, reason?: string) {
   });
 
   revalidatePath("/dashboard/payouts");
-  return updated;
+  return serializePayout(updated);
 }
 
 

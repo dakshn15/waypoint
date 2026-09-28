@@ -25,12 +25,12 @@ import {
   CalendarCheck,
   Package,
   Users,
-  CheckCircle2,
   AlertCircle,
   Plus,
   Edit,
   Trash2,
 } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 import {
   toggleAgencyVerification,
   toggleAgencyActive,
@@ -343,7 +343,7 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
                       <CardTitle className="text-xl flex items-center gap-1.5 font-bold text-slate-900">
                         {agency.name}
                         {agency.verified ? (
-                          <CheckCircle2 className="h-5 w-5 text-secondary fill-secondary/10" />
+                          <VerifiedBadge size="md" />
                         ) : (
                           <AlertCircle className="h-5 w-5 text-primary" />
                         )}

@@ -25,14 +25,7 @@ function SelectValue({ className, children, ...props }: SelectPrimitive.Value.Pr
       className={cn("block min-w-0 flex-1 text-left truncate", className)}
       {...props}
     >
-      {typeof children === "function"
-        ? children
-        : children || ((val: unknown) => (
-            typeof val === "string" && val === val.toUpperCase() && /[A-Z]/.test(val)
-              ? val.split("_").map((w) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ")
-              : String(val ?? "")
-          ))
-      }
+      {children}
     </SelectPrimitive.Value>
   )
 }

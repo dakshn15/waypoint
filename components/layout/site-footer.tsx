@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
 
 const SOCIAL_ICONS = [
   { label: "Instagram", icon: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="2" width="20" height="20" rx="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg> },
@@ -13,12 +14,37 @@ const SOCIAL_ICONS = [
   { label: "LinkedIn", icon: (props: React.SVGProps<SVGSVGElement>) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg> },
 ];
 
-const PRODUCT_LINKS = [
-  { label: "AI Trip Builder", href: "/trip-builder" },
-  { label: "Tour Packages", href: "/packages" },
-  { label: "Agency Dashboard", href: "/dashboard" },
-  { label: "Vendor Portal", href: "/dashboard/vendors" },
-];
+function getProductLinks(role?: string) {
+  const commonLinks = [
+    { label: "AI Trip Builder", href: "/trip-builder" },
+    { label: "Tour Packages", href: "/packages" },
+  ];
+
+  if (role === "ADMIN") {
+    return [
+      ...commonLinks,
+      { label: "Admin Dashboard", href: "/dashboard" },
+      { label: "Manage Agencies", href: "/dashboard/agencies" },
+      { label: "Manage Users", href: "/dashboard/users" },
+    ];
+  }
+
+  if (role === "AGENCY" || role === "STAFF") {
+    return [
+      ...commonLinks,
+      { label: "Agency Dashboard", href: "/dashboard" },
+      { label: "Manage Packages", href: "/dashboard/packages" },
+      { label: "Bookings", href: "/dashboard/bookings" },
+    ];
+  }
+
+  // TRAVELER or logged out
+  return [
+    ...commonLinks,
+    { label: "My Bookings", href: "/dashboard/bookings" },
+    { label: "My Dashboard", href: "/dashboard" },
+  ];
+}
 
 const DESTINATION_LINKS = ["Manali & Solang", "Kerala Backwaters", "Jaipur & Udaipur", "Goa Beaches", "Ladakh"];
 
@@ -36,6 +62,9 @@ interface SiteFooterProps {
 
 export function SiteFooter({ children }: SiteFooterProps) {
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const { data: sessionData } = useSession();
+  const userRole = (sessionData?.user as { role?: string } | undefined)?.role;
+  const productLinks = useMemo(() => getProductLinks(userRole), [userRole]);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +132,7 @@ export function SiteFooter({ children }: SiteFooterProps) {
           <div>
             <h5 className="text-base font-bold uppercase tracking-widest text-white mb-5">Product</h5>
             <nav className="sm:space-y-3 space-y-2">
-              {PRODUCT_LINKS.map(link => (
+              {productLinks.map(link => (
                 <Link key={link.label} href={link.href}
                   className="group flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors duration-200">
                   <ArrowRight className="h-3 w-3 md:opacity-0 md:-translate-x-2 md:group-hover:opacity-70 md:group-hover:translate-x-0 transition-all duration-200" />

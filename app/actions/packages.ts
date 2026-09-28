@@ -7,6 +7,19 @@ import { revalidatePath } from "next/cache";
 
 import { getUserAgencyAccess } from "@/lib/permissions";
 
+/** Throws if the agency is suspended. Admins bypass this check. */
+async function checkAgencySuspension(agencyId: string) {
+  const agency = await prisma.agency.findUnique({
+    where: { id: agencyId },
+    select: { active: true, name: true },
+  });
+  if (agency && agency.active === false) {
+    throw new Error(
+      `Your agency "${agency.name}" is currently suspended. You cannot create, edit, or manage packages during suspension. Please contact the platform administrator.`
+    );
+  }
+}
+
 export async function createPackage(data: {
   title: string;
   description: string;
@@ -54,6 +67,11 @@ export async function createPackage(data: {
       throw new Error("Unauthorized. Only agencies or managers can create packages.");
     }
     agencyId = access.agencyId;
+  }
+
+  // Block suspended agencies
+  if (session.user.role !== "ADMIN") {
+    await checkAgencySuspension(agencyId);
   }
 
   const duration = typeof data.duration === "string" ? parseInt(data.duration) : data.duration;
@@ -160,6 +178,7 @@ export async function deletePackage(packageId: string) {
     if (pkg.agencyId !== access.agencyId) {
       throw new Error("Unauthorized or package belongs to another agency.");
     }
+    await checkAgencySuspension(access.agencyId);
   }
 
   await prisma.package.delete({
@@ -197,6 +216,7 @@ export async function togglePackageStatus(packageId: string) {
     if (pkg.agencyId !== access.agencyId) {
       throw new Error("Unauthorized or package belongs to another agency.");
     }
+    await checkAgencySuspension(access.agencyId);
   }
 
   const newStatus = pkg.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
@@ -266,6 +286,7 @@ export async function updatePackage(
     if (pkg.agencyId !== access.agencyId) {
       throw new Error("Package not found or unauthorized.");
     }
+    await checkAgencySuspension(access.agencyId);
   }
 
   const duration = typeof data.duration === "string" ? parseInt(data.duration) : data.duration;
