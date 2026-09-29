@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
   const packages = await prisma.package.findMany({
     where: { status: "PUBLISHED", agency: { active: true } },
-    select: { id: true, updatedAt: true },
+    select: { id: true, slug: true, updatedAt: true },
   });
 
   return [
@@ -13,6 +13,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/packages`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    ...packages.map((pkg) => ({ url: `${baseUrl}/packages/${pkg.id}`, lastModified: pkg.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
+    ...packages.map((pkg) => ({ url: `${baseUrl}/packages/${pkg.slug || pkg.id}`, lastModified: pkg.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
   ];
 }

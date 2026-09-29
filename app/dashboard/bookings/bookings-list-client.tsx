@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import {
   User as UserIcon, CheckCircle2, XCircle, ShieldAlert,
   PlayCircle, CheckSquare2, RotateCcw, ChevronLeft, ChevronRight,
-  DollarSign, Clock, TrendingUp, CreditCard, Building2, Filter,
+  DollarSign, Clock, TrendingUp, CreditCard, Building2, Filter, MoreHorizontal,
 } from "lucide-react";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { cancelBooking, updateBookingStatus } from "@/app/actions/bookings";
+import { canTransitionBooking } from "@/lib/booking-rules";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
@@ -20,10 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 const PAGE_SIZE = 10;
 
-const STATUS_TABS = ["ALL", "PENDING", "CONFIRMED", "PROCESSING", "COMPLETED", "CANCELLED"] as const;
+const STATUS_TABS = ["ALL", "PENDING", "CONFIRMED", "PROCESSING", "COMPLETED", "CANCELLED", "REFUNDED"] as const;
 type StatusTab = typeof STATUS_TABS[number];
 
 interface BookingStats {
@@ -279,14 +288,22 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
     return map;
   }, [bookings, agencyFilter, isAdmin]);
 
-  // Icon action buttons for agency/staff
+  // Action buttons & dropdown menu for agency/staff/admin
   function AgencyActions({ booking }: { booking: any }) {
     const status = booking.status;
-    const isTerminal = ["COMPLETED", "CANCELLED", "REFUNDED"].includes(status);
-    if (isTerminal) return <span className="text-xs text-slate-400 italic">No actions</span>;
+    const isTerminal = status === "REFUNDED";
+    if (isTerminal) return <span className="text-xs text-slate-400 italic">Refunded</span>;
+
+    const canConfirm = canTransitionBooking(status, "CONFIRMED");
+    const canProcess = canTransitionBooking(status, "PROCESSING");
+    const canComplete = canTransitionBooking(status, "COMPLETED");
+    const canPending = canTransitionBooking(status, "PENDING");
+    const canRefund = canTransitionBooking(status, "REFUNDED");
+    const canCancel = canTransitionBooking(status, "CANCELLED");
 
     return (
       <div className="flex items-center gap-1">
+        {/* PENDING: Quick Confirm and Reject */}
         {status === "PENDING" && (
           <>
             <button
@@ -305,42 +322,161 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
             </button>
           </>
         )}
-        {status === "CONFIRMED" && (
-          <button
-            title="Mark as Processing"
-            onClick={() => openDialog(booking, "PROCESSING")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors cursor-pointer"
-          >
-            <PlayCircle className="h-4 w-4" />
-          </button>
+
+        {/* PROCESSING: Quick Revert to Confirmed & Quick Complete */}
+        {status === "PROCESSING" && (
+          <>
+            <button
+              title="Revert to Confirmed"
+              onClick={() => openDialog(booking, "CONFIRMED")}
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors cursor-pointer"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+            </button>
+            <button
+              title="Mark as Completed"
+              onClick={() => openDialog(booking, "COMPLETED")}
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-teal-600 hover:bg-teal-50 hover:text-teal-700 transition-colors cursor-pointer"
+            >
+              <CheckSquare2 className="h-4 w-4" />
+            </button>
+          </>
         )}
-        {["CONFIRMED", "PROCESSING"].includes(status) && (
+
+        {/* CONFIRMED: Quick Processing & Quick Complete */}
+        {status === "CONFIRMED" && (
+          <>
+            <button
+              title="Mark as Processing"
+              onClick={() => openDialog(booking, "PROCESSING")}
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-amber-500 hover:bg-amber-50 hover:text-amber-600 transition-colors cursor-pointer"
+            >
+              <PlayCircle className="h-4 w-4" />
+            </button>
+            <button
+              title="Mark as Completed"
+              onClick={() => openDialog(booking, "COMPLETED")}
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors cursor-pointer"
+            >
+              <CheckSquare2 className="h-4 w-4" />
+            </button>
+          </>
+        )}
+
+        {/* COMPLETED: Quick Reopen as Confirmed */}
+        {status === "COMPLETED" && (
           <button
-            title="Mark as Completed"
-            onClick={() => openDialog(booking, "COMPLETED")}
+            title="Reopen as Confirmed"
+            onClick={() => openDialog(booking, "CONFIRMED")}
             className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors cursor-pointer"
           >
-            <CheckSquare2 className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" />
           </button>
         )}
-        {["CONFIRMED", "PROCESSING"].includes(status) && (
+
+        {/* CANCELLED: Quick Reactivate & Confirm */}
+        {status === "CANCELLED" && (
           <button
-            title="Mark as Pending"
-            onClick={() => openDialog(booking, "PENDING")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-sky-600 hover:bg-sky-50 hover:text-sky-700 transition-colors cursor-pointer"
+            title="Reactivate & Confirm Booking"
+            onClick={() => openDialog(booking, "CONFIRMED")}
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors cursor-pointer"
           >
-            <RotateCcw className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" />
           </button>
         )}
-        {!["CANCELLED", "COMPLETED", "REFUNDED"].includes(status) && (
-          <button
-            title="Cancel Booking"
-            onClick={() => openDialog(booking, "CANCEL")}
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
-          >
-            <XCircle className="h-4 w-4" />
-          </button>
-        )}
+
+        {/* Dropdown Menu for all available transitions */}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-slate-500 hover:text-slate-900 hover:bg-slate-100 cursor-pointer rounded-lg"
+                title="Change Booking Status"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="w-56 bg-white border border-slate-200 shadow-lg p-1.5">
+            <DropdownMenuLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-slate-100" />
+
+            {canConfirm && (
+              <DropdownMenuItem
+                onClick={() => openDialog(booking, "CONFIRMED")}
+                className="cursor-pointer text-xs flex items-center gap-2 text-emerald-700 hover:bg-emerald-50 rounded-md py-1.5 px-2"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>
+                  {status === "CANCELLED"
+                    ? "Reactivate & Confirm"
+                    : status === "PROCESSING"
+                    ? "Revert to Confirmed"
+                    : status === "COMPLETED"
+                    ? "Reopen as Confirmed"
+                    : "Confirm Booking"}
+                </span>
+              </DropdownMenuItem>
+            )}
+
+            {canProcess && (
+              <DropdownMenuItem
+                onClick={() => openDialog(booking, "PROCESSING")}
+                className="cursor-pointer text-xs flex items-center gap-2 text-amber-700 hover:bg-amber-50 rounded-md py-1.5 px-2"
+              >
+                <PlayCircle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                <span>Mark as Processing</span>
+              </DropdownMenuItem>
+            )}
+
+            {canComplete && (
+              <DropdownMenuItem
+                onClick={() => openDialog(booking, "COMPLETED")}
+                className="cursor-pointer text-xs flex items-center gap-2 text-emerald-700 hover:bg-emerald-50 rounded-md py-1.5 px-2"
+              >
+                <CheckSquare2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Mark as Completed</span>
+              </DropdownMenuItem>
+            )}
+
+            {canPending && (
+              <DropdownMenuItem
+                onClick={() => openDialog(booking, "PENDING")}
+                className="cursor-pointer text-xs flex items-center gap-2 text-sky-700 hover:bg-sky-50 rounded-md py-1.5 px-2"
+              >
+                <Clock className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+                <span>{status === "CANCELLED" ? "Restore to Pending" : "Move to Pending"}</span>
+              </DropdownMenuItem>
+            )}
+
+            {canRefund && (
+              <DropdownMenuItem
+                onClick={() => openDialog(booking, "REFUNDED")}
+                className="cursor-pointer text-xs flex items-center gap-2 text-violet-700 hover:bg-violet-50 rounded-md py-1.5 px-2"
+              >
+                <RotateCcw className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+                <span>Issue Refund</span>
+              </DropdownMenuItem>
+            )}
+
+            {canCancel && (
+              <>
+                <DropdownMenuSeparator className="bg-slate-100" />
+                <DropdownMenuItem
+                  onClick={() => openDialog(booking, "CANCEL")}
+                  className="cursor-pointer text-xs flex items-center gap-2 text-rose-600 hover:bg-rose-50 rounded-md py-1.5 px-2 focus:text-rose-700"
+                >
+                  <XCircle className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                  <span>Cancel Booking</span>
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }
@@ -376,40 +512,98 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
     );
   }
 
-  const dialogConfig: Record<string, { title: string; desc: string; icon: any; confirmLabel: string; confirmStyle: string }> = {
-    CANCEL: {
-      title: "Cancel Booking",
-      desc: "Are you sure you want to cancel this booking? This action will notify the traveler.",
-      icon: ShieldAlert, confirmLabel: "Cancel Booking", confirmStyle: "bg-rose-500 hover:bg-rose-600 text-white",
-    },
-    REJECT: {
-      title: "Reject Booking",
-      desc: "Rejecting will cancel this request and notify the traveler. This action is permanent.",
-      icon: XCircle, confirmLabel: "Reject Booking", confirmStyle: "bg-rose-500 hover:bg-rose-600 text-white",
-    },
-    CONFIRMED: {
-      title: "Confirm Booking",
-      desc: "Confirming notifies the traveler their booking has been verified and scheduled.",
-      icon: CheckCircle2, confirmLabel: "Yes, Confirm", confirmStyle: "bg-secondary hover:bg-secondary/90 text-white",
-    },
-    PROCESSING: {
-      title: "Mark as Processing",
-      desc: "Set this booking to Processing to indicate the tour is actively in preparation.",
-      icon: PlayCircle, confirmLabel: "Mark Processing", confirmStyle: "bg-amber-500 hover:bg-amber-600 text-white",
-    },
-    COMPLETED: {
-      title: "Mark as Completed",
-      desc: "Confirm that this tour package has been fully delivered to the traveler.",
-      icon: CheckSquare2, confirmLabel: "Mark Completed", confirmStyle: "bg-emerald-500 hover:bg-emerald-600 text-white",
-    },
-    PENDING: {
-      title: "Revert to Pending",
-      desc: "Move this booking back to Pending status for further review.",
-      icon: RotateCcw, confirmLabel: "Set to Pending", confirmStyle: "bg-primary hover:bg-primary/90 text-white",
-    },
+  const getDialogDetails = (mode: string, booking: any) => {
+    const from = booking?.status;
+    switch (mode) {
+      case "CANCEL":
+        return {
+          title: "Cancel Booking",
+          desc: "Are you sure you want to cancel this booking? This action will notify the traveler.",
+          icon: ShieldAlert,
+          confirmLabel: "Cancel Booking",
+          confirmStyle: "bg-rose-600 hover:bg-rose-700 text-white",
+        };
+      case "REJECT":
+        return {
+          title: "Reject Booking",
+          desc: "Rejecting will cancel this booking request and notify the traveler.",
+          icon: XCircle,
+          confirmLabel: "Reject Booking",
+          confirmStyle: "bg-rose-600 hover:bg-rose-700 text-white",
+        };
+      case "CONFIRMED":
+        if (from === "PROCESSING") {
+          return {
+            title: "Revert to Confirmed",
+            desc: "Move this booking back to Confirmed status. Tour preparation will be paused.",
+            icon: CheckCircle2,
+            confirmLabel: "Set to Confirmed",
+            confirmStyle: "bg-emerald-600 hover:bg-emerald-700 text-white",
+          };
+        }
+        if (from === "CANCELLED") {
+          return {
+            title: "Reactivate & Confirm Booking",
+            desc: "Reactivate this cancelled booking and mark it as Confirmed. The traveler will be notified.",
+            icon: CheckCircle2,
+            confirmLabel: "Reactivate & Confirm",
+            confirmStyle: "bg-emerald-600 hover:bg-emerald-700 text-white",
+          };
+        }
+        if (from === "COMPLETED") {
+          return {
+            title: "Reopen as Confirmed",
+            desc: "Reopen this completed tour and move it back to Confirmed status.",
+            icon: CheckCircle2,
+            confirmLabel: "Reopen as Confirmed",
+            confirmStyle: "bg-emerald-600 hover:bg-emerald-700 text-white",
+          };
+        }
+        return {
+          title: "Confirm Booking",
+          desc: "Confirming notifies the traveler their booking has been verified and scheduled.",
+          icon: CheckCircle2,
+          confirmLabel: "Yes, Confirm",
+          confirmStyle: "bg-secondary hover:bg-secondary/90 text-white",
+        };
+      case "PROCESSING":
+        return {
+          title: "Mark as Processing",
+          desc: "Set this booking to Processing to indicate the tour package is actively in preparation.",
+          icon: PlayCircle,
+          confirmLabel: "Mark Processing",
+          confirmStyle: "bg-amber-500 hover:bg-amber-600 text-white",
+        };
+      case "COMPLETED":
+        return {
+          title: "Mark as Completed",
+          desc: "Confirm that this tour package has been fully delivered to the traveler.",
+          icon: CheckSquare2,
+          confirmLabel: "Mark Completed",
+          confirmStyle: "bg-emerald-600 hover:bg-emerald-700 text-white",
+        };
+      case "PENDING":
+        return {
+          title: from === "CANCELLED" ? "Restore to Pending" : "Move to Pending",
+          desc: "Move this booking back to Pending status for further review.",
+          icon: Clock,
+          confirmLabel: "Set to Pending",
+          confirmStyle: "bg-primary hover:bg-primary/90 text-white",
+        };
+      case "REFUNDED":
+        return {
+          title: "Issue Refund",
+          desc: "Mark this booking as refunded. The traveler will be notified that their refund has been recorded and processed.",
+          icon: RotateCcw,
+          confirmLabel: "Issue Refund",
+          confirmStyle: "bg-violet-600 hover:bg-violet-700 text-white",
+        };
+      default:
+        return null;
+    }
   };
 
-  const dlg = dialogMode ? dialogConfig[dialogMode] : null;
+  const dlg = selectedBooking && dialogMode ? getDialogDetails(dialogMode, selectedBooking) : null;
   const cur = filteredStats.currency || "INR";
 
   return (

@@ -90,7 +90,7 @@ export async function createPackage(data: {
     return { name, country, lat: null, lng: null };
   });
 
-  const slug = `${data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now().toString().slice(-4)}`;
+  const slug = `${data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now().toString().slice(-4)}`;
 
   const createdPackage = await prisma.package.create({
     data: {
@@ -304,10 +304,16 @@ export async function updatePackage(
     return { name, country, lat: null, lng: null };
   });
 
+  // Regenerate slug if title changed
+  const newSlug = data.title !== pkg.title
+    ? `${data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now().toString().slice(-4)}`
+    : undefined;
+
   const updated = await prisma.package.update({
     where: { id: packageId },
     data: {
       title: data.title,
+      ...(newSlug ? { slug: newSlug } : {}),
       description: data.description,
       duration: duration || 1,
       maxGroupSize,

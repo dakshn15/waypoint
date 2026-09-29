@@ -171,7 +171,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                           Edit Package
                         </DropdownMenuItem>
                       </Link>
-                      <Link href={`/packages/${pkg.id}`} target="_blank">
+                      <Link href={`/packages/${pkg.slug || pkg.id}`} target="_blank">
                         <DropdownMenuItem>
                           <ExternalLink className="h-3.5 w-3.5" />
                           View on Public Site
@@ -217,7 +217,7 @@ export default function AgencyPackagesListClient({ initialPackages }: AgencyPack
                   <span className="text-lg font-bold text-slate-900 font-display">
                     {formatCurrency(pkg.basePrice, pkg.currency)}
                   </span>
-                  <Link href={`/packages/${pkg.id}`}>
+                  <Link href={`/packages/${pkg.slug || pkg.id}`}>
                     <Button variant="ghost" size="sm" className="py-2 gap-1.5 text-xs text-primary hover:text-primary hover:bg-primary/5 cursor-pointer font-semibold rounded-md">
                       <Eye className="h-3.5 w-3.5" /> View Detail
                     </Button>

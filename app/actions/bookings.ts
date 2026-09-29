@@ -259,10 +259,24 @@ export async function updateBookingStatus(
 
     if (nextStatus === "CONFIRMED") {
       title = "Booking Confirmed! 🎉";
-      message = `Great news! Your booking (ID: ${bookingId.slice(-6)}) has been confirmed by the agency.`;
+      message = booking.status === "CANCELLED"
+        ? `Great news! Your booking (ID: ${bookingId.slice(-6)}) has been reactivated and confirmed by the agency. Get ready for your trip!`
+        : `Great news! Your booking (ID: ${bookingId.slice(-6)}) has been confirmed by the agency. Get ready for your trip!`;
+    } else if (nextStatus === "PENDING") {
+      title = "Booking Under Review ⏳";
+      message = `Your booking (ID: ${bookingId.slice(-6)}) has been placed under review by the agency.`;
+    } else if (nextStatus === "PROCESSING") {
+      title = "Booking In Progress ⚙️";
+      message = `Your booking (ID: ${bookingId.slice(-6)}) is now being processed. The agency is preparing your tour.`;
+    } else if (nextStatus === "COMPLETED") {
+      title = "Tour Completed! ✅";
+      message = `Your tour (Booking ID: ${bookingId.slice(-6)}) has been marked as completed. We hope you had an amazing experience! Don't forget to leave a review.`;
     } else if (nextStatus === "CANCELLED") {
       title = "Booking Cancelled ❌";
-      message = `Your booking (ID: ${bookingId.slice(-6)}) was cancelled.`;
+      message = `Your booking (ID: ${bookingId.slice(-6)}) has been cancelled by the agency.`;
+    } else if (nextStatus === "REFUNDED") {
+      title = "Refund Processed 💰";
+      message = `A refund has been issued for your booking (ID: ${bookingId.slice(-6)}). Please allow a few business days for the amount to reflect in your account.`;
     }
 
     await prisma.notification.create({

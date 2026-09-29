@@ -5,6 +5,7 @@ import PackagesListClient from "./packages-list-client";
 
 interface PackageItem {
   id: string;
+  slug: string;
   title: string;
   description: string;
   destinations: string[];
@@ -93,6 +94,7 @@ export default async function PackagesPage() {
 
     return {
       id: pkg.id,
+      slug: pkg.slug || pkg.id,
       title: pkg.title,
       description: pkg.description,
       destinations: (pkg.destinations || []).map((d: any) => (typeof d === "string" ? d : d.name || "India")),

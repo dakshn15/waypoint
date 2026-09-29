@@ -37,6 +37,7 @@ import {
 
 interface Package {
   id: string;
+  slug: string;
   title: string;
   description: string;
   destinations: string[];
@@ -458,7 +459,7 @@ export default function PackagesListClient({ initialPackages, userSession }: Pac
               {sortedPackages.length > 0 ? (
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                   {sortedPackages.map((pkg) => (
-                    <Link key={pkg.id} href={`/packages/${pkg.id}`} className="group">
+                    <Link key={pkg.id} href={`/packages/${pkg.slug || pkg.id}`} className="group">
                       <div className="h-full flex flex-col bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
 
                         {/* Image */}

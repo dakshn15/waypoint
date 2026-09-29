@@ -201,17 +201,19 @@ function activityColor(type: string) {
 export default async function PackageDetailPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
 
   let targetPkg: any = null;
+  let isDraftPreview = false;
 
   try {
+    // First: try finding by ID or slug — regardless of status
     targetPkg = await prisma.package.findFirst({
       where: {
         OR: [
           { id },
           { slug: id },
         ],
-        status: "PUBLISHED",
       },
       include: {
         agency: true,
@@ -238,6 +240,33 @@ export default async function PackageDetailPage({ params }: PageProps) {
       },
     });
 
+    // If package is not PUBLISHED, check authorization
+    if (targetPkg && targetPkg.status !== "PUBLISHED") {
+      let canView = false;
+
+      if (userRole === "ADMIN") {
+        canView = true;
+      } else if (session?.user?.id && (userRole === "AGENCY" || userRole === "STAFF")) {
+        // Check if user belongs to the agency that owns this package
+        try {
+          const { getUserAgencyAccess } = await import("@/lib/permissions");
+          const access = await getUserAgencyAccess(session.user.id, userRole);
+          if (access && access.agencyId === targetPkg.agencyId) {
+            canView = true;
+          }
+        } catch {
+          // permission check failed — deny access
+        }
+      }
+
+      if (!canView) {
+        targetPkg = null; // triggers notFound() below
+      } else {
+        isDraftPreview = true;
+      }
+    }
+
+    // Legacy numeric fallback — only for PUBLISHED packages
     if (!targetPkg && !isNaN(Number(id))) {
       const allDbPkgs = await prisma.package.findMany({
         where: { status: "PUBLISHED" },
@@ -364,6 +393,20 @@ export default async function PackageDetailPage({ params }: PageProps) {
       {/* ═══════════════ NAVBAR ═══════════════ */}
       <SiteHeader userSession={session} />
 
+      {/* ═══════════════ DRAFT PREVIEW BANNER ═══════════════ */}
+      {isDraftPreview && (
+        <div className="bg-amber-50 border-b border-amber-300">
+          <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
+            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
+              <svg className="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-amber-800">Draft Preview Mode</p>
+              <p className="text-xs text-amber-700">This package is <strong>not published</strong> and is only visible to you. Travelers cannot see this page.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════ CINEMATIC HERO ═══════════════ */}
       <section className="relative w-full overflow-hidden bg-slate-950">

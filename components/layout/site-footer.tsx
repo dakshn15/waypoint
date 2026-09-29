@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -62,8 +62,13 @@ interface SiteFooterProps {
 
 export function SiteFooter({ children }: SiteFooterProps) {
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [hasMounted, setHasMounted] = useState(false);
   const { data: sessionData } = useSession();
-  const userRole = (sessionData?.user as { role?: string } | undefined)?.role;
+
+  useEffect(() => setHasMounted(true), []);
+
+  // Defer role-based links to post-hydration to avoid SSR/client mismatch
+  const userRole = hasMounted ? (sessionData?.user as { role?: string } | undefined)?.role : undefined;
   const productLinks = useMemo(() => getProductLinks(userRole), [userRole]);
 
   const handleSubscribe = (e: React.FormEvent) => {
