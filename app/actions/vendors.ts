@@ -43,11 +43,23 @@ export async function addVendor(input: AddVendorInput) {
     }
 
     if (!input.name.trim()) {
-      return { error: "Vendor name is required" };
+      return { error: "Vendor name is required." };
     }
 
     if (!input.category || !input.category.trim()) {
-      return { error: "Vendor category is required" };
+      return { error: "Vendor category is required." };
+    }
+
+    if (!input.location || !input.location.trim()) {
+      return { error: "Vendor location is required." };
+    }
+
+    // Validate email format if provided
+    if (input.contactEmail && input.contactEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(input.contactEmail.trim())) {
+        return { error: "Please enter a valid email address." };
+      }
     }
 
     const vendor = await prisma.vendor.create({
@@ -55,10 +67,10 @@ export async function addVendor(input: AddVendorInput) {
         agencyId,
         name: input.name.trim(),
         category: (input.category || "OTHER").toUpperCase() as any,
-        location: input.location || null,
-        contactEmail: input.contactEmail || null,
-        contactPhone: input.contactPhone || null,
-        description: input.description || null,
+        location: input.location.trim(),
+        contactEmail: input.contactEmail?.trim() || null,
+        contactPhone: input.contactPhone?.trim() || null,
+        description: input.description?.trim() || null,
         active: true,
       },
     });
@@ -66,7 +78,7 @@ export async function addVendor(input: AddVendorInput) {
     const { revalidatePath } = await import("next/cache");
     revalidatePath("/dashboard/vendors");
 
-    return { success: true, vendorId: vendor.id };
+    return { success: true, vendor };
   } catch (error: any) {
     console.error("[ADD_VENDOR_ERROR]", error);
     return { error: error.message || "Failed to add vendor" };

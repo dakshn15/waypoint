@@ -25,6 +25,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
@@ -400,10 +401,11 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
             }
           />
           <DropdownMenuContent align="end" className="w-56 bg-white border border-slate-200 shadow-lg p-1.5">
-            <DropdownMenuLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
-              Change Status
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">
+                Change Status
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-slate-100" />
 
             {canConfirm && (
               <DropdownMenuItem
@@ -475,6 +477,7 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
                 </DropdownMenuItem>
               </>
             )}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

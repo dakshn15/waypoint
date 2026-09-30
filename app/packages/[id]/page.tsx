@@ -393,21 +393,6 @@ export default async function PackageDetailPage({ params }: PageProps) {
       {/* ═══════════════ NAVBAR ═══════════════ */}
       <SiteHeader userSession={session} />
 
-      {/* ═══════════════ DRAFT PREVIEW BANNER ═══════════════ */}
-      {isDraftPreview && (
-        <div className="bg-amber-50 border-b border-amber-300">
-          <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-            <div className="flex-shrink-0 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
-              <svg className="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-amber-800">Draft Preview Mode</p>
-              <p className="text-xs text-amber-700">This package is <strong>not published</strong> and is only visible to you. Travelers cannot see this page.</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ═══════════════ CINEMATIC HERO ═══════════════ */}
       <section className="relative w-full overflow-hidden bg-slate-950">
         <div className="relative w-full h-[450px] sm:h-[500px] md:h-[600px]">
@@ -432,6 +417,11 @@ export default async function PackageDetailPage({ params }: PageProps) {
                 <Link href="/packages" className="hover:text-white transition-colors">Packages</Link>
                 <ChevronRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
                 <span className="text-white/90 font-bold truncate max-w-[200px] sm:max-w-xs">{pkg.title}</span>
+                {isDraftPreview && (
+                  <span className="ml-2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                    Draft Preview
+                  </span>
+                )}
               </nav>
 
               {/* Title */}

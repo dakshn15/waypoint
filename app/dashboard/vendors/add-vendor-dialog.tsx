@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { addVendor } from "@/app/actions/vendors";
+import { serializePrisma } from "@/lib/utils";
 
 const CATEGORIES = [
   "Hotel",
@@ -26,8 +26,12 @@ const CATEGORIES = [
   "Other",
 ];
 
-export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
-  const router = useRouter();
+interface AddVendorDialogProps {
+  agencyId: string;
+  onVendorAdded?: (vendor: any) => void;
+}
+
+export default function AddVendorDialog({ agencyId, onVendorAdded }: AddVendorDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -41,9 +45,23 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.name.trim()) {
-      toast.error("Vendor name is required");
+      toast.error("Vendor name is required.");
       return;
+    }
+    if (!form.location.trim()) {
+      toast.error("Location is required.");
+      return;
+    }
+
+    // Validate email format if provided
+    if (form.contactEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.contactEmail.trim())) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -58,6 +76,12 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
       } else {
         toast.success("Vendor added successfully!");
         setOpen(false);
+
+        // Optimistically add the new vendor to the list
+        if (result.vendor && onVendorAdded) {
+          onVendorAdded(serializePrisma(result.vendor));
+        }
+
         setForm({
           name: "",
           category: "HOTEL",
@@ -66,10 +90,9 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
           contactPhone: "",
           description: "",
         });
-        router.refresh();
       }
     } catch (err) {
-      toast.error("Failed to add vendor");
+      toast.error("Failed to add vendor.");
     } finally {
       setLoading(false);
     }
@@ -104,18 +127,18 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label>Category</Label>
+            <Label>Category <span className="text-rose-500">*</span></Label>
             <div className="grid grid-cols-3 gap-2">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   type="button"
                   className={`p-2 rounded-md border text-sm font-medium transition-all cursor-pointer ${
-                    form.category === cat
+                    form.category === cat.toUpperCase()
                       ? "border-[var(--waypoint-teal)] bg-[var(--waypoint-teal)]/10 text-[var(--waypoint-teal)]"
                       : "border-border hover:border-[var(--waypoint-teal)]/50 text-muted-foreground"
                   }`}
-                  onClick={() => setForm({ ...form, category: cat })}
+                  onClick={() => setForm({ ...form, category: cat.toUpperCase() })}
                 >
                   {cat}
                 </button>
@@ -124,7 +147,7 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="vendor-location">Location</Label>
+            <Label htmlFor="vendor-location">Location <span className="text-rose-500">*</span></Label>
             <Input
               id="vendor-location"
               placeholder="e.g., Mumbai, India"
@@ -192,3 +215,4 @@ export default function AddVendorDialog({ agencyId }: { agencyId: string }) {
     </Dialog>
   );
 }
+
