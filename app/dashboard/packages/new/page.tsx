@@ -740,7 +740,7 @@ export default function NewPackagePage() {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {SUPPORTED_CURRENCIES.map((c) => (
-                        <SelectItem key={c.code} value={c.code}>{c.symbol} {c.name} ({c.code})</SelectItem>
+                        <SelectItem key={c.code} value={c.code} label={`${c.symbol} ${c.name} (${c.code})`}>{c.symbol} {c.name} ({c.code})</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

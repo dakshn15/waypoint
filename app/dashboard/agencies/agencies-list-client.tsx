@@ -580,6 +580,17 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
           </DialogHeader>
 
           <form onSubmit={handleUpdateAgencySubmit} className="space-y-4 mt-3">
+            {editTarget && (
+              <div className="flex items-center justify-between p-3 bg-slate-50/80 border border-slate-200/80 rounded-lg text-xs">
+                <div className="min-w-0 flex-1">
+                  <span className="text-slate-500 font-medium">Owner: </span>
+                  <span className="font-semibold text-slate-800">{editTarget.ownerName}</span>
+                  <span className="text-slate-400 ml-1">({editTarget.ownerEmail})</span>
+                </div>
+                <span className="text-[11px] text-slate-400 shrink-0">Managed in Users</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="edit-agency-name" className="text-xs font-semibold text-slate-700">

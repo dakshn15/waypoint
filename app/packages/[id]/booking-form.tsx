@@ -422,6 +422,7 @@ export default function BookingForm({
                         <SelectItem
                           key={i}
                           value={batch.dateString}
+                          label={formatDate(batch.date)}
                           disabled={batch.isSoldOut}
                           className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 focus:bg-primary/5 focus:text-slate-900 cursor-pointer"
                         >

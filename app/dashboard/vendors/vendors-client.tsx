@@ -358,7 +358,7 @@ export default function VendorsClient({ initialVendors, agencyId }: VendorsClien
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</SelectItem>
+                    <SelectItem key={cat} value={cat} label={cat.charAt(0) + cat.slice(1).toLowerCase()}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

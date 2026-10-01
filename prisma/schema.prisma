@@ -148,6 +148,8 @@ model AgencyStaff {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   tasks  Task[]
+
+  @@index([agencyId])
 }
 
 enum StaffRole {
@@ -196,6 +198,10 @@ model Package {
   bookings     Booking[]
   reviews      Review[]
   favorites    Favorite[]
+
+  @@index([agencyId])
+  @@index([status, createdAt])
+  @@index([featured, status])
 }
 
 enum PackageStatus {
@@ -371,6 +377,11 @@ model Booking {
   trip          Trip?         @relation(fields: [tripId], references: [id])
   payments      Payment[]
   documents     Document[]
+
+  @@index([userId, createdAt])
+  @@index([agencyId, status])
+  @@index([packageId])
+  @@index([status, createdAt])
 }
 
 enum BookingStatus {
@@ -470,6 +481,8 @@ model Vendor {
   createdAt     DateTime   @default(now())
   
   agency        Agency     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
 }
 
 enum VendorType {
@@ -496,6 +509,7 @@ model Review {
   package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
   
   @@unique([userId, packageId])
+  @@index([packageId])
 }
 
 // Notification
@@ -510,6 +524,9 @@ model Notification {
   createdAt DateTime @default(now())
   
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, read])
 }
 
 enum NotificationType {
@@ -531,6 +548,7 @@ model Favorite {
   package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
   
   @@unique([userId, packageId])
+  @@index([packageId])
 }
 
 // Document
@@ -576,6 +594,10 @@ model Task {
   
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  @@index([agencyId, status])
+  @@index([staffId])
+  @@index([dueDate])
 }
 
 enum TaskStatus {

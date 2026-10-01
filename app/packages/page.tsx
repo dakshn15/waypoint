@@ -48,8 +48,17 @@ export default async function PackagesPage() {
     dbPackages = await prisma.package.findMany({
       where: { status: "PUBLISHED" },
       include: {
-        agency: true,
-        reviews: true,
+        agency: {
+          select: {
+            name: true,
+            verified: true,
+          },
+        },
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
         _count: {
           select: {
             bookings: true,

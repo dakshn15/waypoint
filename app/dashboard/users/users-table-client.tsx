@@ -448,7 +448,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-slate-200">
                       {agencies.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                        <SelectItem key={a.id} value={a.id} label={a.name}>{a.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -553,7 +553,7 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-slate-200">
                       {agencies.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                        <SelectItem key={a.id} value={a.id} label={a.name}>{a.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

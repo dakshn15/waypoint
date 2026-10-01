@@ -404,16 +404,61 @@ export async function deleteAgencyByAdmin(agencyId: string) {
       return { error: "Agency not found" };
     }
 
-    const dependencies = await prisma.agency.findUnique({ where: { id: agencyId }, select: { _count: { select: { packages: true, bookings: true, staff: true } } } });
-    if (!dependencies) return { error: "Agency not found" };
-    if (dependencies._count.packages || dependencies._count.bookings || dependencies._count.staff) {
-      return { error: "Agencies with operational data cannot be deleted. Suspend the agency instead to preserve records." };
-    }
-    await prisma.$transaction([
-      prisma.agency.delete({ where: { id: agencyId } }),
-      prisma.user.update({ where: { id: agency.ownerId }, data: { role: "TRAVELER" } }),
-    ]);
-    await writeAuditLog({ actorId: session.user.id, action: "agency.deleted", resourceType: "Agency", resourceId: agencyId, before: { name: agency.name, ownerId: agency.ownerId } });
+    // Find all bookings directly attached to the agency or attached to its packages
+    const agencyBookings = await prisma.booking.findMany({
+      where: {
+        OR: [
+          { agencyId },
+          { package: { agencyId } },
+        ],
+      },
+      select: { id: true },
+    });
+    const bookingIds = agencyBookings.map((b) => b.id);
+
+    // Find all staff user IDs so their roles can be cleanly reverted
+    const staffMembers = await prisma.agencyStaff.findMany({
+      where: { agencyId },
+      select: { userId: true },
+    });
+    const staffUserIds = staffMembers.map((s) => s.userId);
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Remove payments and documents tied to agency bookings, then the bookings
+      if (bookingIds.length > 0) {
+        await tx.payment.deleteMany({ where: { bookingId: { in: bookingIds } } });
+        await tx.document.deleteMany({ where: { bookingId: { in: bookingIds } } });
+        await tx.booking.deleteMany({ where: { id: { in: bookingIds } } });
+      }
+
+      // 2. Remove payouts for this agency
+      await tx.agencyPayout.deleteMany({ where: { agencyId } });
+
+      // 3. Revert staff user accounts to TRAVELER
+      if (staffUserIds.length > 0) {
+        await tx.user.updateMany({
+          where: { id: { in: staffUserIds } },
+          data: { role: "TRAVELER" },
+        });
+      }
+
+      // 4. Delete the agency record (cascades to packages, itineraries, activities, staff, vendors, tasks)
+      await tx.agency.delete({ where: { id: agencyId } });
+
+      // 5. Revert agency owner's user account to TRAVELER
+      await tx.user.update({
+        where: { id: agency.ownerId },
+        data: { role: "TRAVELER" },
+      });
+    });
+
+    await writeAuditLog({
+      actorId: session.user.id,
+      action: "agency.deleted",
+      resourceType: "Agency",
+      resourceId: agencyId,
+      before: { name: agency.name, ownerId: agency.ownerId },
+    });
 
     revalidatePath("/dashboard/agencies");
     return { success: true };

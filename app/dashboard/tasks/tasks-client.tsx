@@ -407,11 +407,14 @@ export default function TasksClient({
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
-                                {staffList.map((s) => (
-                                  <SelectItem key={s.id} value={s.id}>
-                                    {s.user.name || s.user.email}{s.userId === currentStaffUserId ? " (You)" : ""}
-                                  </SelectItem>
-                                ))}
+                                {staffList.map((s) => {
+                                  const staffLabel = `${s.user.name || s.user.email}${s.userId === currentStaffUserId ? " (You)" : ""}`;
+                                  return (
+                                    <SelectItem key={s.id} value={s.id} label={staffLabel}>
+                                      {staffLabel}
+                                    </SelectItem>
+                                  );
+                                })}
                               </SelectContent>
                             </Select>
                           );
@@ -627,11 +630,14 @@ export default function TasksClient({
                 <SelectContent>
                   <SelectItem value="ALL">All Staff</SelectItem>
                   <SelectItem value="UNASSIGNED">Unassigned Tasks</SelectItem>
-                  {staffList.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.user.name} ({s.role.toLowerCase()}){s.userId === currentStaffUserId ? " (You)" : ""}
-                    </SelectItem>
-                  ))}
+                  {staffList.map((s) => {
+                    const staffLabel = `${s.user.name} (${s.role.toLowerCase()})${s.userId === currentStaffUserId ? " (You)" : ""}`;
+                    return (
+                      <SelectItem key={s.id} value={s.id} label={staffLabel}>
+                        {staffLabel}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -774,11 +780,14 @@ export default function TasksClient({
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {staffList.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>
-                        {s.user.name} ({s.role.toLowerCase()}){s.userId === currentStaffUserId ? " (You)" : ""}
-                      </SelectItem>
-                    ))}
+                    {staffList.map((s) => {
+                      const staffLabel = `${s.user.name} (${s.role.toLowerCase()})${s.userId === currentStaffUserId ? " (You)" : ""}`;
+                      return (
+                        <SelectItem key={s.id} value={s.id} label={staffLabel}>
+                          {staffLabel}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

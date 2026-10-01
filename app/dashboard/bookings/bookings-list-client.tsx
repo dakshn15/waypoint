@@ -679,15 +679,15 @@ export default function BookingsListClient({ initialBookings, role, stats, agenc
           </div>
           <Select value={agencyFilter} onValueChange={(v: string | null) => v && setAgencyFilter(v)}>
             <SelectTrigger className="w-[220px] h-9 text-sm bg-white border-slate-200 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-3.5 w-3.5 text-slate-400" />
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 <SelectValue placeholder="All Agencies" />
               </div>
             </SelectTrigger>
             <SelectContent className="bg-white border border-slate-200 shadow-lg" alignItemWithTrigger={false}>
               <SelectItem value="ALL" className="cursor-pointer text-sm">All Agencies</SelectItem>
               {agencies.map((a) => (
-                <SelectItem key={a.id} value={a.id} className="cursor-pointer text-sm">
+                <SelectItem key={a.id} value={a.id} label={a.name} className="cursor-pointer text-sm">
                   {a.name}
                 </SelectItem>
               ))}
