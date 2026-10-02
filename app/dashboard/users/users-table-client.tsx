@@ -156,7 +156,13 @@ export function UsersTable({ initialUsers, agencies, currentUserId }: UsersTable
 
       if (res.error) throw new Error(res.error);
 
-      toast.success("User account registered successfully!");
+      const tempPw = (res as any).tempPassword;
+      toast.success(
+        tempPw
+          ? `User created! Temporary password: ${tempPw}`
+          : "User account registered successfully!",
+        { duration: 8000 }
+      );
       setCreateOpen(false);
       setCreateForm({
         name: "",

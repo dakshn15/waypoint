@@ -150,7 +150,15 @@ export function AgenciesList({ initialAgencies }: AgenciesListProps) {
 
       if (res.error) throw new Error(res.error);
 
-      toast.success("Agency registered successfully!");
+      const r = res as any;
+      if (r.ownerCreated && r.tempPassword) {
+        toast.success(
+          `Agency created! Owner account auto-created with password: ${r.tempPassword}`,
+          { duration: 10000 }
+        );
+      } else {
+        toast.success("Agency registered successfully!");
+      }
       setCreateOpen(false);
       setCreateForm({
         name: "",

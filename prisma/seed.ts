@@ -513,62 +513,6 @@ async function main() {
       availableFrom: new Date(),
       availableTo: daysFromNow(170),
     },
-    // DRAFT package — shows lifecycle in agency dashboard
-    {
-      slug: "andaman-island-getaway",
-      title: "Andaman Island Getaway",
-      description:
-        "Crystal-clear waters, pristine coral reefs, and secluded beaches — the Andaman Islands offer an untouched tropical paradise. Snorkel at Havelock, kayak through mangroves, and witness bioluminescent plankton at night.",
-      highlights: [
-        "Snorkeling at Elephant Beach",
-        "Glass-bottom boat ride at North Bay",
-        "Scuba diving at Havelock Island",
-        "Bioluminescent plankton night tour",
-      ],
-      duration: 6,
-      maxGroupSize: 10,
-      difficulty: "MODERATE" as const,
-      status: "DRAFT" as const,
-      featured: false,
-      basePrice: 32999,
-      currency: "INR",
-      destinations: [
-        {
-          name: "Port Blair",
-          country: "India",
-          lat: 11.6234,
-          lng: 92.7265,
-        },
-        {
-          name: "Havelock Island",
-          country: "India",
-          lat: 12.0263,
-          lng: 92.9823,
-        },
-        {
-          name: "Neil Island",
-          country: "India",
-          lat: 11.8313,
-          lng: 93.0447,
-        },
-      ],
-      startPoint: "Port Blair",
-      inclusions: [
-        "Beachfront resort stays",
-        "Daily breakfast & dinner",
-        "Ferry transfers between islands",
-        "Snorkeling gear included",
-      ],
-      exclusions: [
-        "Flights to/from Port Blair",
-        "Scuba diving charges",
-        "Personal expenses",
-      ],
-      images: ["https://images.unsplash.com/photo-1544550581-5f7ceaf7f796?auto=format&fit=crop&w=1920&q=80"],
-      departureDates: [],
-      availableFrom: null,
-      availableTo: null,
-    },
   ];
 
   const packages: Record<string, Package> = {};
@@ -1493,16 +1437,7 @@ async function main() {
       data: { bookingNumber: "WP-2026-008" },
       createdAt: daysAgo(6),
     },
-    {
-      userId: travelerUser.id,
-      title: "New Package Alert: Andaman Islands!",
-      message:
-        "Wanderlust Travels is launching an exciting new Andaman Island Getaway! Crystal-clear waters and coral reefs await. Stay tuned for availability.",
-      type: "PROMOTION",
-      read: false,
-      data: { packageSlug: "andaman-island-getaway" },
-      createdAt: daysAgo(1),
-    },
+
     {
       userId: travelerUser.id,
       title: "Welcome to Waypoint!",
@@ -1548,7 +1483,6 @@ async function main() {
   const favSlugs = [
     "kashmir-valley-gulmarg",
     "rajasthan-royal-heritage",
-    "andaman-island-getaway",
   ];
   for (const slug of favSlugs) {
     const pkg = packages[slug];
@@ -1602,15 +1536,7 @@ async function main() {
       priority: "MEDIUM" as const,
       category: "PACKAGE" as const,
     },
-    {
-      title: "Review Andaman Island vendor applications",
-      description:
-        "Three new vendors (dive school, ferry operator, beach resort) have applied for the upcoming Andaman package. Review credentials and pricing.",
-      dueDate: daysFromNow(10),
-      status: "TODO" as const,
-      priority: "MEDIUM" as const,
-      category: "SYSTEM" as const,
-    },
+
   ];
 
   for (const td of taskDefs) {

@@ -102,11 +102,94 @@ export async function createUserByAdmin(input: {
   staffRole?: "MANAGER" | "AGENT" | "SUPPORT" | null;
 }) {
   try {
-    await verifyAdmin();
-    // A bare User row cannot authenticate and would prevent the person from
-    // registering normally. Until a tokenized invitation workflow exists,
-    // registrations must use the audited public/agency onboarding flow.
-    return { error: "Direct account creation is disabled until email invitations are configured. Ask the user to register, then assign their role here." };
+    const session = await verifyAdmin();
+
+    const name = input.name.trim();
+    const email = input.email.trim().toLowerCase();
+    if (!name || !email) return { error: "Name and email are required." };
+
+    const nextRole = roleSchema.parse(input.role);
+    const nextStaffRole = input.staffRole ? staffRoleSchema.parse(input.staffRole) : "AGENT";
+    if (input.agencyId) agencyIdSchema.parse(input.agencyId);
+
+    // Check for duplicate email
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) return { error: `A user with email "${email}" already exists.` };
+
+    if (nextRole === "STAFF" && !input.agencyId) {
+      return { error: "An agency must be assigned for staff accounts." };
+    }
+    if (nextRole === "STAFF" && input.agencyId) {
+      await ensureActiveAgency(input.agencyId);
+    }
+
+    // Hash a temporary default password — the user should reset it on first login
+    const { hashPassword } = await import("better-auth/crypto");
+    const TEMP_PASSWORD = "Welcome@123";
+    const hashedPw = await hashPassword(TEMP_PASSWORD);
+
+    const user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email,
+          role: nextRole,
+          emailVerified: false,
+          phone: input.phone || null,
+        },
+      });
+
+      // Create the better-auth credential Account so the user can log in
+      const accountId = `adm_${newUser.id.substring(0, 20)}`;
+      await tx.account.create({
+        data: {
+          id: accountId,
+          accountId: newUser.id,
+          providerId: "credential",
+          userId: newUser.id,
+          password: hashedPw,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+
+      // If AGENCY → also create the agency record
+      if (nextRole === "AGENCY") {
+        await tx.agency.create({
+          data: {
+            name: `${name}'s Agency`,
+            slug: agencySlug(`${name}'s Agency`, newUser.id),
+            ownerId: newUser.id,
+            email,
+          },
+        });
+      }
+
+      // If STAFF → create staff membership
+      if (nextRole === "STAFF" && input.agencyId) {
+        await tx.agencyStaff.create({
+          data: {
+            userId: newUser.id,
+            agencyId: input.agencyId,
+            role: nextStaffRole,
+            active: true,
+          },
+        });
+      }
+
+      return newUser;
+    });
+
+    await writeAuditLog({
+      actorId: session.user.id,
+      action: "user.created",
+      resourceType: "User",
+      resourceId: user.id,
+      after: { name, email, role: nextRole },
+    });
+
+    revalidatePath("/dashboard/users");
+    return { success: true, tempPassword: TEMP_PASSWORD };
   } catch (error: any) {
     console.error("[CREATE_USER_BY_ADMIN_ERROR]", error);
     return { error: error.message || "Failed to create user" };
@@ -304,9 +387,12 @@ export async function createAgencyByAdmin(input: {
       return { error: "Agency name, owner name, and owner email are required." };
     }
 
-    // Find or create Owner User
+    const ownerEmail = input.ownerEmail.trim().toLowerCase();
+    const ownerName = input.ownerName.trim();
+
+    // Find existing user or prepare to create one
     let ownerUser = await prisma.user.findUnique({
-      where: { email: input.ownerEmail.trim().toLowerCase() },
+      where: { email: ownerEmail },
     });
 
     if (ownerUser) {
@@ -314,31 +400,77 @@ export async function createAgencyByAdmin(input: {
         where: { ownerId: ownerUser.id },
       });
       if (ownsAgency) {
-        return { error: `User with email ${input.ownerEmail} already owns agency "${ownsAgency.name}"` };
+        return { error: `User with email ${ownerEmail} already owns agency "${ownsAgency.name}"` };
       }
       if (ownerUser.role !== "TRAVELER") return { error: "Only traveler accounts can be upgraded to agency owners." };
-    } else return { error: "The owner must register first so their account has valid authentication credentials." };
+    }
 
-    const agency = await prisma.$transaction(async (tx) => {
-      await tx.user.update({ where: { id: ownerUser.id }, data: { role: "AGENCY" } });
-      return tx.agency.create({
+    const { hashPassword } = await import("better-auth/crypto");
+    const TEMP_PASSWORD = "Welcome@123";
+    const hashedPw = await hashPassword(TEMP_PASSWORD);
+
+    const result = await prisma.$transaction(async (tx) => {
+      let ownerId: string;
+      let ownerCreated = false;
+
+      if (ownerUser) {
+        // Upgrade existing traveler to AGENCY
+        await tx.user.update({ where: { id: ownerUser.id }, data: { role: "AGENCY" } });
+        ownerId = ownerUser.id;
+      } else {
+        // Create the owner user + auth credentials inline
+        const newOwner = await tx.user.create({
+          data: {
+            name: ownerName,
+            email: ownerEmail,
+            role: "AGENCY",
+            emailVerified: false,
+          },
+        });
+        ownerId = newOwner.id;
+        ownerCreated = true;
+
+        // Create the better-auth credential Account
+        const accountId = `adm_${newOwner.id.substring(0, 20)}`;
+        await tx.account.create({
+          data: {
+            id: accountId,
+            accountId: newOwner.id,
+            providerId: "credential",
+            userId: newOwner.id,
+            password: hashedPw,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        });
+      }
+
+      const agency = await tx.agency.create({
         data: {
           name: input.name.trim(),
-          slug: agencySlug(input.name.trim(), ownerUser.id),
-          ownerId: ownerUser.id,
+          slug: agencySlug(input.name.trim(), ownerId),
+          ownerId,
           description: input.description || null,
           website: input.website || null,
           phone: input.phone || null,
-          email: input.ownerEmail.trim().toLowerCase(),
+          email: ownerEmail,
           verified: false,
           active: true,
         },
       });
+
+      return { agency, ownerId, ownerCreated };
     });
-    await writeAuditLog({ actorId: session.user.id, action: "agency.created", resourceType: "Agency", resourceId: agency.id, after: { name: agency.name, ownerId: agency.ownerId, verified: agency.verified, active: agency.active } });
+
+    await writeAuditLog({ actorId: session.user.id, action: "agency.created", resourceType: "Agency", resourceId: result.agency.id, after: { name: result.agency.name, ownerId: result.ownerId, verified: result.agency.verified, active: result.agency.active, ownerCreated: result.ownerCreated } });
 
     revalidatePath("/dashboard/agencies");
-    return { success: true };
+    revalidatePath("/dashboard/users");
+    return {
+      success: true,
+      ownerCreated: result.ownerCreated,
+      tempPassword: result.ownerCreated ? TEMP_PASSWORD : undefined,
+    };
   } catch (error: any) {
     console.error("[CREATE_AGENCY_BY_ADMIN_ERROR]", error);
     return { error: error.message || "Failed to create agency" };
